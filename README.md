@@ -29,9 +29,18 @@ Module d'automatisation pour la classe Blood Hunter de Matthew Mercer dans Found
 - Système d'amplification avec coût en HP automatique
 - Prompts de réaction en temps réel pendant le combat
 
-### Ordres (à venir)
+### Order of the Lycan 🐺 ✓
+- **Hybrid Transformation** complète avec Active Effects
+- **Bonus évolutifs** selon le niveau (AC, vitesse, Force, Dextérité, Réduction de dégâts)
+- **Blood Lust** : Système de contrôle avec rappels automatiques
+- **Predatory Strikes** : Dégâts hémocratiques automatiques en mêlée
+- Transformation dure 1 heure avec gestion automatique
+- Interface intuitive avec bouton de transformation sur la feuille
+- Progression complète de niveau 3 à 18
+- Messages de chat stylisés pour les transformations
+
+### Autres Ordres (à venir)
 - Order of the Ghostslayer
-- Order of the Lycan
 - Order of the Mutant
 - Order of the Profane Soul
 
