@@ -177,13 +177,107 @@
   margin-left: 0.5rem;
 }
 
-/* Blood Curse Styles (for future implementation) */
+/* Blood Curse Styles */
 .bloodhunter-curse-button {
   background: linear-gradient(135deg, #4b0082 0%, #8b008b 100%);
 }
 
 .bloodhunter-curse-button:hover {
   background: linear-gradient(135deg, #6a0dad 0%, #9932cc 100%);
+}
+
+/* Blood Curse Prompt Dialog */
+.bloodhunter-curse-prompt {
+  padding: 1rem;
+}
+
+.bloodhunter-curse-prompt .form-group {
+  margin-bottom: 1rem;
+}
+
+.bloodhunter-curse-prompt select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 2px solid #4b0082;
+  border-radius: 4px;
+  background: white;
+  color: #333;
+  font-size: 1em;
+}
+
+.bloodhunter-curse-prompt select:focus {
+  outline: none;
+  border-color: #8b008b;
+  box-shadow: 0 0 0 3px rgba(139, 0, 139, 0.1);
+}
+
+.bloodhunter-curse-prompt label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #4b0082;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.bloodhunter-curse-prompt input[type="checkbox"] {
+  width: 1.2em;
+  height: 1.2em;
+  cursor: pointer;
+}
+
+/* Blood Curse Message */
+.bloodhunter-curse-message {
+  background: linear-gradient(135deg, rgba(75, 0, 130, 0.1) 0%, rgba(139, 0, 139, 0.1) 100%);
+  border-left: 4px solid #4b0082;
+  padding: 1rem;
+  border-radius: 4px;
+}
+
+.bloodhunter-curse-message h3 {
+  margin: 0 0 0.5rem 0;
+  color: #4b0082;
+  font-size: 1.2em;
+}
+
+.bloodhunter-curse-message p {
+  margin: 0;
+  color: #333;
+}
+
+/* Active Curse Effect */
+.bloodhunter-active-curse {
+  background: linear-gradient(135deg, rgba(75, 0, 130, 0.2) 0%, rgba(139, 0, 139, 0.2) 100%);
+  border-left: 4px solid #8b008b;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.bloodhunter-active-curse i {
+  color: #8b008b;
+  font-size: 1.2em;
+}
+
+.bloodhunter-active-curse .curse-name {
+  font-weight: bold;
+  color: #4b0082;
+  flex-grow: 1;
+}
+
+/* Amplified Indicator */
+.bloodhunter-amplified {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  background: #dc143c;
+  color: white;
+  border-radius: 4px;
+  font-size: 0.8em;
+  font-weight: bold;
+  margin-left: 0.5rem;
 }
 
 /* Order Specific Styles */

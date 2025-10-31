@@ -4,6 +4,7 @@
 
 import { BloodHunterUtils } from './utils.js';
 import { MODULE_ID } from './blood-hunter.js';
+import { BloodHunterIntegrations } from './integrations.js';
 
 export class CrimsonRite {
 
@@ -212,24 +213,38 @@ export class CrimsonRite {
     const damageType = this.RITE_TYPES[riteType].damageType;
 
     // Create Active Effect for the rite
-    const effectData = {
-      name: `${game.i18n.localize('BLOODHUNTER.CrimsonRite.Title')} - ${game.i18n.localize('BLOODHUNTER.CrimsonRite.Types.' + riteType)}`,
-      icon: this.getRiteIcon(riteType),
-      origin: actor.uuid,
-      duration: {
-        seconds: null // Lasts until dismissed or rest
-      },
-      flags: {
-        'vtt-blood-hunter': {
-          crimsonRite: true,
-          riteType: riteType,
-          damageType: damageType,
-          riteDamage: riteDamage,
-          weaponId: weaponId
-        }
-      },
-      changes: []
-    };
+    // Use DAE-enhanced effect if available
+    let effectData;
+    if (BloodHunterIntegrations.isDAEActive()) {
+      effectData = BloodHunterIntegrations.createCrimsonRiteEffect(
+        riteType,
+        damageType,
+        riteDamage,
+        weaponId,
+        actor
+      );
+    } else {
+      // Fallback to basic effect
+      effectData = {
+        name: `${game.i18n.localize('BLOODHUNTER.CrimsonRite.Title')} - ${game.i18n.localize('BLOODHUNTER.CrimsonRite.Types.' + riteType)}`,
+        icon: this.getRiteIcon(riteType),
+        origin: actor.uuid,
+        duration: {
+          seconds: null // Lasts until dismissed or rest
+        },
+        flags: {
+          'vtt-blood-hunter': {
+            crimsonRite: true,
+            riteType: riteType,
+            damageType: damageType,
+            riteDamage: riteDamage,
+            weaponId: weaponId
+          }
+        },
+        changes: [],
+        transfer: false
+      };
+    }
 
     await weapon.createEmbeddedDocuments('ActiveEffect', [effectData]);
 

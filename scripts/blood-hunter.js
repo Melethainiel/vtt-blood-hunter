@@ -5,6 +5,8 @@
 
 import { CrimsonRite } from './crimson-rite.js';
 import { BloodHunterUtils } from './utils.js';
+import { BloodHunterIntegrations } from './integrations.js';
+import { BloodCurse } from './blood-curse.js';
 
 // Module constants
 const MODULE_ID = 'vtt-blood-hunter';
@@ -19,31 +21,55 @@ Hooks.once('init', async function() {
   // Initialize classes
   game.bloodhunter = {
     CrimsonRite,
+    BloodCurse,
     utils: BloodHunterUtils,
+    integrations: BloodHunterIntegrations,
     MODULE_ID
   };
 
   // Register Handlebars helpers
   registerHandlebarsHelpers();
+
+  // Register custom damage types
+  BloodHunterIntegrations.registerCustomDamageTypes();
 });
 
 Hooks.once('ready', async function() {
   console.log(`${MODULE_NAME} | Module Ready`);
 
+  // Initialize integrations
+  BloodHunterIntegrations.init();
+
+  // Initialize Blood Curse system
+  BloodCurse.init();
+
+  // Setup DAE special durations
+  BloodHunterIntegrations.setupDAEDurations();
+
   // Create macro compendium if needed
   await createMacros();
 });
 
+// Hook into combat turn changes to reset Blood Curse uses
+Hooks.on('combatTurn', async (combat, updateData, options) => {
+  await BloodCurse.resetCurseUses(combat, updateData);
+});
+
 // Hook into damage rolls to add Crimson Rite damage
+// Only use this hook if midi-qol is NOT active (midi-qol has its own hooks)
 Hooks.on('dnd5e.preRollDamage', async (item, rollConfig) => {
+  // If midi-qol is active, skip this hook (it handles damage in its own workflow)
+  if (BloodHunterIntegrations.isMidiQOLActive()) return;
+
   if (!item.actor) return;
 
   // Check if this weapon has an active Crimson Rite
   const activeRite = CrimsonRite.getActiveRite(item);
   if (activeRite) {
     // Add rite damage to the roll
-    const riteDamage = CrimsonRite.getRiteDamage(item.actor);
-    const damageType = activeRite.damageType;
+    const riteData = activeRite.flags[MODULE_ID];
+    const riteDamage = riteData.riteDamage;
+    const damageType = riteData.damageType;
 
     if (rollConfig.parts) {
       rollConfig.parts.push(`${riteDamage}[${damageType}]`);

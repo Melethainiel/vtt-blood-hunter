@@ -1,7 +1,7 @@
 {
   "id": "vtt-blood-hunter",
   "title": "Blood Hunter",
-  "description": "Automatisation complète de la classe Blood Hunter de Matthew Mercer pour D&D 5e. Inclut les Crimson Rites, Blood Curses, et toutes les fonctionnalités des différents ordres.",
+  "description": "Automatisation complète de la classe Blood Hunter de Matthew Mercer pour D&D 5e. Inclut les Crimson Rites, Blood Curses, et toutes les fonctionnalités des différents ordres. Intégration avancée avec DAE et midi-qol pour une automatisation maximale.",
   "version": "1.0.0",
   "compatibility": {
     "minimum": "11",
@@ -20,6 +20,23 @@
         "compatibility": {
           "minimum": "3.0.0"
         }
+      }
+    ],
+    "recommends": [
+      {
+        "id": "dae",
+        "type": "module",
+        "reason": "Automatic application of Crimson Rite damage to attacks. Highly recommended for best experience."
+      },
+      {
+        "id": "midi-qol",
+        "type": "module",
+        "reason": "Automated combat workflow with Blood Curse reactions. Highly recommended for best experience."
+      },
+      {
+        "id": "advanced-macros",
+        "type": "module",
+        "reason": "Enhanced macro support for complex automations. Optional but useful."
       }
     ]
   },
