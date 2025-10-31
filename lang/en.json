@@ -1,0 +1,61 @@
+{
+  "BLOODHUNTER": {
+    "ModuleName": "Blood Hunter",
+
+    "CrimsonRite": {
+      "Title": "Crimson Rite",
+      "SelectWeapon": "Select a weapon to enchant",
+      "SelectRite": "Select a Rite type",
+      "Activate": "Activate Rite",
+      "Deactivate": "Deactivate Rite",
+      "Active": "Active Rite",
+      "Cost": "HP Cost",
+      "NoWeapons": "No weapons found in inventory",
+      "AlreadyActive": "This weapon already has an active Crimson Rite",
+      "Activated": "{weapon} is now enchanted with {rite}",
+      "Deactivated": "Crimson Rite deactivated on {weapon}",
+      "InsufficientHP": "Insufficient HP to activate Crimson Rite",
+      "NotBloodHunter": "You must be a Blood Hunter to use Crimson Rites",
+
+      "Types": {
+        "flame": "Rite of the Flame (Fire)",
+        "frozen": "Rite of the Frozen (Cold)",
+        "storm": "Rite of the Storm (Lightning)",
+        "corrosion": "Rite of the Corrosion (Acid)",
+        "toxin": "Rite of the Toxin (Poison)",
+        "dead": "Rite of the Dead (Necrotic)",
+        "oracle": "Rite of the Oracle (Psychic)",
+        "dawn": "Rite of the Dawn (Radiant)",
+        "roar": "Rite of the Roar (Thunder)"
+      },
+
+      "DamageTypes": {
+        "fire": "Fire",
+        "cold": "Cold",
+        "lightning": "Lightning",
+        "acid": "Acid",
+        "poison": "Poison",
+        "necrotic": "Necrotic",
+        "psychic": "Psychic",
+        "radiant": "Radiant",
+        "thunder": "Thunder"
+      }
+    },
+
+    "Settings": {
+      "AutoCalculateHP": {
+        "Name": "Auto-calculate HP cost",
+        "Hint": "Automatically calculate and apply HP cost when activating Crimson Rites"
+      },
+      "ShowRiteButtons": {
+        "Name": "Show Rite buttons on items",
+        "Hint": "Display Crimson Rite activation buttons on weapon items"
+      }
+    },
+
+    "Notifications": {
+      "HPCostApplied": "Paid {cost} HP to activate Crimson Rite",
+      "RiteEnded": "Crimson Rite has ended"
+    }
+  }
+}

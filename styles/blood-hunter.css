@@ -1,0 +1,230 @@
+/* Blood Hunter Module Styles */
+
+/* Main Blood Hunter UI */
+.bloodhunter-rite-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #8b0000 0%, #dc143c 100%);
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: bold;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.bloodhunter-rite-button:hover {
+  background: linear-gradient(135deg, #a00000 0%, #ff1744 100%);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  transform: translateY(-1px);
+}
+
+.bloodhunter-rite-button i {
+  font-size: 1.2em;
+}
+
+/* Crimson Rite Dialog */
+.bloodhunter-crimson-rite-form {
+  padding: 1rem;
+}
+
+.bloodhunter-crimson-rite-form .form-group {
+  margin-bottom: 1rem;
+}
+
+.bloodhunter-crimson-rite-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  color: #8b0000;
+}
+
+.bloodhunter-crimson-rite-form select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 2px solid #8b0000;
+  border-radius: 4px;
+  background: white;
+  color: #333;
+  font-size: 1em;
+}
+
+.bloodhunter-crimson-rite-form select:focus {
+  outline: none;
+  border-color: #dc143c;
+  box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.1);
+}
+
+.bloodhunter-crimson-rite-form .info {
+  background: linear-gradient(135deg, rgba(139, 0, 0, 0.1) 0%, rgba(220, 20, 60, 0.1) 100%);
+  padding: 1rem;
+  border-left: 4px solid #8b0000;
+  border-radius: 4px;
+}
+
+.bloodhunter-crimson-rite-form .info p {
+  margin: 0.25rem 0;
+  color: #333;
+}
+
+.bloodhunter-crimson-rite-form .info strong {
+  color: #8b0000;
+}
+
+.bloodhunter-crimson-rite-form .deactivate-button {
+  width: 100%;
+  padding: 0.5rem;
+  background: #666;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: bold;
+}
+
+.bloodhunter-crimson-rite-form .deactivate-button:hover {
+  background: #888;
+}
+
+/* Item Sheet Rite Button */
+.item-sheet .bloodhunter-rite-activate {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: linear-gradient(135deg, #8b0000 0%, #dc143c 100%);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: bold;
+  text-align: center;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.item-sheet .bloodhunter-rite-activate:hover {
+  background: linear-gradient(135deg, #a00000 0%, #ff1744 100%);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.item-sheet .bloodhunter-rite-activate i {
+  font-size: 1.1em;
+}
+
+/* Active Rite Indicator */
+.bloodhunter-active-rite {
+  background: linear-gradient(135deg, rgba(139, 0, 0, 0.2) 0%, rgba(220, 20, 60, 0.2) 100%);
+  border-left: 4px solid #dc143c;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.bloodhunter-active-rite i {
+  color: #dc143c;
+  font-size: 1.2em;
+}
+
+.bloodhunter-active-rite .rite-name {
+  font-weight: bold;
+  color: #8b0000;
+  flex-grow: 1;
+}
+
+.bloodhunter-active-rite .rite-damage {
+  color: #666;
+  font-size: 0.9em;
+}
+
+/* Chat Messages */
+.chat-message.bloodhunter-message {
+  border-left: 4px solid #8b0000;
+}
+
+.chat-message.bloodhunter-message .message-header {
+  background: linear-gradient(135deg, rgba(139, 0, 0, 0.1) 0%, rgba(220, 20, 60, 0.1) 100%);
+}
+
+/* Effects List */
+.effect.bloodhunter-effect {
+  border-left: 3px solid #dc143c;
+}
+
+.effect.bloodhunter-effect .effect-name {
+  color: #8b0000;
+  font-weight: bold;
+}
+
+/* Hemocraft Die Display */
+.bloodhunter-hemocraft-die {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  background: #8b0000;
+  color: white;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 0.9em;
+  margin-left: 0.5rem;
+}
+
+/* Blood Curse Styles (for future implementation) */
+.bloodhunter-curse-button {
+  background: linear-gradient(135deg, #4b0082 0%, #8b008b 100%);
+}
+
+.bloodhunter-curse-button:hover {
+  background: linear-gradient(135deg, #6a0dad 0%, #9932cc 100%);
+}
+
+/* Order Specific Styles */
+.bloodhunter-order-ghostslayer {
+  border-color: #00ffff;
+}
+
+.bloodhunter-order-lycan {
+  border-color: #ffa500;
+}
+
+.bloodhunter-order-mutant {
+  border-color: #00ff00;
+}
+
+.bloodhunter-order-profane-soul {
+  border-color: #9932cc;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .bloodhunter-rite-button {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9em;
+  }
+
+  .bloodhunter-crimson-rite-form {
+    padding: 0.5rem;
+  }
+}
+
+/* Animation for rite activation */
+@keyframes rite-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(220, 20, 60, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(220, 20, 60, 0.8);
+  }
+}
+
+.bloodhunter-active-rite {
+  animation: rite-glow 2s ease-in-out infinite;
+}

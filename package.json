@@ -1,0 +1,23 @@
+{
+  "name": "vtt-blood-hunter",
+  "version": "1.0.0",
+  "description": "Module Foundry VTT pour automatiser la classe Blood Hunter",
+  "main": "scripts/blood-hunter.js",
+  "scripts": {
+    "build": "echo 'No build step required'",
+    "test": "echo 'No tests configured'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Melethainiel/vtt-blood-hunter"
+  },
+  "keywords": [
+    "foundry-vtt",
+    "dnd5e",
+    "blood-hunter",
+    "critical-role"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {}
+}

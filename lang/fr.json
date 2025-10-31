@@ -1,0 +1,61 @@
+{
+  "BLOODHUNTER": {
+    "ModuleName": "Blood Hunter",
+
+    "CrimsonRite": {
+      "Title": "Rite Écarlate",
+      "SelectWeapon": "Sélectionnez une arme à enchanter",
+      "SelectRite": "Sélectionnez un type de Rite",
+      "Activate": "Activer le Rite",
+      "Deactivate": "Désactiver le Rite",
+      "Active": "Rite Actif",
+      "Cost": "Coût en PV",
+      "NoWeapons": "Aucune arme trouvée dans l'inventaire",
+      "AlreadyActive": "Cette arme possède déjà un Rite Écarlate actif",
+      "Activated": "{weapon} est maintenant enchanté(e) avec {rite}",
+      "Deactivated": "Rite Écarlate désactivé sur {weapon}",
+      "InsufficientHP": "Points de vie insuffisants pour activer le Rite Écarlate",
+      "NotBloodHunter": "Vous devez être un Blood Hunter pour utiliser les Rites Écarlates",
+
+      "Types": {
+        "flame": "Rite de la Flamme (Feu)",
+        "frozen": "Rite du Givre (Froid)",
+        "storm": "Rite de la Tempête (Foudre)",
+        "corrosion": "Rite de la Corrosion (Acide)",
+        "toxin": "Rite de la Toxine (Poison)",
+        "dead": "Rite des Morts (Nécrotique)",
+        "oracle": "Rite de l'Oracle (Psychique)",
+        "dawn": "Rite de l'Aube (Radiant)",
+        "roar": "Rite du Rugissement (Tonnerre)"
+      },
+
+      "DamageTypes": {
+        "fire": "Feu",
+        "cold": "Froid",
+        "lightning": "Foudre",
+        "acid": "Acide",
+        "poison": "Poison",
+        "necrotic": "Nécrotique",
+        "psychic": "Psychique",
+        "radiant": "Radiant",
+        "thunder": "Tonnerre"
+      }
+    },
+
+    "Settings": {
+      "AutoCalculateHP": {
+        "Name": "Calculer automatiquement le coût en PV",
+        "Hint": "Calculer et appliquer automatiquement le coût en PV lors de l'activation des Rites Écarlates"
+      },
+      "ShowRiteButtons": {
+        "Name": "Afficher les boutons de Rite sur les objets",
+        "Hint": "Afficher les boutons d'activation de Rite Écarlate sur les armes"
+      }
+    },
+
+    "Notifications": {
+      "HPCostApplied": "{cost} PV payés pour activer le Rite Écarlate",
+      "RiteEnded": "Le Rite Écarlate s'est terminé"
+    }
+  }
+}
