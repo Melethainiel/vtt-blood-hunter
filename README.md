@@ -1,8 +1,13 @@
 # Blood Hunter - Module Foundry VTT
 
+![Foundry v13](https://img.shields.io/badge/Foundry-v13-informational)
+![DnD5e v3.0+](https://img.shields.io/badge/dnd5e-v3.0+-blue)
+![Version](https://img.shields.io/badge/version-1.0.0-green)
+
 Module d'automatisation pour la classe Blood Hunter de Matthew Mercer dans Foundry VTT (système D&D 5e).
 
 **✨ Intégration avancée avec DAE et midi-qol pour une automatisation maximale !**
+**🎯 Compatible et testé sur Foundry VTT v13 (version actuelle)**
 
 ## Fonctionnalités
 
@@ -65,8 +70,9 @@ Module d'automatisation pour la classe Blood Hunter de Matthew Mercer dans Found
 
 ## Compatibilité
 
-- Foundry VTT v11+
-- Système D&D 5e v3.0.0+
+- **Foundry VTT** : v11, v12, v13 (vérifié et testé sur v13)
+- **Système D&D 5e** : v3.0.0+
+- **Note** : Le module fonctionne parfaitement sur Foundry VTT v13 (version actuelle)
 
 ### Modules Recommandés
 

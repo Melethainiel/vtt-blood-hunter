@@ -1,6 +1,8 @@
 # Guide d'Intégration - DAE & midi-qol
 
-Ce guide explique comment tirer le meilleur parti du module Blood Hunter avec DAE (Dynamic Active Effects) et midi-qol.
+**✅ Compatible Foundry VTT v13**
+
+Ce guide explique comment tirer le meilleur parti du module Blood Hunter avec DAE (Dynamic Active Effects) et midi-qol sur Foundry VTT v11-v13.
 
 ## Table des matières
 
