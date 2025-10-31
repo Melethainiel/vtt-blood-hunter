@@ -7,6 +7,7 @@ import { CrimsonRite } from './crimson-rite.js';
 import { BloodHunterUtils } from './utils.js';
 import { BloodHunterIntegrations } from './integrations.js';
 import { BloodCurse } from './blood-curse.js';
+import { OrderOfTheLycan } from './order-lycan.js';
 
 // Module constants
 const MODULE_ID = 'vtt-blood-hunter';
@@ -22,6 +23,7 @@ Hooks.once('init', async function() {
   game.bloodhunter = {
     CrimsonRite,
     BloodCurse,
+    OrderOfTheLycan,
     utils: BloodHunterUtils,
     integrations: BloodHunterIntegrations,
     MODULE_ID
@@ -42,6 +44,9 @@ Hooks.once('ready', async function() {
 
   // Initialize Blood Curse system
   BloodCurse.init();
+
+  // Initialize Order of the Lycan system
+  OrderOfTheLycan.init();
 
   // Setup DAE special durations
   BloodHunterIntegrations.setupDAEDurations();
@@ -139,6 +144,20 @@ async function createMacros() {
       flags: { "vtt-blood-hunter": { macro: true } }
     });
   }
+
+  // Create Hybrid Transformation macro
+  const lycanMacroName = "Hybrid Transformation";
+  const existingLycanMacro = game.macros.find(m => m.name === lycanMacroName);
+
+  if (!existingLycanMacro) {
+    await Macro.create({
+      name: lycanMacroName,
+      type: "script",
+      img: "icons/creatures/mammals/wolf-howl-moon-white.webp",
+      command: `game.bloodhunter.OrderOfTheLycan.transformationDialog();`,
+      flags: { "vtt-blood-hunter": { macro: true } }
+    });
+  }
 }
 
 function addBloodHunterUI(html, actor) {
@@ -159,6 +178,9 @@ function addBloodHunterUI(html, actor) {
   });
 
   headerActions.append(riteButton);
+
+  // Add Lycan Transformation button if Order of the Lycan
+  OrderOfTheLycan.addLycanButtonToSheet(html, actor);
 }
 
 export { MODULE_ID, MODULE_NAME };

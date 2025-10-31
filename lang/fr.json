@@ -56,6 +56,41 @@
     "Notifications": {
       "HPCostApplied": "{cost} PV payés pour activer le Rite Écarlate",
       "RiteEnded": "Le Rite Écarlate s'est terminé"
+    },
+
+    "Lycan": {
+      "Title": "Ordre du Lycan",
+      "Transformation": "Transformation Hybride",
+      "HybridForm": "Forme Hybride",
+      "HybridTransformation": "Transformation Hybride",
+      "Human": "Humain",
+      "Hybrid": "Hybride",
+      "Transform": "Se Transformer",
+      "RevertToHuman": "Reprendre forme humaine",
+      "Transformed": "Vous vous transformez en forme hybride !",
+      "Reverted": "Vous reprenez votre forme humanoïde",
+      "AlreadyTransformed": "Vous êtes déjà en forme hybride",
+      "NotTransformed": "Vous n'êtes pas en forme hybride",
+      "NotLycan": "Vous devez être un Blood Hunter de l'Ordre du Lycan pour vous transformer",
+      "CurrentlyTransformed": "Actuellement en Forme Hybride",
+
+      "BloodLust": "Soif de Sang",
+      "BloodLustWarning": "Au début de votre tour, si vous avez subi des dégâts depuis votre dernier tour, effectuez un jet de sauvegarde de Sagesse (DD 8 + dégâts subis) ou attaquez la créature la plus proche.",
+
+      "Features": {
+        "PredatoryStrikes": "Frappes Prédatrices",
+        "PredatoryStrikesDesc": "Ajoutez votre dé hémocratique aux attaques d'armes de mêlée comme dégâts tranchants",
+        "CursedWeakness": "Faiblesse Maudite",
+        "CursedWeaknessDesc": "Vulnérable aux armes en argent",
+        "StalkersProwess": "Prouesse du Traqueur",
+        "StalkersProwessDesc": "Avantage aux tests de Sagesse (Perception) basés sur l'ouïe ou l'odorat",
+        "BrandOfTheVoracious": "Marque du Vorace",
+        "BrandOfTheVoraciousDesc": "Les créatures marquées subissent des dégâts supplémentaires de vos attaques",
+        "AdvancedTransformation": "Transformation Avancée",
+        "AdvancedTransformationDesc": "Capacités améliorées en forme hybride",
+        "HybridTransformationMastery": "Maîtrise de la Transformation Hybride",
+        "HybridTransformationMasteryDesc": "Avantage aux jets de sauvegarde contre la Soif de Sang"
+      }
     }
   }
 }

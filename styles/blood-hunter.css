@@ -280,6 +280,245 @@
   margin-left: 0.5rem;
 }
 
+/* Order of the Lycan Styles */
+
+/* Lycan Transformation Button */
+.bloodhunter-lycan-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #cd7f32 0%, #ffa500 100%);
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: bold;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.bloodhunter-lycan-button:hover {
+  background: linear-gradient(135deg, #e89b4c 0%, #ffb733 100%);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  transform: translateY(-1px);
+}
+
+.bloodhunter-lycan-button.active {
+  background: linear-gradient(135deg, #b8860b 0%, #daa520 100%);
+  animation: lycan-pulse 2s ease-in-out infinite;
+}
+
+.bloodhunter-lycan-button i {
+  font-size: 1.2em;
+}
+
+/* Lycan Transformation Dialog */
+.bloodhunter-lycan-form {
+  padding: 1rem;
+}
+
+.transformation-status {
+  background: linear-gradient(135deg, rgba(218, 165, 32, 0.2) 0%, rgba(255, 165, 0, 0.2) 100%);
+  border-left: 4px solid #ffa500;
+  padding: 1rem;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.transformation-status.active i {
+  font-size: 2em;
+  color: #ffa500;
+  animation: lycan-pulse 2s ease-in-out infinite;
+}
+
+.transformation-preview {
+  padding: 0.5rem;
+}
+
+.transformation-preview h3 {
+  margin: 0 0 1rem 0;
+  color: #cd7f32;
+  font-size: 1.3em;
+  text-align: center;
+}
+
+.bonus-list {
+  background: linear-gradient(135deg, rgba(218, 165, 32, 0.1) 0%, rgba(255, 165, 0, 0.1) 100%);
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.bonus-list p {
+  margin: 0.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #333;
+}
+
+.bonus-list i {
+  color: #ffa500;
+  width: 20px;
+}
+
+.features-list {
+  background: rgba(255, 165, 0, 0.05);
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.features-list p {
+  margin: 0 0 0.5rem 0;
+  font-weight: bold;
+  color: #cd7f32;
+}
+
+.features-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.features-list li {
+  padding: 0.25rem 0;
+  color: #333;
+}
+
+.blood-lust-warning {
+  background: linear-gradient(135deg, rgba(139, 0, 0, 0.1) 0%, rgba(255, 69, 0, 0.1) 100%);
+  border-left: 4px solid #ff4500;
+  padding: 1rem;
+  border-radius: 4px;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.blood-lust-warning i {
+  color: #ff4500;
+  font-size: 1.5em;
+  margin-top: 0.2rem;
+}
+
+.blood-lust-warning p {
+  margin: 0;
+  color: #333;
+  flex: 1;
+}
+
+.blood-lust-warning strong {
+  color: #8b0000;
+}
+
+/* Lycan Chat Messages */
+.bloodhunter-lycan-transformation,
+.bloodhunter-lycan-reversion {
+  background: linear-gradient(135deg, rgba(218, 165, 32, 0.1) 0%, rgba(255, 165, 0, 0.1) 100%);
+  border-left: 4px solid #ffa500;
+  padding: 1rem;
+  border-radius: 4px;
+}
+
+.bloodhunter-lycan-transformation h3,
+.bloodhunter-lycan-reversion h3 {
+  margin: 0 0 0.75rem 0;
+  color: #cd7f32;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.bloodhunter-lycan-transformation p,
+.bloodhunter-lycan-reversion p {
+  margin: 0.5rem 0;
+  color: #333;
+}
+
+.transformation-bonuses {
+  background: rgba(255, 165, 0, 0.1);
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-top: 0.75rem;
+}
+
+.transformation-bonuses p {
+  margin: 0.25rem 0;
+  font-weight: bold;
+  color: #cd7f32;
+}
+
+/* Blood Lust Reminder */
+.bloodhunter-blood-lust-reminder {
+  background: linear-gradient(135deg, rgba(139, 0, 0, 0.1) 0%, rgba(255, 69, 0, 0.1) 100%);
+  border-left: 4px solid #ff4500;
+  padding: 1rem;
+  border-radius: 4px;
+}
+
+.bloodhunter-blood-lust-reminder h3 {
+  margin: 0 0 0.75rem 0;
+  color: #8b0000;
+}
+
+.bloodhunter-blood-lust-reminder p {
+  margin: 0.5rem 0;
+  color: #333;
+}
+
+.bloodhunter-blood-lust-reminder strong {
+  color: #8b0000;
+}
+
+.bloodhunter-blood-lust-reminder em {
+  color: #666;
+  font-style: italic;
+}
+
+/* Lycan Animation */
+@keyframes lycan-pulse {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(255, 165, 0, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(255, 165, 0, 0.8);
+  }
+}
+
+/* Hybrid Form Active Effect Indicator */
+.bloodhunter-hybrid-form {
+  background: linear-gradient(135deg, rgba(218, 165, 32, 0.2) 0%, rgba(255, 165, 0, 0.2) 100%);
+  border-left: 4px solid #ffa500;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  animation: lycan-pulse 2s ease-in-out infinite;
+}
+
+.bloodhunter-hybrid-form i {
+  color: #ffa500;
+  font-size: 1.2em;
+}
+
+.bloodhunter-hybrid-form .form-name {
+  font-weight: bold;
+  color: #cd7f32;
+  flex-grow: 1;
+}
+
+.bloodhunter-hybrid-form .form-bonuses {
+  color: #666;
+  font-size: 0.9em;
+}
+
 /* Order Specific Styles */
 .bloodhunter-order-ghostslayer {
   border-color: #00ffff;

@@ -56,6 +56,41 @@
     "Notifications": {
       "HPCostApplied": "Paid {cost} HP to activate Crimson Rite",
       "RiteEnded": "Crimson Rite has ended"
+    },
+
+    "Lycan": {
+      "Title": "Order of the Lycan",
+      "Transformation": "Hybrid Transformation",
+      "HybridForm": "Hybrid Form",
+      "HybridTransformation": "Hybrid Transformation",
+      "Human": "Human",
+      "Hybrid": "Hybrid",
+      "Transform": "Transform",
+      "RevertToHuman": "Revert to Human Form",
+      "Transformed": "You transform into your hybrid form!",
+      "Reverted": "You revert to your humanoid form",
+      "AlreadyTransformed": "You are already in hybrid form",
+      "NotTransformed": "You are not in hybrid form",
+      "NotLycan": "You must be an Order of the Lycan Blood Hunter to transform",
+      "CurrentlyTransformed": "Currently in Hybrid Form",
+
+      "BloodLust": "Blood Lust",
+      "BloodLustWarning": "At the start of your turn, if you took damage since your last turn, make a Wisdom saving throw (DC 8 + damage taken) or attack the nearest creature.",
+
+      "Features": {
+        "PredatoryStrikes": "Predatory Strikes",
+        "PredatoryStrikesDesc": "Add your hemocraft die to melee weapon attacks as slashing damage",
+        "CursedWeakness": "Cursed Weakness",
+        "CursedWeaknessDesc": "Vulnerable to silvered weapons",
+        "StalkersProwess": "Stalker's Prowess",
+        "StalkersProwessDesc": "Advantage on Wisdom (Perception) checks relying on hearing or smell",
+        "BrandOfTheVoracious": "Brand of the Voracious",
+        "BrandOfTheVoraciousDesc": "Branded creatures take additional damage from your attacks",
+        "AdvancedTransformation": "Advanced Transformation",
+        "AdvancedTransformationDesc": "Enhanced abilities in hybrid form",
+        "HybridTransformationMastery": "Hybrid Transformation Mastery",
+        "HybridTransformationMasteryDesc": "Advantage on Blood Lust saving throws"
+      }
     }
   }
 }
