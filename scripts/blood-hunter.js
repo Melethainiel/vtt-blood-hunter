@@ -122,6 +122,20 @@ function registerSettings() {
     type: Boolean,
     default: true
   });
+
+  game.settings.register(MODULE_ID, 'riteDetectionMode', {
+    name: game.i18n.localize('BLOODHUNTER.Settings.RiteDetectionMode.Name'),
+    hint: game.i18n.localize('BLOODHUNTER.Settings.RiteDetectionMode.Hint'),
+    scope: 'world',
+    config: true,
+    type: String,
+    choices: {
+      'auto': game.i18n.localize('BLOODHUNTER.Settings.RiteDetectionMode.Auto'),
+      'features': game.i18n.localize('BLOODHUNTER.Settings.RiteDetectionMode.Features'),
+      'level': game.i18n.localize('BLOODHUNTER.Settings.RiteDetectionMode.Level')
+    },
+    default: 'auto'
+  });
 }
 
 function registerHandlebarsHelpers() {

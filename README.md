@@ -13,6 +13,8 @@ Module d'automatisation pour la classe Blood Hunter de Matthew Mercer dans Found
 
 ### Crimson Rites ✓
 - Activation/désactivation automatique des rites
+- **🔄 Détection automatique depuis D&D Beyond** : Ne montre que les rites que vous possédez !
+- **Configuration flexible** : 3 modes (Auto, Features-Only, Level-Based)
 - Calcul automatique du coût en HP selon le niveau
 - Application automatique des dégâts élémentaires aux armes
 - Types de rites : Fire, Cold, Lightning, Acid, Poison, Necrotic, Psychic, Radiant, Thunder
@@ -55,13 +57,21 @@ Module d'automatisation pour la classe Blood Hunter de Matthew Mercer dans Found
 
 ### Crimson Rites
 
-1. Assurez-vous d'avoir la fonctionnalité "Crimson Rite" dans votre feuille de personnage
-2. Utilisez la macro "Crimson Rite" ou le bouton dans votre feuille
-3. Sélectionnez le type de rite et l'arme à enchanter
-4. Le module calculera automatiquement le coût en HP et appliquera les dégâts
+1. **Importez votre personnage depuis D&D Beyond** (ou créez des features manuellement)
+2. Le module **détecte automatiquement** vos rites depuis vos features
+3. Utilisez la macro "Crimson Rite" ou le bouton dans votre feuille
+4. **Seuls vos rites apparaissent** dans la liste de sélection !
+5. Sélectionnez l'arme à enchanter
+6. Le module calculera automatiquement le coût en HP et appliquera les dégâts
+
+**Exemple** : Blood Hunter niveau 7 avec Rite of Flame et Storm uniquement
+- ✅ Dialog affiche : Flame et Storm
+- ❌ Dialog ne montre PAS : Frozen, Corrosion, Toxin
 
 **Avec DAE** : Les dégâts sont automatiquement ajoutés à chaque attaque
 **Avec midi-qol** : Les dégâts apparaissent dans le workflow de combat automatisé
+
+📖 **Voir [DDB-CONFIGURATION.md](DDB-CONFIGURATION.md) pour le guide complet**
 
 ### Blood Curses (avec midi-qol)
 
@@ -76,6 +86,10 @@ Module d'automatisation pour la classe Blood Hunter de Matthew Mercer dans Found
 
 - **Auto-calculate HP cost** : Active/désactive le calcul automatique du coût en HP
 - **Show Rite buttons** : Affiche/masque les boutons de Rite sur les armes
+- **Crimson Rite Detection Mode** : Comment détecter les rites disponibles
+  - **Auto** (Recommandé) : Détecte depuis les features, repli sur niveau
+  - **Features Only** : Compatible D&D Beyond, montre uniquement vos rites
+  - **Level-Based** : Mode traditionnel, tous les rites selon le niveau
 
 ## Compatibilité
 

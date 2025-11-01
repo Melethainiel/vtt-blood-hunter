@@ -50,6 +50,13 @@
       "ShowRiteButtons": {
         "Name": "Show Rite buttons on items",
         "Hint": "Display Crimson Rite activation buttons on weapon items"
+      },
+      "RiteDetectionMode": {
+        "Name": "Crimson Rite Detection Mode",
+        "Hint": "How to determine which Crimson Rites are available to the character. AUTO: Detect from features/items, fallback to level. FEATURES: Only rites found in character features. LEVEL: Traditional level-based (all rites at appropriate level).",
+        "Auto": "Auto (Features → Level fallback)",
+        "Features": "Features Only (D&D Beyond compatible)",
+        "Level": "Level-Based (Traditional)"
       }
     },
 

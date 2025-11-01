@@ -50,6 +50,13 @@
       "ShowRiteButtons": {
         "Name": "Afficher les boutons de Rite sur les objets",
         "Hint": "Afficher les boutons d'activation de Rite Écarlate sur les armes"
+      },
+      "RiteDetectionMode": {
+        "Name": "Mode de Détection des Rites Écarlates",
+        "Hint": "Comment déterminer quels Rites Écarlates sont disponibles pour le personnage. AUTO : Détecte depuis les capacités/objets, repli sur le niveau. CAPACITÉS : Seulement les rites trouvés dans les capacités du personnage. NIVEAU : Basé sur le niveau (traditionnel, tous les rites au niveau approprié).",
+        "Auto": "Auto (Capacités → Repli sur niveau)",
+        "Features": "Capacités Uniquement (Compatible D&D Beyond)",
+        "Level": "Basé sur le Niveau (Traditionnel)"
       }
     },
 

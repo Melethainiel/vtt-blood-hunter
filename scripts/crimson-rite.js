@@ -50,7 +50,74 @@ export class CrimsonRite {
   }
 
   /**
-   * Get available rites for an actor based on their level
+   * Detect known rites from actor's features/items
+   * @param {Actor} actor - The Blood Hunter actor
+   * @returns {Array} Array of known rite keys
+   */
+  static getKnownRitesFromFeatures(actor) {
+    const knownRites = [];
+
+    // Search through actor's features for Crimson Rite items
+    const features = actor.items.filter(i => i.type === 'feat' || i.type === 'feature');
+
+    for (const feature of features) {
+      const name = feature.name.toLowerCase();
+      const description = feature.system?.description?.value?.toLowerCase() || '';
+
+      // Check for each rite type
+      for (const [key, value] of Object.entries(this.RITE_TYPES)) {
+        const riteName = game.i18n.localize(`BLOODHUNTER.CrimsonRite.Types.${key}`).toLowerCase();
+
+        // Check if feature mentions this rite
+        if (name.includes(key) ||
+            name.includes(riteName) ||
+            description.includes(key) ||
+            description.includes(riteName) ||
+            name.includes(value.damageType)) {
+
+          if (!knownRites.includes(key)) {
+            knownRites.push(key);
+          }
+        }
+
+        // Check for specific rite names from D&D Beyond
+        const riteNames = {
+          flame: ['flame', 'fire'],
+          frozen: ['frozen', 'cold'],
+          storm: ['storm', 'lightning'],
+          corrosion: ['corrosion', 'acid'],
+          toxin: ['toxin', 'poison'],
+          dead: ['dead', 'necrotic'],
+          oracle: ['oracle', 'psychic'],
+          dawn: ['dawn', 'radiant'],
+          roar: ['roar', 'thunder']
+        };
+
+        if (riteNames[key]) {
+          for (const riteName of riteNames[key]) {
+            if (name.includes(riteName) || description.includes(riteName)) {
+              if (!knownRites.includes(key)) {
+                knownRites.push(key);
+              }
+            }
+          }
+        }
+      }
+
+      // Check for module flag
+      if (feature.flags[MODULE_ID]?.crimsonRite) {
+        const riteType = feature.flags[MODULE_ID].riteType;
+        if (riteType && !knownRites.includes(riteType)) {
+          knownRites.push(riteType);
+        }
+      }
+    }
+
+    return knownRites;
+  }
+
+  /**
+   * Get available rites for an actor based on their features or level
    * @param {Actor} actor - The Blood Hunter actor
    * @returns {Object} Available rites
    */
@@ -58,9 +125,42 @@ export class CrimsonRite {
     const bloodHunterLevel = BloodHunterUtils.getBloodHunterLevel(actor);
     const available = {};
 
-    for (const [key, value] of Object.entries(this.RITE_TYPES)) {
-      if (bloodHunterLevel >= value.level) {
-        available[key] = value;
+    // Check module setting for detection mode
+    const detectionMode = game.settings.get(MODULE_ID, 'riteDetectionMode') || 'auto';
+
+    let knownRites = [];
+
+    if (detectionMode === 'features' || detectionMode === 'auto') {
+      // Try to detect rites from features first
+      knownRites = this.getKnownRitesFromFeatures(actor);
+    }
+
+    // If no rites found in features and mode is auto, fall back to level-based
+    if (knownRites.length === 0 && detectionMode === 'auto') {
+      console.log(`${MODULE_ID} | No rites found in features, using level-based detection`);
+
+      for (const [key, value] of Object.entries(this.RITE_TYPES)) {
+        if (bloodHunterLevel >= value.level) {
+          available[key] = value;
+        }
+      }
+    }
+    // If mode is features-only or we found rites, use those
+    else if (knownRites.length > 0) {
+      console.log(`${MODULE_ID} | Found ${knownRites.length} rites in features:`, knownRites);
+
+      for (const riteKey of knownRites) {
+        if (this.RITE_TYPES[riteKey]) {
+          available[riteKey] = this.RITE_TYPES[riteKey];
+        }
+      }
+    }
+    // If mode is level-only, use level-based
+    else if (detectionMode === 'level') {
+      for (const [key, value] of Object.entries(this.RITE_TYPES)) {
+        if (bloodHunterLevel >= value.level) {
+          available[key] = value;
+        }
       }
     }
 
