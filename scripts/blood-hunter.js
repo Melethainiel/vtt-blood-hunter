@@ -136,6 +136,20 @@ function registerSettings() {
     },
     default: 'auto'
   });
+
+  game.settings.register(MODULE_ID, 'curseDetectionMode', {
+    name: game.i18n.localize('BLOODHUNTER.Settings.CurseDetectionMode.Name'),
+    hint: game.i18n.localize('BLOODHUNTER.Settings.CurseDetectionMode.Hint'),
+    scope: 'world',
+    config: true,
+    type: String,
+    choices: {
+      'auto': game.i18n.localize('BLOODHUNTER.Settings.CurseDetectionMode.Auto'),
+      'features': game.i18n.localize('BLOODHUNTER.Settings.CurseDetectionMode.Features'),
+      'level': game.i18n.localize('BLOODHUNTER.Settings.CurseDetectionMode.Level')
+    },
+    default: 'auto'
+  });
 }
 
 function registerHandlebarsHelpers() {

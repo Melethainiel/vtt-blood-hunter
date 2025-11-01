@@ -57,6 +57,13 @@
         "Auto": "Auto (Features → Level fallback)",
         "Features": "Features Only (D&D Beyond compatible)",
         "Level": "Level-Based (Traditional)"
+      },
+      "CurseDetectionMode": {
+        "Name": "Blood Curse Detection Mode",
+        "Hint": "How to determine which Blood Curses are available to the character. AUTO: Detect from features/items, fallback to level. FEATURES: Only curses found in character features. LEVEL: Traditional level-based (all curses at appropriate level).",
+        "Auto": "Auto (Features → Level fallback)",
+        "Features": "Features Only (D&D Beyond compatible)",
+        "Level": "Level-Based (Traditional)"
       }
     },
 

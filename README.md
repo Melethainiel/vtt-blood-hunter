@@ -23,6 +23,8 @@ Module d'automatisation pour la classe Blood Hunter de Matthew Mercer dans Found
 
 ### Blood Curses 🔥
 - Framework complet pour toutes les malédictions
+- **🔄 Détection automatique depuis D&D Beyond** : Ne montre que les malédictions que vous possédez !
+- **Configuration flexible** : 3 modes (Auto, Features-Only, Level-Based)
 - **Intégration midi-qol** : Réactions automatiques pendant le combat
 - Blood Curse of the Marked (avec amplification)
 - Blood Curse of Binding (avec amplification)
@@ -32,6 +34,7 @@ Module d'automatisation pour la classe Blood Hunter de Matthew Mercer dans Found
 - Prompts de réaction en temps réel pendant le combat
 
 ### Order of the Lycan 🐺 ✓
+- **🔄 Détection automatique depuis D&D Beyond** : Le bouton de transformation apparaît automatiquement si vous avez les features Lycan !
 - **Hybrid Transformation** complète avec Active Effects
 - **Bonus évolutifs** selon le niveau (AC, vitesse, Force, Dextérité, Réduction de dégâts)
 - **Blood Lust** : Système de contrôle avec rappels automatiques
@@ -90,6 +93,10 @@ Module d'automatisation pour la classe Blood Hunter de Matthew Mercer dans Found
   - **Auto** (Recommandé) : Détecte depuis les features, repli sur niveau
   - **Features Only** : Compatible D&D Beyond, montre uniquement vos rites
   - **Level-Based** : Mode traditionnel, tous les rites selon le niveau
+- **Blood Curse Detection Mode** : Comment détecter les malédictions disponibles
+  - **Auto** (Recommandé) : Détecte depuis les features, repli sur niveau
+  - **Features Only** : Compatible D&D Beyond, montre uniquement vos malédictions
+  - **Level-Based** : Mode traditionnel, toutes les malédictions selon le niveau
 
 ## Compatibilité
 

@@ -57,6 +57,13 @@
         "Auto": "Auto (Capacités → Repli sur niveau)",
         "Features": "Capacités Uniquement (Compatible D&D Beyond)",
         "Level": "Basé sur le Niveau (Traditionnel)"
+      },
+      "CurseDetectionMode": {
+        "Name": "Mode de Détection des Malédictions de Sang",
+        "Hint": "Comment déterminer quelles Malédictions de Sang sont disponibles pour le personnage. AUTO : Détecte depuis les capacités/objets, repli sur le niveau. CAPACITÉS : Seulement les malédictions trouvées dans les capacités du personnage. NIVEAU : Basé sur le niveau (traditionnel, toutes les malédictions au niveau approprié).",
+        "Auto": "Auto (Capacités → Repli sur niveau)",
+        "Features": "Capacités Uniquement (Compatible D&D Beyond)",
+        "Level": "Basé sur le Niveau (Traditionnel)"
       }
     },
 

@@ -369,12 +369,54 @@ export class OrderOfTheLycan {
   static isLycan(actor) {
     if (!actor) return false;
 
-    return actor.items.some(i =>
-      i.type === 'feat' &&
-      (i.name.toLowerCase().includes('lycan') ||
-       i.name.toLowerCase().includes('heightened senses') ||
-       i.flags[MODULE_ID]?.orderOfTheLycan === true)
+    // Check for explicit flag first
+    const hasFlag = actor.items.some(i =>
+      i.type === 'feat' && i.flags[MODULE_ID]?.orderOfTheLycan === true
     );
+    if (hasFlag) return true;
+
+    // Auto-detect from features
+    return this.hasLycanFeatures(actor);
+  }
+
+  /**
+   * Detect Order of the Lycan features from actor's items
+   * @param {Actor} actor - The Blood Hunter actor
+   * @returns {boolean} True if Lycan features detected
+   */
+  static hasLycanFeatures(actor) {
+    if (!actor) return false;
+
+    const features = actor.items.filter(i => i.type === 'feat' || i.type === 'feature');
+
+    // Keywords that indicate Lycan features
+    const lycanKeywords = [
+      // English keywords
+      'lycan', 'lycanthrope', 'hybrid transformation', 'hybrid form',
+      'predatory strikes', 'blood lust', 'cursed weakness',
+      'heightened senses', 'stalker\'s prowess', 'stalkers prowess',
+      'brand of the voracious', 'advanced transformation',
+      'hybrid transformation mastery',
+      // French keywords
+      'transformation hybride', 'forme hybride', 'frappes prédatrices',
+      'soif de sang', 'faiblesse maudite', 'sens aiguisés',
+      'prouesse du traqueur', 'marque du vorace',
+      'transformation avancée', 'maîtrise de la transformation hybride'
+    ];
+
+    // Check for any Lycan-related features
+    for (const feature of features) {
+      const name = feature.name.toLowerCase();
+      const description = feature.system?.description?.value?.toLowerCase() || '';
+
+      for (const keyword of lycanKeywords) {
+        if (name.includes(keyword) || description.includes(keyword)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 
   /**

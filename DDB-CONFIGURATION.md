@@ -1,18 +1,21 @@
-# Guide de Configuration - D&D Beyond & Rites Écarlates
+# Guide de Configuration - D&D Beyond & Détection Automatique
 
-Ce guide explique comment configurer votre Blood Hunter pour que le module détecte automatiquement vos Crimson Rites depuis D&D Beyond ou en configuration manuelle.
+Ce guide explique comment configurer votre Blood Hunter pour que le module détecte automatiquement vos capacités (Crimson Rites, Blood Curses, Orders) depuis D&D Beyond ou en configuration manuelle.
+
+**✨ Système Universel de Détection :** Le module détecte automatiquement TOUTES vos capacités Blood Hunter !
 
 ## Table des matières
 
 1. [Modes de Détection](#modes-de-détection)
 2. [Configuration Automatique (D&D Beyond)](#configuration-automatique-dnd-beyond)
 3. [Configuration Manuelle](#configuration-manuelle)
-4. [Résolution de Problèmes](#résolution-de-problèmes)
-5. [Exemples](#exemples)
+4. [Détection par Type de Capacité](#détection-par-type-de-capacité)
+5. [Résolution de Problèmes](#résolution-de-problèmes)
+6. [Exemples](#exemples)
 
 ## Modes de Détection
 
-Le module offre trois modes de détection des Crimson Rites :
+Le module offre trois modes de détection pour les **Crimson Rites** et les **Blood Curses** :
 
 ### 🔄 Auto (Recommandé)
 **Par défaut** - Le meilleur des deux mondes
@@ -113,6 +116,68 @@ Si vous préférez ne pas créer de features :
 2. **"Crimson Rite Detection Mode"** → **"Level-Based (Traditional)"**
 3. Tous les rites appropriés au niveau seront disponibles
 
+## Détection par Type de Capacité
+
+Le module détecte automatiquement différents types de capacités Blood Hunter :
+
+### 🔥 Crimson Rites
+
+**Mots-clés détectés :**
+- Anglais : flame, fire, frozen, cold, storm, lightning, corrosion, acid, toxin, poison, dead, necrotic, oracle, psychic, dawn, radiant, roar, thunder
+- Français : flamme, feu, givre, froid, tempête, foudre, corrosion, acide, toxine, poison, mort, nécrotique, oracle, psychique, aube, radiant, rugissement, tonnerre
+
+**Exemple de feature :**
+```
+Nom: Rite of the Flame
+Type: Feature
+Description: As a bonus action, you can activate a crimson rite...
+```
+
+**Configuration :** Module Settings → "Crimson Rite Detection Mode"
+
+### 🩸 Blood Curses
+
+**Mots-clés détectés :**
+- **Binding** : binding, bind, lier, entrave
+- **Marked** : marked, mark, marque
+- **Anxious** : anxious, anxiety, anxieux, anxiété
+- **Eyeless** : eyeless, blind, aveugle
+- **Fallen Puppet** : fallen puppet, puppet, marionnette
+- **Bloated Agony** : bloated agony, agony, agonie
+- **Corrosion** : corrosion, corrode
+- **Exorcism** : exorcism, exorcise, exorcisme
+
+**Exemple de feature :**
+```
+Nom: Blood Curse of the Marked
+Type: Feature
+Description: As a bonus action, you can mark a creature...
+```
+
+**Configuration :** Module Settings → "Blood Curse Detection Mode"
+
+### 🐺 Order of the Lycan
+
+**Mots-clés détectés :**
+- Anglais : lycan, lycanthrope, hybrid transformation, predatory strikes, blood lust, cursed weakness, heightened senses, stalker's prowess, brand of the voracious
+- Français : transformation hybride, frappes prédatrices, soif de sang, faiblesse maudite, sens aiguisés, prouesse du traqueur, marque du vorace
+
+**Exemple de feature :**
+```
+Nom: Hybrid Transformation
+Type: Feature
+Description: You can transform into a hybrid form...
+```
+
+**Détection :** Automatique - si une feature Lycan est trouvée, le bouton de transformation apparaît
+
+### 🔮 Autres Orders (à venir)
+
+La détection automatique sera étendue aux autres Orders :
+- Order of the Ghostslayer
+- Order of the Mutant
+- Order of the Profane Soul
+
 ## Résolution de Problèmes
 
 ### Problème : Aucun rite n'apparaît
@@ -157,6 +222,39 @@ Si vous voulez UNIQUEMENT vos rites choisis :
 
 3. **Essayez de réimporter**
    - Parfois, une réimportation complète résout le problème
+
+### Problème : Blood Curses ne déclenchent pas de prompt
+
+**Solutions :**
+
+1. **Vérifiez que midi-qol est actif**
+   - Les prompts automatiques nécessitent midi-qol
+   - Sans midi-qol, utilisez les macros manuellement
+
+2. **Vérifiez le mode de détection**
+   - Module Settings → "Blood Curse Detection Mode"
+   - Essayez "Auto" ou "Level-Based"
+
+3. **Vérifiez vos features**
+   - Cherchez des items avec "Blood Curse", "Marked", "Binding", etc.
+   - Si aucun, créez-les ou passez en mode "Level-Based"
+
+### Problème : Bouton de transformation Lycan n'apparaît pas
+
+**Solutions :**
+
+1. **Vérifiez vos features Lycan**
+   - Cherchez des items avec "Lycan", "Hybrid Transformation", "Predatory Strikes", etc.
+   - Le module détecte automatiquement ces keywords
+
+2. **Créez une feature manuellement**
+   - Nom : "Hybrid Transformation" ou "Order of the Lycan"
+   - Type : Feature
+   - Le bouton apparaîtra automatiquement
+
+3. **Utilisez la macro**
+   - Une macro "Hybrid Transformation" est créée automatiquement
+   - Utilisez-la si le bouton n'apparaît pas
 
 ## Exemples
 
