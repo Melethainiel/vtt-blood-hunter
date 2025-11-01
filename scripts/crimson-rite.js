@@ -23,16 +23,30 @@ export class CrimsonRite {
 
   /**
    * Calculate HP cost for activating a Crimson Rite
+   * Returns the hemocraft die string for display
    * @param {Actor} actor - The Blood Hunter actor
-   * @returns {number} HP cost
+   * @returns {string} HP cost die (e.g., "1d4")
    */
   static calculateHPCost(actor) {
-    const bloodHunterLevel = BloodHunterUtils.getBloodHunterLevel(actor);
+    return BloodHunterUtils.getHemocraftDie(actor);
+  }
 
-    if (bloodHunterLevel < 5) return 1; // 1 HP at levels 1-4
-    if (bloodHunterLevel < 11) return 2; // 2 HP at levels 5-10
-    if (bloodHunterLevel < 17) return 3; // 3 HP at levels 11-16
-    return 4; // 4 HP at levels 17+
+  /**
+   * Roll HP cost for Crimson Rite activation
+   * @param {Actor} actor - The Blood Hunter actor
+   * @returns {Promise<number>} The rolled HP cost
+   */
+  static async rollHPCost(actor) {
+    const hemocraftDie = BloodHunterUtils.getHemocraftDie(actor);
+    const roll = await new Roll(hemocraftDie).evaluate();
+
+    // Display roll in chat
+    await roll.toMessage({
+      speaker: ChatMessage.getSpeaker({ actor: actor }),
+      flavor: game.i18n.localize('BLOODHUNTER.CrimsonRite.Title') + ' - ' + game.i18n.localize('BLOODHUNTER.CrimsonRite.Cost')
+    });
+
+    return roll.total;
   }
 
   /**
@@ -291,8 +305,8 @@ export class CrimsonRite {
       await this.deactivate(actor, weaponId, false);
     }
 
-    // Calculate HP cost
-    const hpCost = this.calculateHPCost(actor);
+    // Roll HP cost (hemocraft die)
+    const hpCost = await this.rollHPCost(actor);
     const currentHP = actor.system.attributes.hp.value;
 
     if (currentHP <= hpCost && game.settings.get(MODULE_ID, 'autoCalculateHP')) {
