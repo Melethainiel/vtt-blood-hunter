@@ -191,7 +191,7 @@ async function createMacros() {
 
 
   // Create Hybrid Transformation macro
-  const lycanMacroName = 'Hybrid Transformation';
+  const lycanMacroName = 'BH: Hybrid Transformation';
   const existingLycanMacro = game.macros.find(m => m.name === lycanMacroName);
 
   if (!existingLycanMacro) {
