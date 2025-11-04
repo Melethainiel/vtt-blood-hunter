@@ -86,6 +86,19 @@ Hooks.on('dnd5e.preRollDamage', async(item, rollConfig) => {
   }
 });
 
+// Hook into activity usage to handle Crimson Rite feature activation
+// This allows the "Crimson Rite" feature from the compendium to trigger the activation dialog
+Hooks.on('dnd5e.preUseActivity', async(activity, usageConfig, dialogConfig, messageConfig) => {
+  const item = activity?.item;
+  if (!item) return;
+
+  // Check if this item is flagged as a Crimson Rite activation feature
+  if (item.getFlag('vtt-blood-hunter', 'crimsonRiteActivation')) {
+    await CrimsonRite.activateDialog();
+    return false; // Prevent default item usage
+  }
+});
+
 // Hook into item sheet rendering to add Crimson Rite buttons
 Hooks.on('renderItemSheet5e', (app, html, data) => {
   if (!game.settings.get(MODULE_ID, 'showRiteButtons')) return;
