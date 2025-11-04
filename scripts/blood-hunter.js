@@ -4,6 +4,7 @@
  */
 
 import { CrimsonRite } from './crimson-rite.js';
+import { CrimsonRiteFeatures } from './crimson-rite-features.js';
 import { BloodHunterUtils } from './utils.js';
 import { BloodHunterIntegrations } from './integrations.js';
 import { BloodCurse } from './blood-curse.js';
@@ -22,6 +23,7 @@ Hooks.once('init', async function() {
   // Initialize classes
   game.bloodhunter = {
     CrimsonRite,
+    CrimsonRiteFeatures,
     BloodCurse,
     OrderOfTheLycan,
     utils: BloodHunterUtils,
@@ -47,6 +49,9 @@ Hooks.once('ready', async function() {
 
   // Initialize Order of the Lycan system
   OrderOfTheLycan.init();
+
+  // Initialize Crimson Rite Features system
+  CrimsonRiteFeatures.init();
 
   // Setup DAE special durations
   BloodHunterIntegrations.setupDAEDurations();
@@ -173,6 +178,26 @@ async function createMacros() {
     });
   }
 
+  // Create Crimson Rite Feature macro (for adding single feature to character)
+  const featureMacroName = 'Add Crimson Rite Feature';
+  const existingFeatureMacro = game.macros.find(m => m.name === featureMacroName);
+
+  if (!existingFeatureMacro) {
+    await Macro.create({
+      name: featureMacroName,
+      type: 'script',
+      img: 'icons/magic/fire/flame-burning-creature-pink.webp',
+      command: `// Add Crimson Rite feature to selected character
+const token = canvas.tokens.controlled[0];
+if (!token) {
+  ui.notifications.warn('Please select a token');
+} else {
+  await game.bloodhunter.CrimsonRiteFeatures.addCrimsonRiteFeatureToActor(token.actor);
+}`,
+      flags: { 'vtt-blood-hunter': { macro: true } }
+    });
+  }
+
   // Create Hybrid Transformation macro
   const lycanMacroName = 'Hybrid Transformation';
   const existingLycanMacro = game.macros.find(m => m.name === lycanMacroName);
@@ -190,7 +215,12 @@ async function createMacros() {
 
 function addBloodHunterUI(html, actor) {
   // Find the header actions area
-  const headerActions = html.find('.sheet-header .header-actions');
+  // dnd5e v3 uses .sheet-header-buttons, v2 uses .header-actions
+  let headerActions = html.find('.sheet-header .sheet-header-buttons');
+  if (headerActions.length === 0) {
+    // Fallback to v2 selector for backward compatibility
+    headerActions = html.find('.sheet-header .header-actions');
+  }
   if (headerActions.length === 0) return;
 
   // Add Crimson Rite button

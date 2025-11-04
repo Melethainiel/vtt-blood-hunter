@@ -11,11 +11,20 @@
       "Active": "Active Rite",
       "Cost": "HP Cost",
       "NoWeapons": "No weapons found in inventory",
+      "NoRites": "No Crimson Rites available at your level",
       "AlreadyActive": "This weapon already has an active Crimson Rite",
       "Activated": "{weapon} is now enchanted with {rite}",
       "Deactivated": "Crimson Rite deactivated on {weapon}",
       "InsufficientHP": "Insufficient HP to activate Crimson Rite",
       "NotBloodHunter": "You must be a Blood Hunter to use Crimson Rites",
+
+      "Features": {
+        "AddedToActor": "Added {count} Crimson Rite feature(s) to {actor}",
+        "AlreadyHas": "{actor} already has {count} Crimson Rite feature(s)",
+        "RemovedFromActor": "Removed {count} Crimson Rite feature(s) from {actor}",
+        "NoFeaturesToAdd": "No Crimson Rite features to add",
+        "NoFeaturesToRemove": "No Crimson Rite features to remove"
+      },
 
       "Types": {
         "flame": "Rite of the Flame (Fire)",

@@ -11,11 +11,20 @@
       "Active": "Rite Actif",
       "Cost": "Coût en PV",
       "NoWeapons": "Aucune arme trouvée dans l'inventaire",
+      "NoRites": "Aucun Rite Écarlate disponible à votre niveau",
       "AlreadyActive": "Cette arme possède déjà un Rite Écarlate actif",
       "Activated": "{weapon} est maintenant enchanté(e) avec {rite}",
       "Deactivated": "Rite Écarlate désactivé sur {weapon}",
       "InsufficientHP": "Points de vie insuffisants pour activer le Rite Écarlate",
       "NotBloodHunter": "Vous devez être un Blood Hunter pour utiliser les Rites Écarlates",
+
+      "Features": {
+        "AddedToActor": "{count} capacité(s) de Rite Écarlate ajoutée(s) à {actor}",
+        "AlreadyHas": "{actor} possède déjà {count} capacité(s) de Rite Écarlate",
+        "RemovedFromActor": "{count} capacité(s) de Rite Écarlate retirée(s) de {actor}",
+        "NoFeaturesToAdd": "Aucune capacité de Rite Écarlate à ajouter",
+        "NoFeaturesToRemove": "Aucune capacité de Rite Écarlate à retirer"
+      },
 
       "Types": {
         "flame": "Rite de la Flamme (Feu)",
