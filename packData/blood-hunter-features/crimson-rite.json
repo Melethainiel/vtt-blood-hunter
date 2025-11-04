@@ -1,12 +1,12 @@
 {
   "_id": "bloodhunter.crimsonrite.x7k9m2p4",
   "_key": "!items!bloodhunter.crimsonrite.x7k9m2p4",
-  "name": "Crimson Rite",
+  "name": "BH: Crimson Rite",
   "type": "feat",
   "img": "icons/magic/fire/flame-burning-hand-orange.webp",
   "system": {
     "description": {
-      "value": "<h2>Crimson Rite</h2>\n<p>As a bonus action, you can activate a Crimson Rite on a single weapon. The rite lasts until you finish a short or long rest.</p>\n<p>When you activate a Crimson Rite, you take damage equal to one roll of your hemocraft die. While active, attacks with this weapon deal an extra 1d4 damage of the rite's damage type.</p>\n<p><strong>Click this feature to activate a Crimson Rite on one of your weapons.</strong></p>",
+      "value": "<h2>BH: Crimson Rite</h2>\n<p>As a bonus action, you can activate a Crimson Rite on a single weapon. The rite lasts until you finish a short or long rest.</p>\n<p>When you activate a Crimson Rite, you take damage equal to one roll of your hemocraft die. While active, attacks with this weapon deal an extra 1d4 damage of the rite's damage type.</p>\n<p><strong>Click this feature to activate a Crimson Rite on one of your weapons.</strong></p>",
       "chat": ""
     },
     "source": {
