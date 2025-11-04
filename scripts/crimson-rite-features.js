@@ -8,14 +8,14 @@ import { MODULE_ID } from './blood-hunter.js';
 import { BloodHunterUtils } from './utils.js';
 
 export class CrimsonRiteFeatures {
-  
+
   /**
    * Initialize the Crimson Rite feature system
    */
   static init() {
     // Hook into item usage
     Hooks.on('dnd5e.useItem', this._onUseItem.bind(this));
-    
+
     console.log(`${MODULE_ID} | Crimson Rite Features system initialized`);
   }
 
@@ -54,7 +54,7 @@ export class CrimsonRiteFeatures {
 
     // Get available rites based on Blood Hunter level
     const availableRites = CrimsonRite.getAvailableRites(actor);
-    
+
     if (Object.keys(availableRites).length === 0) {
       ui.notifications.warn(game.i18n.localize('BLOODHUNTER.CrimsonRite.NoRites'));
       return;
@@ -448,8 +448,8 @@ export class CrimsonRiteFeatures {
 
     for (const riteType of riteTypes) {
       // Check if actor already has this feature
-      const existing = actor.items.find(i => 
-        i.flags[MODULE_ID]?.crimsonRiteFeature && 
+      const existing = actor.items.find(i =>
+        i.flags[MODULE_ID]?.crimsonRiteFeature &&
         i.flags[MODULE_ID]?.riteType === riteType
       );
 
@@ -484,7 +484,7 @@ export class CrimsonRiteFeatures {
    */
   static async removeRiteFeaturesFromActor(actor) {
     const riteFeatures = actor.items.filter(i => i.flags[MODULE_ID]?.crimsonRiteFeature);
-    
+
     if (riteFeatures.length === 0) {
       ui.notifications.info('No Crimson Rite features to remove');
       return;
@@ -492,7 +492,7 @@ export class CrimsonRiteFeatures {
 
     const ids = riteFeatures.map(f => f.id);
     await actor.deleteEmbeddedDocuments('Item', ids);
-    
+
     ui.notifications.info(`Removed ${riteFeatures.length} Crimson Rite feature(s) from ${actor.name}`);
   }
 }
