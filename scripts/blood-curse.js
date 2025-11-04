@@ -372,8 +372,6 @@ export class BloodCurse {
    * @param {boolean} amplify - Whether to amplify
    */
   static async execute(actor, curse, workflow, amplify = false) {
-    const curseType = curse.flags[MODULE_ID]?.curseType;
-
     // Calculate HP cost if amplified
     if (amplify) {
       const hpCost = this.calculateAmplificationCost(actor);

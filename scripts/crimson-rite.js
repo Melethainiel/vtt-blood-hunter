@@ -222,7 +222,7 @@ export class CrimsonRite {
 
     // Build rite options HTML
     let riteOptions = '';
-    for (const [key, value] of Object.entries(availableRites)) {
+    for (const key of Object.keys(availableRites)) {
       riteOptions += `<option value="${key}">${game.i18n.localize('BLOODHUNTER.CrimsonRite.Types.' + key)}</option>`;
     }
 

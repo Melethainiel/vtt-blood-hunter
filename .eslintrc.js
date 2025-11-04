@@ -41,6 +41,7 @@ module.exports = {
     'game': 'readonly',
     'canvas': 'readonly',
     'CONFIG': 'readonly',
+    'CONST': 'readonly',
     'Hooks': 'readonly',
     'foundry': 'readonly',
     'Actor': 'readonly',
@@ -63,6 +64,8 @@ module.exports = {
     'setProperty': 'readonly',
     'hasProperty': 'readonly',
     'isNewerVersion': 'readonly',
-    'AudioHelper': 'readonly'
+    'AudioHelper': 'readonly',
+    'Handlebars': 'readonly',
+    '$': 'readonly'
   }
 };

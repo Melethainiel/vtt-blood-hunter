@@ -89,7 +89,6 @@ export class BloodHunterIntegrations {
     // Add bonus damage to workflow
     if (workflow.damageRoll) {
       const bonusRoll = await new Roll(riteDamage).evaluate();
-      const newTotal = workflow.damageRoll.total + bonusRoll.total;
 
       // Add to damage detail
       workflow.damageDetail.push({
