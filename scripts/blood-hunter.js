@@ -34,6 +34,11 @@ Hooks.once('init', async function() {
 
   // Register custom damage types
   BloodHunterIntegrations.registerCustomDamageTypes();
+
+  // Register Blood Hunter feature category
+  if (CONFIG.DND5E?.featureTypes?.class?.subtypes) {
+    CONFIG.DND5E.featureTypes.class.subtypes.bloodHunter = 'BLOODHUNTER.FeatureCategory';
+  }
 });
 
 Hooks.once('ready', async function() {

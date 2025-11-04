@@ -1,6 +1,7 @@
 {
   "BLOODHUNTER": {
     "ModuleName": "Blood Hunter",
+    "FeatureCategory": "Capacités de Blood Hunter",
 
     "CrimsonRite": {
       "Title": "Rite Écarlate",
