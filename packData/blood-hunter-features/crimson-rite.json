@@ -1,26 +1,39 @@
 {
-  "_id": "bloodhunter.crimsonrite.x7k9m2p4",
-  "_key": "!items!bloodhunter.crimsonrite.x7k9m2p4",
+  "_id": "x7k9m2p4bloodhunter",
+  "_key": "!items!x7k9m2p4bloodhunter",
   "name": "Crimson Rite",
   "type": "feat",
   "img": "icons/skills/melee/strike-sword-blood-red.webp",
   "system": {
     "description": {
-      "value": "<p>As a bonus action, you can activate a Crimson Rite on a single weapon. The rite lasts until you finish a short or long rest.</p>",
+      "value": "<p>As a bonus action, you can activate a Crimson Rite on a single weapon. The rite lasts until you finish a short or long rest.</p><p>When you activate a Crimson Rite, you take damage equal to one roll of your hemocraft die. While active, attacks with this weapon deal extra damage of the rite's damage type.</p>",
       "chat": ""
     },
     "source": {
-      "custom": "Blood Hunter"
+      "custom": "Blood Hunter",
+      "revision": 1,
+      "rules": "2014"
+    },
+    "uses": {
+      "max": "",
+      "spent": 0,
+      "recovery": []
     },
     "type": {
       "value": "class",
       "subtype": ""
     },
+    "requirements": "",
     "properties": [],
     "prerequisites": {
-      "level": null
+      "level": null,
+      "items": [],
+      "repeatable": false
     },
-    "identifier": "crimson-rite"
+    "identifier": "crimson-rite",
+    "enchant": {},
+    "advancement": [],
+    "crewed": false
   },
   "effects": [],
   "flags": {
