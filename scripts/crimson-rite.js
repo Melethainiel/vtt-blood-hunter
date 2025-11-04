@@ -270,7 +270,7 @@ export class CrimsonRite {
 
     // Create dialog content
     const content = `
-      <form class="bloodhunter-crimson-rite-form">
+      <form class="bh-rite-dialog">
         <div class="form-group">
           <label>${game.i18n.localize('BLOODHUNTER.CrimsonRite.SelectWeapon')}:</label>
           <select name="weapon" id="rite-weapon">

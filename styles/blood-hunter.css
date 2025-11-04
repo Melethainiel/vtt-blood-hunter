@@ -1,571 +1,69 @@
-/* Blood Hunter Module Styles */
+/* Blood Hunter Module - Crimson Rite Dialog Styles */
+/* Uses Foundry VTT base styles where possible to minimize conflicts */
 
-/* Main Blood Hunter UI */
-.bloodhunter-rite-button {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: linear-gradient(135deg, #8b0000 0%, #dc143c 100%);
-  color: white;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-weight: bold;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-}
-
-.bloodhunter-rite-button:hover {
-  background: linear-gradient(135deg, #a00000 0%, #ff1744 100%);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-  transform: translateY(-1px);
-}
-
-.bloodhunter-rite-button i {
-  font-size: 1.2em;
-}
-
-/* Crimson Rite Dialog */
-.bloodhunter-crimson-rite-form {
+/* Main dialog container - prefixed to avoid conflicts */
+.bh-rite-dialog {
   padding: 1rem;
 }
 
-.bloodhunter-crimson-rite-form .form-group {
+.bh-rite-dialog .form-group {
   margin-bottom: 1rem;
 }
 
-.bloodhunter-crimson-rite-form label {
+/* Custom label styling for Blood Hunter theme */
+.bh-rite-dialog label {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: bold;
-  color: #8b0000;
+  color: var(--color-text-dark-primary, #8b0000);
 }
 
-.bloodhunter-crimson-rite-form select {
+/* Select dropdown - uses Foundry base styles with BH accent */
+.bh-rite-dialog select {
   width: 100%;
   padding: 0.5rem;
-  border: 2px solid #8b0000;
+  border: 2px solid var(--color-border-dark-primary, #8b0000);
   border-radius: 4px;
   font-size: 1em;
+  background: var(--color-bg-option, white);
 }
 
-.bloodhunter-crimson-rite-form select option {
-  padding: 0.5rem;
-  white-space: normal;
-  overflow: visible;
-}
-
-.bloodhunter-crimson-rite-form select:focus {
+.bh-rite-dialog select:focus {
   outline: none;
   border-color: #dc143c;
   box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.1);
 }
 
-.bloodhunter-crimson-rite-form .info {
+/* Info box for HP cost and damage display */
+.bh-rite-dialog .info {
   background: linear-gradient(135deg, rgba(139, 0, 0, 0.1) 0%, rgba(220, 20, 60, 0.1) 100%);
   padding: 1rem;
   border-left: 4px solid #8b0000;
   border-radius: 4px;
 }
 
-.bloodhunter-crimson-rite-form .info p {
+.bh-rite-dialog .info p {
   margin: 0.25rem 0;
-  color: #333;
+  color: var(--color-text-dark-primary, #333);
 }
 
-.bloodhunter-crimson-rite-form .info strong {
+.bh-rite-dialog .info strong {
   color: #8b0000;
 }
 
-.bloodhunter-crimson-rite-form .deactivate-button {
+/* Deactivate button */
+.bh-rite-dialog .deactivate-button {
   width: 100%;
   padding: 0.5rem;
-  background: #666;
+  background: var(--color-border-dark, #666);
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background 0.2s ease;
   font-weight: bold;
 }
 
-.bloodhunter-crimson-rite-form .deactivate-button:hover {
-  background: #888;
-}
-
-/* Item Sheet Rite Button */
-.item-sheet .bloodhunter-rite-activate {
-  margin-top: 1rem;
-  padding: 0.75rem;
-  background: linear-gradient(135deg, #8b0000 0%, #dc143c 100%);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-weight: bold;
-  text-align: center;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
-.item-sheet .bloodhunter-rite-activate:hover {
-  background: linear-gradient(135deg, #a00000 0%, #ff1744 100%);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-.item-sheet .bloodhunter-rite-activate i {
-  font-size: 1.1em;
-}
-
-/* Active Rite Indicator */
-.bloodhunter-active-rite {
-  background: linear-gradient(135deg, rgba(139, 0, 0, 0.2) 0%, rgba(220, 20, 60, 0.2) 100%);
-  border-left: 4px solid #dc143c;
-  padding: 0.5rem;
-  margin-top: 0.5rem;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.bloodhunter-active-rite i {
-  color: #dc143c;
-  font-size: 1.2em;
-}
-
-.bloodhunter-active-rite .rite-name {
-  font-weight: bold;
-  color: #8b0000;
-  flex-grow: 1;
-}
-
-.bloodhunter-active-rite .rite-damage {
-  color: #666;
-  font-size: 0.9em;
-}
-
-/* Chat Messages */
-.chat-message.bloodhunter-message {
-  border-left: 4px solid #8b0000;
-}
-
-.chat-message.bloodhunter-message .message-header {
-  background: linear-gradient(135deg, rgba(139, 0, 0, 0.1) 0%, rgba(220, 20, 60, 0.1) 100%);
-}
-
-/* Effects List */
-.effect.bloodhunter-effect {
-  border-left: 3px solid #dc143c;
-}
-
-.effect.bloodhunter-effect .effect-name {
-  color: #8b0000;
-  font-weight: bold;
-}
-
-/* Hemocraft Die Display */
-.bloodhunter-hemocraft-die {
-  display: inline-block;
-  padding: 0.25rem 0.5rem;
-  background: #8b0000;
-  color: white;
-  border-radius: 4px;
-  font-weight: bold;
-  font-size: 0.9em;
-  margin-left: 0.5rem;
-}
-
-/* Blood Curse Styles */
-.bloodhunter-curse-button {
-  background: linear-gradient(135deg, #4b0082 0%, #8b008b 100%);
-}
-
-.bloodhunter-curse-button:hover {
-  background: linear-gradient(135deg, #6a0dad 0%, #9932cc 100%);
-}
-
-/* Blood Curse Prompt Dialog */
-.bloodhunter-curse-prompt {
-  padding: 1rem;
-}
-
-.bloodhunter-curse-prompt .form-group {
-  margin-bottom: 1rem;
-}
-
-.bloodhunter-curse-prompt select {
-  width: 100%;
-  padding: 0.5rem;
-  border: 2px solid #4b0082;
-  border-radius: 4px;
-  font-size: 1em;
-}
-
-.bloodhunter-curse-prompt select option {
-  padding: 0.5rem;
-  white-space: normal;
-  overflow: visible;
-}
-
-.bloodhunter-curse-prompt select:focus {
-  outline: none;
-  border-color: #8b008b;
-  box-shadow: 0 0 0 3px rgba(139, 0, 139, 0.1);
-}
-
-.bloodhunter-curse-prompt label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: #4b0082;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.bloodhunter-curse-prompt input[type="checkbox"] {
-  width: 1.2em;
-  height: 1.2em;
-  cursor: pointer;
-}
-
-/* Blood Curse Message */
-.bloodhunter-curse-message {
-  background: linear-gradient(135deg, rgba(75, 0, 130, 0.1) 0%, rgba(139, 0, 139, 0.1) 100%);
-  border-left: 4px solid #4b0082;
-  padding: 1rem;
-  border-radius: 4px;
-}
-
-.bloodhunter-curse-message h3 {
-  margin: 0 0 0.5rem 0;
-  color: #4b0082;
-  font-size: 1.2em;
-}
-
-.bloodhunter-curse-message p {
-  margin: 0;
-  color: #333;
-}
-
-/* Active Curse Effect */
-.bloodhunter-active-curse {
-  background: linear-gradient(135deg, rgba(75, 0, 130, 0.2) 0%, rgba(139, 0, 139, 0.2) 100%);
-  border-left: 4px solid #8b008b;
-  padding: 0.5rem;
-  margin-top: 0.5rem;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.bloodhunter-active-curse i {
-  color: #8b008b;
-  font-size: 1.2em;
-}
-
-.bloodhunter-active-curse .curse-name {
-  font-weight: bold;
-  color: #4b0082;
-  flex-grow: 1;
-}
-
-/* Amplified Indicator */
-.bloodhunter-amplified {
-  display: inline-block;
-  padding: 0.2rem 0.5rem;
-  background: #dc143c;
-  color: white;
-  border-radius: 4px;
-  font-size: 0.8em;
-  font-weight: bold;
-  margin-left: 0.5rem;
-}
-
-/* Order of the Lycan Styles */
-
-/* Lycan Transformation Button */
-.bloodhunter-lycan-button {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: linear-gradient(135deg, #cd7f32 0%, #ffa500 100%);
-  color: white;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-weight: bold;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-}
-
-.bloodhunter-lycan-button:hover {
-  background: linear-gradient(135deg, #e89b4c 0%, #ffb733 100%);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-  transform: translateY(-1px);
-}
-
-.bloodhunter-lycan-button.active {
-  background: linear-gradient(135deg, #b8860b 0%, #daa520 100%);
-  animation: lycan-pulse 2s ease-in-out infinite;
-}
-
-.bloodhunter-lycan-button i {
-  font-size: 1.2em;
-}
-
-/* Lycan Transformation Dialog */
-.bloodhunter-lycan-form {
-  padding: 1rem;
-}
-
-.transformation-status {
-  background: linear-gradient(135deg, rgba(218, 165, 32, 0.2) 0%, rgba(255, 165, 0, 0.2) 100%);
-  border-left: 4px solid #ffa500;
-  padding: 1rem;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.transformation-status.active i {
-  font-size: 2em;
-  color: #ffa500;
-  animation: lycan-pulse 2s ease-in-out infinite;
-}
-
-.transformation-preview {
-  padding: 0.5rem;
-}
-
-.transformation-preview h3 {
-  margin: 0 0 1rem 0;
-  color: #cd7f32;
-  font-size: 1.3em;
-  text-align: center;
-}
-
-.bonus-list {
-  background: linear-gradient(135deg, rgba(218, 165, 32, 0.1) 0%, rgba(255, 165, 0, 0.1) 100%);
-  padding: 1rem;
-  border-radius: 4px;
-  margin-bottom: 1rem;
-}
-
-.bonus-list p {
-  margin: 0.5rem 0;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: #333;
-}
-
-.bonus-list i {
-  color: #ffa500;
-  width: 20px;
-}
-
-.features-list {
-  background: rgba(255, 165, 0, 0.05);
-  padding: 1rem;
-  border-radius: 4px;
-  margin-bottom: 1rem;
-}
-
-.features-list p {
-  margin: 0 0 0.5rem 0;
-  font-weight: bold;
-  color: #cd7f32;
-}
-
-.features-list ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.features-list li {
-  padding: 0.25rem 0;
-  color: #333;
-}
-
-.blood-lust-warning {
-  background: linear-gradient(135deg, rgba(139, 0, 0, 0.1) 0%, rgba(255, 69, 0, 0.1) 100%);
-  border-left: 4px solid #ff4500;
-  padding: 1rem;
-  border-radius: 4px;
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-}
-
-.blood-lust-warning i {
-  color: #ff4500;
-  font-size: 1.5em;
-  margin-top: 0.2rem;
-}
-
-.blood-lust-warning p {
-  margin: 0;
-  color: #333;
-  flex: 1;
-}
-
-.blood-lust-warning strong {
-  color: #8b0000;
-}
-
-/* Lycan Chat Messages */
-.bloodhunter-lycan-transformation,
-.bloodhunter-lycan-reversion {
-  background: linear-gradient(135deg, rgba(218, 165, 32, 0.1) 0%, rgba(255, 165, 0, 0.1) 100%);
-  border-left: 4px solid #ffa500;
-  padding: 1rem;
-  border-radius: 4px;
-}
-
-.bloodhunter-lycan-transformation h3,
-.bloodhunter-lycan-reversion h3 {
-  margin: 0 0 0.75rem 0;
-  color: #cd7f32;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.bloodhunter-lycan-transformation p,
-.bloodhunter-lycan-reversion p {
-  margin: 0.5rem 0;
-  color: #333;
-}
-
-.transformation-bonuses {
-  background: rgba(255, 165, 0, 0.1);
-  padding: 0.75rem;
-  border-radius: 4px;
-  margin-top: 0.75rem;
-}
-
-.transformation-bonuses p {
-  margin: 0.25rem 0;
-  font-weight: bold;
-  color: #cd7f32;
-}
-
-/* Blood Lust Reminder */
-.bloodhunter-blood-lust-reminder {
-  background: linear-gradient(135deg, rgba(139, 0, 0, 0.1) 0%, rgba(255, 69, 0, 0.1) 100%);
-  border-left: 4px solid #ff4500;
-  padding: 1rem;
-  border-radius: 4px;
-}
-
-.bloodhunter-blood-lust-reminder h3 {
-  margin: 0 0 0.75rem 0;
-  color: #8b0000;
-}
-
-.bloodhunter-blood-lust-reminder p {
-  margin: 0.5rem 0;
-  color: #333;
-}
-
-.bloodhunter-blood-lust-reminder strong {
-  color: #8b0000;
-}
-
-.bloodhunter-blood-lust-reminder em {
-  color: #666;
-  font-style: italic;
-}
-
-/* Lycan Animation */
-@keyframes lycan-pulse {
-  0%, 100% {
-    box-shadow: 0 0 5px rgba(255, 165, 0, 0.5);
-  }
-  50% {
-    box-shadow: 0 0 20px rgba(255, 165, 0, 0.8);
-  }
-}
-
-/* Hybrid Form Active Effect Indicator */
-.bloodhunter-hybrid-form {
-  background: linear-gradient(135deg, rgba(218, 165, 32, 0.2) 0%, rgba(255, 165, 0, 0.2) 100%);
-  border-left: 4px solid #ffa500;
-  padding: 0.5rem;
-  margin-top: 0.5rem;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  animation: lycan-pulse 2s ease-in-out infinite;
-}
-
-.bloodhunter-hybrid-form i {
-  color: #ffa500;
-  font-size: 1.2em;
-}
-
-.bloodhunter-hybrid-form .form-name {
-  font-weight: bold;
-  color: #cd7f32;
-  flex-grow: 1;
-}
-
-.bloodhunter-hybrid-form .form-bonuses {
-  color: #666;
-  font-size: 0.9em;
-}
-
-/* Order Specific Styles */
-.bloodhunter-order-ghostslayer {
-  border-color: #00ffff;
-}
-
-.bloodhunter-order-lycan {
-  border-color: #ffa500;
-}
-
-.bloodhunter-order-mutant {
-  border-color: #00ff00;
-}
-
-.bloodhunter-order-profane-soul {
-  border-color: #9932cc;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .bloodhunter-rite-button {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.9em;
-  }
-
-  .bloodhunter-crimson-rite-form {
-    padding: 0.5rem;
-  }
-}
-
-/* Animation for rite activation */
-@keyframes rite-glow {
-  0%, 100% {
-    box-shadow: 0 0 5px rgba(220, 20, 60, 0.5);
-  }
-  50% {
-    box-shadow: 0 0 20px rgba(220, 20, 60, 0.8);
-  }
-}
-
-.bloodhunter-active-rite {
-  animation: rite-glow 2s ease-in-out infinite;
+.bh-rite-dialog .deactivate-button:hover {
+  background: var(--color-border-dark-tertiary, #888);
 }
