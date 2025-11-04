@@ -11,6 +11,7 @@
       "Active": "Rite Actif",
       "Cost": "Coût en PV",
       "NoWeapons": "Aucune arme trouvée dans l'inventaire",
+      "NoRites": "Aucun Rite Écarlate disponible à votre niveau",
       "AlreadyActive": "Cette arme possède déjà un Rite Écarlate actif",
       "Activated": "{weapon} est maintenant enchanté(e) avec {rite}",
       "Deactivated": "Rite Écarlate désactivé sur {weapon}",

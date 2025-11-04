@@ -33,18 +33,108 @@ export class CrimsonRiteFeatures {
     const actor = item.actor;
     if (!actor) return;
 
-    // Get the rite type from the feature
-    const riteType = item.flags[MODULE_ID].riteType;
-    if (!riteType) {
-      ui.notifications.error('Invalid Crimson Rite feature: missing rite type');
-      return false;
-    }
-
-    // Open weapon selection dialog
-    await this.activateRiteFromFeature(actor, riteType);
+    // Open the full Crimson Rite dialog (rite type + weapon selection)
+    await this.openCrimsonRiteDialog(actor);
 
     // Prevent default item usage
     return false;
+  }
+
+  /**
+   * Open the full Crimson Rite dialog (rite type + weapon selection)
+   * @param {Actor} actor - The Blood Hunter actor
+   */
+  static async openCrimsonRiteDialog(actor) {
+    // Get available weapons
+    const weapons = actor.items.filter(i => i.type === 'weapon');
+    if (weapons.length === 0) {
+      ui.notifications.warn(game.i18n.localize('BLOODHUNTER.CrimsonRite.NoWeapons'));
+      return;
+    }
+
+    // Get available rites based on Blood Hunter level
+    const availableRites = CrimsonRite.getAvailableRites(actor);
+    
+    if (Object.keys(availableRites).length === 0) {
+      ui.notifications.warn(game.i18n.localize('BLOODHUNTER.CrimsonRite.NoRites'));
+      return;
+    }
+
+    // Build rite options HTML
+    let riteOptions = '';
+    for (const [key, info] of Object.entries(availableRites)) {
+      const riteName = game.i18n.localize('BLOODHUNTER.CrimsonRite.Types.' + key);
+      riteOptions += `<option value="${key}">${riteName} (${info.damageType})</option>`;
+    }
+
+    // Build weapon options HTML
+    let weaponOptions = '';
+    for (const weapon of weapons) {
+      const activeRite = CrimsonRite.getActiveRite(weapon);
+      const activeText = activeRite ? ` (${game.i18n.localize('BLOODHUNTER.CrimsonRite.Active')}: ${game.i18n.localize('BLOODHUNTER.CrimsonRite.Types.' + activeRite.flags[MODULE_ID].riteType)})` : '';
+      weaponOptions += `<option value="${weapon.id}">${weapon.name}${activeText}</option>`;
+    }
+
+    const hpCost = CrimsonRite.calculateHPCost(actor);
+    const riteDamage = CrimsonRite.getRiteDamage(actor);
+
+    // Create dialog content
+    const content = `
+      <form class="bloodhunter-crimson-rite-form">
+        <div class="form-group">
+          <label>${game.i18n.localize('BLOODHUNTER.CrimsonRite.SelectRite')}:</label>
+          <select name="rite" id="rite-type">
+            ${riteOptions}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>${game.i18n.localize('BLOODHUNTER.CrimsonRite.SelectWeapon')}:</label>
+          <select name="weapon" id="rite-weapon">
+            ${weaponOptions}
+          </select>
+        </div>
+        <div class="form-group info">
+          <p><strong>${game.i18n.localize('BLOODHUNTER.CrimsonRite.Cost')}:</strong> ${hpCost} HP</p>
+          <p><strong>Bonus Damage:</strong> ${riteDamage}</p>
+        </div>
+        <div class="form-group">
+          <button type="button" id="deactivate-rite" class="deactivate-button">
+            ${game.i18n.localize('BLOODHUNTER.CrimsonRite.Deactivate')}
+          </button>
+        </div>
+      </form>
+    `;
+
+    // Create and show dialog
+    new Dialog({
+      title: game.i18n.localize('BLOODHUNTER.CrimsonRite.Title'),
+      content: content,
+      buttons: {
+        activate: {
+          icon: '<i class="fas fa-fire"></i>',
+          label: game.i18n.localize('BLOODHUNTER.CrimsonRite.Activate'),
+          callback: async(html) => {
+            const riteType = html.find('[name="rite"]').val();
+            const weaponId = html.find('[name="weapon"]').val();
+            await CrimsonRite.activate(actor, weaponId, riteType);
+          }
+        },
+        cancel: {
+          icon: '<i class="fas fa-times"></i>',
+          label: 'Cancel'
+        }
+      },
+      default: 'activate',
+      render: (html) => {
+        // Add deactivate button handler
+        html.find('#deactivate-rite').on('click', async() => {
+          const weaponId = html.find('[name="weapon"]').val();
+          await CrimsonRite.deactivate(actor, weaponId);
+          // Close the dialog
+          html.closest('.dialog').find('.dialog-button.cancel').trigger('click');
+        });
+      }
+    }).render(true);
   }
 
   /**
@@ -126,7 +216,97 @@ export class CrimsonRiteFeatures {
   }
 
   /**
-   * Create a Crimson Rite feature item
+   * Create a single Crimson Rite feature item
+   * @returns {object} Item data for the feature
+   */
+  static createCrimsonRiteFeatureData() {
+    const icon = 'icons/magic/fire/flame-burning-hand-purple.webp';
+
+    // Build description
+    const description = `
+      <p><strong>Crimson Rite</strong></p>
+      <p>As a bonus action, you can activate a Crimson Rite on a single weapon with the elemental energy of your choice.</p>
+      <p>The rite lasts until you finish a short or long rest. When you activate a Crimson Rite, you take necrotic damage equal to one roll of your hemocraft die.</p>
+      <p>While the rite is active, attacks you make with this weapon deal an extra hemocraft die of damage.</p>
+      <p><em>Click to activate a Crimson Rite on one of your weapons.</em></p>
+    `;
+
+    return {
+      name: game.i18n.localize('BLOODHUNTER.CrimsonRite.Title'),
+      type: 'feat',
+      img: icon,
+      system: {
+        description: {
+          value: description,
+          chat: '',
+          unidentified: ''
+        },
+        source: 'Blood Hunter Class',
+        activation: {
+          type: 'bonus',
+          cost: 1,
+          condition: ''
+        },
+        duration: {
+          value: null,
+          units: 'spec'
+        },
+        target: {
+          value: 1,
+          width: null,
+          units: '',
+          type: 'self'
+        },
+        range: {
+          value: null,
+          long: null,
+          units: 'self'
+        },
+        uses: {
+          value: null,
+          max: '',
+          per: null,
+          recovery: ''
+        },
+        consume: {
+          type: '',
+          target: null,
+          amount: null
+        },
+        ability: null,
+        actionType: 'util',
+        attackBonus: '',
+        chatFlavor: '',
+        critical: {
+          threshold: null,
+          damage: ''
+        },
+        damage: {
+          parts: [],
+          versatile: ''
+        },
+        formula: '',
+        save: {
+          ability: '',
+          dc: null,
+          scaling: 'spell'
+        },
+        requirements: 'Blood Hunter 1',
+        recharge: {
+          value: null,
+          charged: true
+        }
+      },
+      flags: {
+        [MODULE_ID]: {
+          crimsonRiteFeature: true
+        }
+      }
+    };
+  }
+
+  /**
+   * Create a Crimson Rite feature item (LEGACY - for specific rite types)
    * @param {string} riteType - The type of rite (flame, frozen, storm, etc.)
    * @returns {object} Item data for the feature
    */
@@ -224,7 +404,30 @@ export class CrimsonRiteFeatures {
   }
 
   /**
-   * Add Crimson Rite features to an actor
+   * Add Crimson Rite feature to an actor
+   * @param {Actor} actor - The Blood Hunter actor
+   */
+  static async addCrimsonRiteFeatureToActor(actor) {
+    if (!BloodHunterUtils.isBloodHunter(actor)) {
+      ui.notifications.error(game.i18n.localize('BLOODHUNTER.CrimsonRite.NotBloodHunter'));
+      return;
+    }
+
+    // Check if actor already has the feature
+    const existing = actor.items.find(i => i.flags[MODULE_ID]?.crimsonRiteFeature);
+
+    if (existing) {
+      ui.notifications.info(`${actor.name} already has the Crimson Rite feature`);
+      return;
+    }
+
+    const featureData = this.createCrimsonRiteFeatureData();
+    await actor.createEmbeddedDocuments('Item', [featureData]);
+    ui.notifications.info(`Added Crimson Rite feature to ${actor.name}`);
+  }
+
+  /**
+   * Add Crimson Rite features to an actor (LEGACY - specific rite types)
    * @param {Actor} actor - The Blood Hunter actor
    * @param {Array<string>} riteTypes - Optional array of specific rites to add (defaults to available rites)
    */

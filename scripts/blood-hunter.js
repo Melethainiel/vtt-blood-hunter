@@ -178,8 +178,8 @@ async function createMacros() {
     });
   }
 
-  // Create Crimson Rite Features macro (for adding features to character)
-  const featureMacroName = 'Add Crimson Rite Features';
+  // Create Crimson Rite Feature macro (for adding single feature to character)
+  const featureMacroName = 'Add Crimson Rite Feature';
   const existingFeatureMacro = game.macros.find(m => m.name === featureMacroName);
 
   if (!existingFeatureMacro) {
@@ -187,12 +187,12 @@ async function createMacros() {
       name: featureMacroName,
       type: 'script',
       img: 'icons/magic/fire/flame-burning-creature-pink.webp',
-      command: `// Add Crimson Rite features to selected character
+      command: `// Add Crimson Rite feature to selected character
 const token = canvas.tokens.controlled[0];
 if (!token) {
   ui.notifications.warn('Please select a token');
 } else {
-  await game.bloodhunter.CrimsonRiteFeatures.addRiteFeaturesToActor(token.actor);
+  await game.bloodhunter.CrimsonRiteFeatures.addCrimsonRiteFeatureToActor(token.actor);
 }`,
       flags: { 'vtt-blood-hunter': { macro: true } }
     });
