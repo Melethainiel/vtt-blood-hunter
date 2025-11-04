@@ -20,3 +20,7 @@ build/
 # Packs (compiled) - LevelDB format generated from packData/
 packs/*/
 !packs/.gitkeep
+
+# Distribution files
+*.tar.gz
+*.zip
