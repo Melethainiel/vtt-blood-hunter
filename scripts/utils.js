@@ -46,10 +46,10 @@ export class BloodHunterUtils {
   static getHemocraftDie(actor) {
     const level = this.getBloodHunterLevel(actor);
 
-    if (level < 5) return "1d4";
-    if (level < 11) return "1d6";
-    if (level < 17) return "1d8";
-    return "1d10";
+    if (level < 5) return '1d4';
+    if (level < 11) return '1d6';
+    if (level < 17) return '1d8';
+    return '1d10';
   }
 
   /**
@@ -165,7 +165,7 @@ export class BloodHunterUtils {
    * @param {string} label - Label for the roll
    * @returns {Promise<Roll>} The roll result
    */
-  static async rollHemocraft(actor, label = "Hemocraft") {
+  static async rollHemocraft(actor, label = 'Hemocraft') {
     const die = this.getHemocraftDie(actor);
     const roll = new Roll(die);
     await roll.evaluate();

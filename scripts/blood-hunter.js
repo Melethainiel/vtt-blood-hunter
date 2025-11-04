@@ -56,13 +56,13 @@ Hooks.once('ready', async function() {
 });
 
 // Hook into combat turn changes to reset Blood Curse uses
-Hooks.on('combatTurn', async (combat, updateData, options) => {
+Hooks.on('combatTurn', async(combat, updateData, options) => {
   await BloodCurse.resetCurseUses(combat, updateData);
 });
 
 // Hook into damage rolls to add Crimson Rite damage
 // Only use this hook if midi-qol is NOT active (midi-qol has its own hooks)
-Hooks.on('dnd5e.preRollDamage', async (item, rollConfig) => {
+Hooks.on('dnd5e.preRollDamage', async(item, rollConfig) => {
   // If midi-qol is active, skip this hook (it handles damage in its own workflow)
   if (BloodHunterIntegrations.isMidiQOLActive()) return;
 
@@ -160,30 +160,30 @@ function registerHandlebarsHelpers() {
 
 async function createMacros() {
   // Create Crimson Rite macro
-  const macroName = "Crimson Rite";
+  const macroName = 'Crimson Rite';
   const existingMacro = game.macros.find(m => m.name === macroName);
 
   if (!existingMacro) {
     await Macro.create({
       name: macroName,
-      type: "script",
-      img: "icons/magic/fire/flame-burning-hand-purple.webp",
-      command: `game.bloodhunter.CrimsonRite.activateDialog();`,
-      flags: { "vtt-blood-hunter": { macro: true } }
+      type: 'script',
+      img: 'icons/magic/fire/flame-burning-hand-purple.webp',
+      command: 'game.bloodhunter.CrimsonRite.activateDialog();',
+      flags: { 'vtt-blood-hunter': { macro: true } }
     });
   }
 
   // Create Hybrid Transformation macro
-  const lycanMacroName = "Hybrid Transformation";
+  const lycanMacroName = 'Hybrid Transformation';
   const existingLycanMacro = game.macros.find(m => m.name === lycanMacroName);
 
   if (!existingLycanMacro) {
     await Macro.create({
       name: lycanMacroName,
-      type: "script",
-      img: "icons/creatures/mammals/wolf-howl-moon-white.webp",
-      command: `game.bloodhunter.OrderOfTheLycan.transformationDialog();`,
-      flags: { "vtt-blood-hunter": { macro: true } }
+      type: 'script',
+      img: 'icons/creatures/mammals/wolf-howl-moon-white.webp',
+      command: 'game.bloodhunter.OrderOfTheLycan.transformationDialog();',
+      flags: { 'vtt-blood-hunter': { macro: true } }
     });
   }
 }
