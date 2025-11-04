@@ -64,7 +64,7 @@
     },
     "type": {
       "value": "class",
-      "subtype": "bloodHunter"
+      "subtype": ""
     },
     "recharge": {
       "value": null,
