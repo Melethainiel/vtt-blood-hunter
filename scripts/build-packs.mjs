@@ -1,4 +1,5 @@
 import { compilePack } from '@foundryvtt/foundryvtt-cli';
+import { readdirSync, existsSync } from 'fs';
 
 /**
  * Build script for compiling Foundry VTT compendium packs
@@ -13,10 +14,26 @@ const packs = [
 console.log('🔨 Building compendium packs...\n');
 
 for (const pack of packs) {
+  const sourcePath = `./packData/${pack}`;
+  
+  // Check if directory exists and has JSON files
+  if (!existsSync(sourcePath)) {
+    console.log(`⏭️  Skipping ${pack}: source directory does not exist\n`);
+    continue;
+  }
+  
+  const files = readdirSync(sourcePath);
+  const hasJsonFiles = files.some(f => f.endsWith('.json'));
+  
+  if (!hasJsonFiles) {
+    console.log(`⏭️  Skipping ${pack}: no JSON source files found\n`);
+    continue;
+  }
+
   try {
     console.log(`📦 Compiling: ${pack}`);
     await compilePack(
-      `./packData/${pack}`,
+      sourcePath,
       `./packs/${pack}`,
       { log: true }
     );
