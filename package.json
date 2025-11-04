@@ -4,8 +4,13 @@
   "description": "Module Foundry VTT pour automatiser la classe Blood Hunter",
   "main": "scripts/blood-hunter.js",
   "scripts": {
-    "build": "echo 'No build step required'",
-    "test": "echo 'No tests configured'"
+    "build": "webpack --mode=production",
+    "dev": "webpack --mode=development --watch",
+    "lint": "eslint scripts/ --ext .js",
+    "lint:fix": "eslint scripts/ --ext .js --fix",
+    "package": "npm run build && zip -r vtt-blood-hunter.zip scripts/ styles/ lang/ packs/ module.json LICENSE README.md -x \"*.git*\" \"node_modules/*\" \"*.log\"",
+    "clean": "rm -rf dist/ vtt-blood-hunter.zip",
+    "validate": "node scripts/validate-module.js"
   },
   "repository": {
     "type": "git",
@@ -19,5 +24,16 @@
   ],
   "author": "",
   "license": "MIT",
-  "devDependencies": {}
+  "devDependencies": {
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4",
+    "css-loader": "^6.8.1",
+    "style-loader": "^3.3.3",
+    "terser-webpack-plugin": "^5.3.9",
+    "eslint": "^8.52.0",
+    "eslint-config-standard": "^17.1.0",
+    "eslint-plugin-import": "^2.29.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^6.1.1"
+  }
 }
