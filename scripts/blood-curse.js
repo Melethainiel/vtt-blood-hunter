@@ -159,15 +159,15 @@ export class BloodCurse {
    */
   static registerMidiQOLHooks() {
     // Hook for reaction-based curses
-    Hooks.on('midi-qol.preAttackRoll', async (workflow) => {
+    Hooks.on('midi-qol.preAttackRoll', async(workflow) => {
       await this.checkReactionCurses(workflow, 'preAttack');
     });
 
-    Hooks.on('midi-qol.preCheckHits', async (workflow) => {
+    Hooks.on('midi-qol.preCheckHits', async(workflow) => {
       await this.checkReactionCurses(workflow, 'preHit');
     });
 
-    Hooks.on('midi-qol.preDamageRoll', async (workflow) => {
+    Hooks.on('midi-qol.preDamageRoll', async(workflow) => {
       await this.checkReactionCurses(workflow, 'preDamage');
     });
   }
@@ -332,7 +332,7 @@ export class BloodCurse {
           use: {
             icon: '<i class="fas fa-hand-sparkles"></i>',
             label: 'Use Curse',
-            callback: async (html) => {
+            callback: async(html) => {
               const curseId = html.find('[name="curse"]').val();
               const amplify = html.find('[name="amplify"]').prop('checked');
 
@@ -372,8 +372,6 @@ export class BloodCurse {
    * @param {boolean} amplify - Whether to amplify
    */
   static async execute(actor, curse, workflow, amplify = false) {
-    const curseType = curse.flags[MODULE_ID]?.curseType;
-
     // Calculate HP cost if amplified
     if (amplify) {
       const hpCost = this.calculateAmplificationCost(actor);

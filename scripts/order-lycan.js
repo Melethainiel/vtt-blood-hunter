@@ -83,7 +83,7 @@ export class OrderOfTheLycan {
    */
   static registerHooks() {
     // Hook for attacks to add Predatory Strikes damage
-    Hooks.on('dnd5e.preRollDamage', async (item, rollConfig) => {
+    Hooks.on('dnd5e.preRollDamage', async(item, rollConfig) => {
       if (!item.actor) return;
 
       const isTransformed = this.isTransformed(item.actor);
@@ -94,7 +94,7 @@ export class OrderOfTheLycan {
 
     // Hook for midi-qol integration
     if (BloodHunterIntegrations.isMidiQOLActive()) {
-      Hooks.on('midi-qol.DamageRollComplete', async (workflow) => {
+      Hooks.on('midi-qol.DamageRollComplete', async(workflow) => {
         if (!workflow.actor) return;
 
         const isTransformed = this.isTransformed(workflow.actor);
@@ -138,7 +138,7 @@ export class OrderOfTheLycan {
     if (!actor) {
       const token = canvas.tokens.controlled[0];
       if (!token) {
-        ui.notifications.warn("Please select a token");
+        ui.notifications.warn('Please select a token');
         return;
       }
       actor = token.actor;
@@ -199,28 +199,28 @@ export class OrderOfTheLycan {
         revert: {
           icon: '<i class="fas fa-user"></i>',
           label: game.i18n.localize('BLOODHUNTER.Lycan.RevertToHuman'),
-          callback: async () => {
+          callback: async() => {
             await this.revertTransformation(actor);
           }
         },
         cancel: {
           icon: '<i class="fas fa-times"></i>',
-          label: "Cancel"
+          label: 'Cancel'
         }
       } : {
         transform: {
           icon: '<i class="fas fa-paw-claws"></i>',
           label: game.i18n.localize('BLOODHUNTER.Lycan.Transform'),
-          callback: async () => {
+          callback: async() => {
             await this.transform(actor);
           }
         },
         cancel: {
           icon: '<i class="fas fa-times"></i>',
-          label: "Cancel"
+          label: 'Cancel'
         }
       },
-      default: isTransformed ? "revert" : "transform"
+      default: isTransformed ? 'revert' : 'transform'
     }).render(true);
   }
 

@@ -57,10 +57,10 @@ export class CrimsonRite {
   static getRiteDamage(actor) {
     const bloodHunterLevel = BloodHunterUtils.getBloodHunterLevel(actor);
 
-    if (bloodHunterLevel < 5) return "1d4";
-    if (bloodHunterLevel < 11) return "1d6";
-    if (bloodHunterLevel < 17) return "1d8";
-    return "1d10";
+    if (bloodHunterLevel < 5) return '1d4';
+    if (bloodHunterLevel < 11) return '1d6';
+    if (bloodHunterLevel < 17) return '1d8';
+    return '1d10';
   }
 
   /**
@@ -190,7 +190,7 @@ export class CrimsonRite {
     if (!actor) {
       const token = canvas.tokens.controlled[0];
       if (!token) {
-        ui.notifications.warn("Please select a token");
+        ui.notifications.warn('Please select a token');
         return;
       }
       actor = token.actor;
@@ -222,7 +222,7 @@ export class CrimsonRite {
 
     // Build rite options HTML
     let riteOptions = '';
-    for (const [key, value] of Object.entries(availableRites)) {
+    for (const key of Object.keys(availableRites)) {
       riteOptions += `<option value="${key}">${game.i18n.localize('BLOODHUNTER.CrimsonRite.Types.' + key)}</option>`;
     }
 
@@ -264,7 +264,7 @@ export class CrimsonRite {
         activate: {
           icon: '<i class="fas fa-fire"></i>',
           label: game.i18n.localize('BLOODHUNTER.CrimsonRite.Activate'),
-          callback: async (html) => {
+          callback: async(html) => {
             const weaponId = html.find('[name="weapon"]').val();
             const riteType = html.find('[name="rite"]').val();
             await this.activate(actor, weaponId, riteType);
@@ -272,13 +272,13 @@ export class CrimsonRite {
         },
         cancel: {
           icon: '<i class="fas fa-times"></i>',
-          label: "Cancel"
+          label: 'Cancel'
         }
       },
-      default: "activate",
+      default: 'activate',
       render: (html) => {
         // Add deactivate button handler
-        html.find('#deactivate-rite').on('click', async () => {
+        html.find('#deactivate-rite').on('click', async() => {
           const weaponId = html.find('[name="weapon"]').val();
           await this.deactivate(actor, weaponId);
           // Close the dialog
@@ -383,7 +383,7 @@ export class CrimsonRite {
     const activeRite = this.getActiveRite(weapon);
     if (!activeRite) {
       if (showNotification) {
-        ui.notifications.warn("No active Crimson Rite on this weapon");
+        ui.notifications.warn('No active Crimson Rite on this weapon');
       }
       return;
     }
@@ -468,7 +468,7 @@ export class CrimsonRite {
     insertPoint.after(buttonElement);
 
     // Add click handler for activation button
-    buttonElement.on('click', async (event) => {
+    buttonElement.on('click', async(event) => {
       event.preventDefault();
       await this.activateDialog(item.actor);
     });

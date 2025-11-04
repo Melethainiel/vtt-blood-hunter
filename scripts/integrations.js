@@ -55,17 +55,17 @@ export class BloodHunterIntegrations {
    */
   static setupMidiQOLIntegration() {
     // Hook into midi-qol damage bonus workflow
-    Hooks.on('midi-qol.DamageRollComplete', async (workflow) => {
+    Hooks.on('midi-qol.DamageRollComplete', async(workflow) => {
       await this.addCrimsonRiteDamage(workflow);
     });
 
     // Hook for Blood Curse reactions
-    Hooks.on('midi-qol.AttackRollComplete', async (workflow) => {
+    Hooks.on('midi-qol.AttackRollComplete', async(workflow) => {
       await this.checkBloodCurseReaction(workflow);
     });
 
     // Hook for applying amplified curses
-    Hooks.on('midi-qol.RollComplete', async (workflow) => {
+    Hooks.on('midi-qol.RollComplete', async(workflow) => {
       await this.processBloodCurseEffects(workflow);
     });
   }
@@ -89,7 +89,6 @@ export class BloodHunterIntegrations {
     // Add bonus damage to workflow
     if (workflow.damageRoll) {
       const bonusRoll = await new Roll(riteDamage).evaluate();
-      const newTotal = workflow.damageRoll.total + bonusRoll.total;
 
       // Add to damage detail
       workflow.damageDetail.push({
