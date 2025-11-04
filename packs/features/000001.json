@@ -1,0 +1,87 @@
+{
+  "_id": "crimsonrite0001",
+  "name": "Crimson Rite",
+  "type": "feat",
+  "img": "icons/magic/fire/flame-burning-skull-orange.webp",
+  "system": {
+    "description": {
+      "value": "<h2>Crimson Rite</h2>\n<p>As a bonus action, you can activate a Crimson Rite on a single weapon. The rite lasts until you finish a short or long rest.</p>\n<p>When you activate a Crimson Rite, you take damage equal to one roll of your hemocraft die. While active, attacks with this weapon deal an extra 1d4 damage of the rite's damage type.</p>\n<p><strong>Click this feature to activate a Crimson Rite on one of your weapons.</strong></p>",
+      "chat": ""
+    },
+    "source": {
+      "custom": "Blood Hunter"
+    },
+    "activation": {
+      "type": "bonus",
+      "cost": 1,
+      "condition": ""
+    },
+    "duration": {
+      "value": "",
+      "units": ""
+    },
+    "target": {
+      "value": "",
+      "width": null,
+      "units": "",
+      "type": "",
+      "prompt": true
+    },
+    "range": {
+      "value": null,
+      "long": null,
+      "units": "self"
+    },
+    "uses": {
+      "value": null,
+      "max": "",
+      "per": null,
+      "recovery": "",
+      "prompt": true
+    },
+    "consume": {
+      "type": "",
+      "target": null,
+      "amount": null,
+      "scale": false
+    },
+    "ability": null,
+    "actionType": null,
+    "chatFlavor": "",
+    "critical": {
+      "threshold": null,
+      "damage": ""
+    },
+    "damage": {
+      "parts": []
+    },
+    "formula": "",
+    "save": {
+      "ability": "",
+      "dc": null,
+      "scaling": "spell"
+    },
+    "type": {
+      "value": "class",
+      "subtype": ""
+    },
+    "requirements": "Blood Hunter 2",
+    "recharge": {
+      "value": null,
+      "charged": false
+    },
+    "attunement": null,
+    "properties": []
+  },
+  "effects": [],
+  "flags": {
+    "vtt-blood-hunter": {
+      "crimsonRiteActivation": true
+    }
+  },
+  "folder": null,
+  "sort": 0,
+  "ownership": {
+    "default": 0
+  }
+}

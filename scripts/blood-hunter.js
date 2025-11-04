@@ -53,9 +53,6 @@ Hooks.once('ready', async function() {
 
   // Create macro compendium if needed
   await createMacros();
-
-  // Initialize compendiums with default content
-  await initializeCompendiums();
 });
 
 // Hook into combat turn changes to reset Blood Curse uses
@@ -205,77 +202,6 @@ async function createMacros() {
       command: 'game.bloodhunter.OrderOfTheLycan.transformationDialog();',
       flags: { 'vtt-blood-hunter': { macro: true } }
     });
-  }
-}
-
-async function initializeCompendiums() {
-  // Get the Blood Hunter Features compendium
-  const pack = game.packs.get('vtt-blood-hunter.blood-hunter-features');
-  if (!pack) {
-    console.warn(`${MODULE_NAME} | Blood Hunter Features compendium not found`);
-    return;
-  }
-
-  // Check if Crimson Rite feature already exists
-  const index = await pack.getIndex();
-  const existingFeature = index.find(i => i.name === 'Crimson Rite');
-
-  if (existingFeature) {
-    // Feature already exists, skip creation
-    return;
-  }
-
-  // Only GMs can create compendium content
-  if (!game.user.isGM) return;
-
-  console.log(`${MODULE_NAME} | Creating Crimson Rite feature in compendium...`);
-
-  // Create the Crimson Rite feature
-  const featureData = {
-    name: 'Crimson Rite',
-    type: 'feat',
-    img: 'icons/magic/fire/flame-burning-skull-orange.webp',
-    system: {
-      description: {
-        value: `<h2>Crimson Rite</h2>
-<p>As a bonus action, you can activate a Crimson Rite on a single weapon. The rite lasts until you finish a short or long rest.</p>
-<p>When you activate a Crimson Rite, you take damage equal to one roll of your hemocraft die. While active, attacks with this weapon deal an extra 1d4 damage of the rite's damage type.</p>
-<p><strong>Click this feature to activate a Crimson Rite on one of your weapons.</strong></p>`,
-        chat: '',
-        unidentified: ''
-      },
-      source: {
-        custom: 'Blood Hunter'
-      },
-      activation: {
-        type: 'bonus',
-        cost: 1
-      },
-      type: {
-        value: 'class',
-        subtype: ''
-      },
-      requirements: 'Blood Hunter 2',
-      uses: {
-        value: null,
-        max: '',
-        per: null,
-        recovery: ''
-      }
-    },
-    flags: {
-      'vtt-blood-hunter': {
-        crimsonRiteActivation: true
-      }
-    }
-  };
-
-  try {
-    // Create the item in the compendium
-    await pack.getDocument(await Item.create(featureData, { pack: pack.collection }));
-    console.log(`${MODULE_NAME} | Crimson Rite feature created successfully`);
-  } catch (error) {
-    console.error(`${MODULE_NAME} | Error creating Crimson Rite feature:`, error);
   }
 }
 
