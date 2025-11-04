@@ -164,14 +164,13 @@ function registerHandlebarsHelpers() {
 
 async function createMacros() {
   // Create Crimson Rite macro
-  const macroName = 'Crimson Rite';
+  const macroName = 'BH: Crimson Rite';
   const existingMacro = game.macros.find(m => m.name === macroName);
 
   if (!existingMacro) {
     await Macro.create({
       name: macroName,
       type: 'script',
-      img: 'icons/magic/fire/flame-burning-hand-purple.webp',
       command: 'game.bloodhunter.CrimsonRite.activateDialog();',
       flags: { 'vtt-blood-hunter': { macro: true } }
     });
