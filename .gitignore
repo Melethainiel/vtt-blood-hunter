@@ -17,6 +17,6 @@ npm-debug.log*
 dist/
 build/
 
-# Packs (compiled)
-packs/*/*.db
-!packs/*/.gitkeep
+# Packs (compiled) - LevelDB format generated from packData/
+packs/*/
+!packs/.gitkeep

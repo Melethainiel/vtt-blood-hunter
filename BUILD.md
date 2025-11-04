@@ -15,7 +15,9 @@ npm install
 
 ### Développement
 - `npm run dev` - Build en mode développement avec watch
-- `npm run build` - Build en mode production
+- `npm run build` - Build du code JavaScript en mode production
+- `npm run build:packs` - Compile les compendiums depuis packData/
+- `npm run build:all` - Build complet (compendiums + code)
 
 ### Qualité
 - `npm run lint` - Vérifie la qualité du code JavaScript
@@ -23,8 +25,8 @@ npm install
 - `npm run validate` - Valide la structure du module
 
 ### Packaging
-- `npm run package` - Crée le zip du module pour distribution
-- `npm run clean` - Nettoie les fichiers de build
+- `npm run package` - Crée le zip du module pour distribution (inclut build:all)
+- `npm run clean` - Nettoie les fichiers de build et packs compilés
 
 ## Workflow CI/CD
 
@@ -40,7 +42,10 @@ Le projet utilise GitHub Actions pour automatiser:
 ├── scripts/          # Fichiers JavaScript source
 ├── styles/           # Fichiers CSS
 ├── lang/             # Fichiers de traduction
-├── packs/            # Packs de données Foundry
+├── packData/         # Source des compendiums (JSON)
+│   ├── blood-hunter-features/  # Features source
+│   └── blood-hunter-items/     # Items source
+├── packs/            # Compendiums compilés (généré, LevelDB)
 ├── dist/             # Fichiers compilés (généré)
 └── vtt-blood-hunter.zip  # Package final (généré)
 ```
@@ -51,9 +56,21 @@ Pour développer:
 
 1. Clonez le repo
 2. Installez les dépendances: `npm install`
-3. Lancez le mode dev: `npm run dev`
-4. Modifiez les fichiers dans `scripts/` et `styles/`
-5. Les changements sont automatiquement recompilés
+3. Compilez les compendiums: `npm run build:packs`
+4. Lancez le mode dev: `npm run dev`
+5. Modifiez les fichiers dans `scripts/` et `styles/`
+6. Les changements sont automatiquement recompilés
+
+### Travailler avec les compendiums
+
+Les compendiums utilisent le système de build de Foundry VTT CLI:
+
+1. **Fichiers sources** sont dans `packData/` au format JSON lisible
+2. **Fichiers compilés** sont générés dans `packs/` au format LevelDB (ignorés par git)
+3. Pour modifier un compendium:
+   - Éditez les fichiers JSON dans `packData/`
+   - Lancez `npm run build:packs` pour recompiler
+4. **N'éditez jamais** directement les fichiers dans `packs/`
 
 ## Release
 
