@@ -54,10 +54,13 @@ export class BloodHunterIntegrations {
    * Setup midi-qol integration hooks
    */
   static setupMidiQOLIntegration() {
-    // Hook into midi-qol damage bonus workflow
-    Hooks.on('midi-qol.DamageRollComplete', async(workflow) => {
-      await this.addCrimsonRiteDamage(workflow);
-    });
+    // Only hook into damage if DAE is NOT active
+    // DAE handles damage bonuses via active effects on the weapon
+    if (!this.isDAEActive()) {
+      Hooks.on('midi-qol.DamageRollComplete', async(workflow) => {
+        await this.addCrimsonRiteDamage(workflow);
+      });
+    }
 
     // Hook for Blood Curse reactions
     Hooks.on('midi-qol.AttackRollComplete', async(workflow) => {

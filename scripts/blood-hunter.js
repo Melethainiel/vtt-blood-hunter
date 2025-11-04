@@ -66,8 +66,12 @@ Hooks.on('combatTurn', async(combat, updateData, options) => {
 });
 
 // Hook into damage rolls to add Crimson Rite damage
-// Only use this hook if midi-qol is NOT active (midi-qol has its own hooks)
+// Only use this hook if DAE is NOT active (DAE handles damage via active effects)
+// AND midi-qol is NOT active (midi-qol has its own hooks)
 Hooks.on('dnd5e.preRollDamage', async(item, rollConfig) => {
+  // If DAE is active, it handles the damage bonus via active effects
+  if (BloodHunterIntegrations.isDAEActive()) return;
+
   // If midi-qol is active, skip this hook (it handles damage in its own workflow)
   if (BloodHunterIntegrations.isMidiQOLActive()) return;
 
