@@ -190,7 +190,12 @@ async function createMacros() {
 
 function addBloodHunterUI(html, actor) {
   // Find the header actions area
-  const headerActions = html.find('.sheet-header .header-actions');
+  // dnd5e v3 uses .sheet-header-buttons, v2 uses .header-actions
+  let headerActions = html.find('.sheet-header .sheet-header-buttons');
+  if (headerActions.length === 0) {
+    // Fallback to v2 selector for backward compatibility
+    headerActions = html.find('.sheet-header .header-actions');
+  }
   if (headerActions.length === 0) return;
 
   // Add Crimson Rite button

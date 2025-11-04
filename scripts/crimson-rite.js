@@ -78,6 +78,25 @@ export class CrimsonRite {
       const name = feature.name.toLowerCase();
       const description = feature.system?.description?.value?.toLowerCase() || '';
 
+      // Check for D&D Beyond format: "Crimson Rite: Rite of the [Type]"
+      // Example: "Crimson Rite: Rite of the Flame"
+      if (name.includes('crimson rite:') || name.includes('rite of the')) {
+        for (const [key, value] of Object.entries(this.RITE_TYPES)) {
+          const riteName = game.i18n.localize(`BLOODHUNTER.CrimsonRite.Types.${key}`).toLowerCase();
+          
+          // Match patterns like "rite of the flame", "rite of the frozen", etc.
+          if (name.includes(`rite of the ${key}`) || 
+              name.includes(`rite of the ${riteName}`) ||
+              name.includes(`rite of ${key}`) ||
+              name.includes(`rite of ${riteName}`)) {
+            if (!knownRites.includes(key)) {
+              knownRites.push(key);
+              console.log(`${MODULE_ID} | Detected rite from D&D Beyond format: ${key} (from "${feature.name}")`);
+            }
+          }
+        }
+      }
+
       // Check for each rite type
       for (const [key, value] of Object.entries(this.RITE_TYPES)) {
         const riteName = game.i18n.localize(`BLOODHUNTER.CrimsonRite.Types.${key}`).toLowerCase();
