@@ -2,6 +2,7 @@
 
 ## Build & Test Commands
 - **REQUIRED**: `npm run lint` must pass before every commit/push
+- **REQUIRED**: Bump version in `module.json` before every PR (ask if major/minor/patch if unsure)
 - `npm run lint` - Lint all JavaScript files in scripts/
 - `npm run lint:fix` - Auto-fix linting issues (run this first if lint fails)
 - `npm run validate` - Validate module.json structure
