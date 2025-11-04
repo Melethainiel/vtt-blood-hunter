@@ -4,7 +4,6 @@
  */
 
 import { CrimsonRite } from './crimson-rite.js';
-import { CrimsonRiteFeatures } from './crimson-rite-features.js';
 import { BloodHunterUtils } from './utils.js';
 import { BloodHunterIntegrations } from './integrations.js';
 import { BloodCurse } from './blood-curse.js';
@@ -23,7 +22,6 @@ Hooks.once('init', async function() {
   // Initialize classes
   game.bloodhunter = {
     CrimsonRite,
-    CrimsonRiteFeatures,
     BloodCurse,
     OrderOfTheLycan,
     utils: BloodHunterUtils,
@@ -50,9 +48,6 @@ Hooks.once('ready', async function() {
   // Initialize Order of the Lycan system
   OrderOfTheLycan.init();
 
-  // Initialize Crimson Rite Features system
-  CrimsonRiteFeatures.init();
-
   // Setup DAE special durations
   BloodHunterIntegrations.setupDAEDurations();
 
@@ -66,8 +61,12 @@ Hooks.on('combatTurn', async(combat, updateData, options) => {
 });
 
 // Hook into damage rolls to add Crimson Rite damage
-// Only use this hook if midi-qol is NOT active (midi-qol has its own hooks)
+// Only use this hook if DAE is NOT active (DAE handles damage via active effects)
+// AND midi-qol is NOT active (midi-qol has its own hooks)
 Hooks.on('dnd5e.preRollDamage', async(item, rollConfig) => {
+  // If DAE is active, it handles the damage bonus via active effects
+  if (BloodHunterIntegrations.isDAEActive()) return;
+
   // If midi-qol is active, skip this hook (it handles damage in its own workflow)
   if (BloodHunterIntegrations.isMidiQOLActive()) return;
 
@@ -84,6 +83,19 @@ Hooks.on('dnd5e.preRollDamage', async(item, rollConfig) => {
     if (rollConfig.parts) {
       rollConfig.parts.push(`${riteDamage}[${damageType}]`);
     }
+  }
+});
+
+// Hook into activity usage to handle Crimson Rite feature activation
+// This allows the "Crimson Rite" feature from the compendium to trigger the activation dialog
+Hooks.on('dnd5e.preUseActivity', async(activity, usageConfig, dialogConfig, messageConfig) => {
+  const item = activity?.item;
+  if (!item) return;
+
+  // Check if this item is flagged as a Crimson Rite activation feature
+  if (item.getFlag('vtt-blood-hunter', 'crimsonRiteActivation')) {
+    await CrimsonRite.activateDialog();
+    return false; // Prevent default item usage
   }
 });
 
@@ -165,41 +177,21 @@ function registerHandlebarsHelpers() {
 
 async function createMacros() {
   // Create Crimson Rite macro
-  const macroName = 'Crimson Rite';
+  const macroName = 'BH: Crimson Rite';
   const existingMacro = game.macros.find(m => m.name === macroName);
 
   if (!existingMacro) {
     await Macro.create({
       name: macroName,
       type: 'script',
-      img: 'icons/magic/fire/flame-burning-hand-purple.webp',
       command: 'game.bloodhunter.CrimsonRite.activateDialog();',
       flags: { 'vtt-blood-hunter': { macro: true } }
     });
   }
 
-  // Create Crimson Rite Feature macro (for adding single feature to character)
-  const featureMacroName = 'Add Crimson Rite Feature';
-  const existingFeatureMacro = game.macros.find(m => m.name === featureMacroName);
-
-  if (!existingFeatureMacro) {
-    await Macro.create({
-      name: featureMacroName,
-      type: 'script',
-      img: 'icons/magic/fire/flame-burning-creature-pink.webp',
-      command: `// Add Crimson Rite feature to selected character
-const token = canvas.tokens.controlled[0];
-if (!token) {
-  ui.notifications.warn('Please select a token');
-} else {
-  await game.bloodhunter.CrimsonRiteFeatures.addCrimsonRiteFeatureToActor(token.actor);
-}`,
-      flags: { 'vtt-blood-hunter': { macro: true } }
-    });
-  }
 
   // Create Hybrid Transformation macro
-  const lycanMacroName = 'Hybrid Transformation';
+  const lycanMacroName = 'BH: Hybrid Transformation';
   const existingLycanMacro = game.macros.find(m => m.name === lycanMacroName);
 
   if (!existingLycanMacro) {
