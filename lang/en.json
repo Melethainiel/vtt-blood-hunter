@@ -1,6 +1,7 @@
 {
   "BLOODHUNTER": {
     "ModuleName": "Blood Hunter",
+    "FeatureCategory": "Blood Hunter Features",
 
     "CrimsonRite": {
       "Title": "Crimson Rite",

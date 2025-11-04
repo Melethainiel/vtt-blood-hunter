@@ -16,7 +16,7 @@
     },
     "type": {
       "value": "class",
-      "subtype": ""
+      "subtype": "bloodHunter"
     },
     "identifier": "crimson-rite",
     "activities": {
