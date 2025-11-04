@@ -47,9 +47,13 @@
   padding: 0.5rem;
   border: 2px solid #8b0000;
   border-radius: 4px;
-  background: white;
-  color: #333;
   font-size: 1em;
+}
+
+.bloodhunter-crimson-rite-form select option {
+  padding: 0.5rem;
+  white-space: normal;
+  overflow: visible;
 }
 
 .bloodhunter-crimson-rite-form select:focus {
@@ -200,9 +204,13 @@
   padding: 0.5rem;
   border: 2px solid #4b0082;
   border-radius: 4px;
-  background: white;
-  color: #333;
   font-size: 1em;
+}
+
+.bloodhunter-curse-prompt select option {
+  padding: 0.5rem;
+  white-space: normal;
+  overflow: visible;
 }
 
 .bloodhunter-curse-prompt select:focus {
