@@ -23,7 +23,7 @@ module.exports = {
     'no-redeclare': 'error',
     
     // Bonnes pratiques - warnings pour amélioration progressive
-    'no-console': 'warn',
+    // 'no-console': 'warn', // Désactivé pour Foundry VTT (console.log utilisé pour debugging)
     'prefer-const': 'warn',
     'no-var': 'warn',
     
