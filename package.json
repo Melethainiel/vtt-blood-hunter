@@ -8,8 +8,8 @@
     "build:packs": "node scripts/build-packs.mjs",
     "build:all": "npm run build:packs && npm run build",
     "dev": "webpack --mode=development --watch",
-    "lint": "eslint scripts/ --ext .js",
-    "lint:fix": "eslint scripts/ --ext .js --fix",
+    "lint": "eslint scripts/ --ext .js,.mjs",
+    "lint:fix": "eslint scripts/ --ext .js,.mjs --fix",
     "package": "npm run build:all && zip -r vtt-blood-hunter.zip scripts/ styles/ lang/ packs/ module.json LICENSE README.md -x \"*.git*\" \"node_modules/*\" \"*.log\"",
     "clean": "rm -rf dist/ vtt-blood-hunter.zip packs/*/",
     "validate": "node scripts/validate-module.js"

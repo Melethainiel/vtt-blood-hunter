@@ -68,5 +68,27 @@ module.exports = [
       'no-multiple-empty-lines': ['warn', { 'max': 2 }]
     },
     files: ['scripts/**/*.js']
+  },
+  {
+    // Configuration pour les scripts de build Node.js (*.mjs)
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals: {
+        ...globals.node
+      }
+    },
+    rules: {
+      'no-undef': 'error',
+      'no-unused-vars': ['error', { 
+        'vars': 'all',
+        'args': 'none',
+        'ignoreRestSiblings': true 
+      }],
+      'semi': ['warn', 'always'],
+      'quotes': ['warn', 'single', { 'avoidEscape': true }],
+      'indent': ['warn', 2]
+    },
+    files: ['scripts/**/*.mjs']
   }
 ];
