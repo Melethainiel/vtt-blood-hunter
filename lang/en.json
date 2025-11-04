@@ -17,6 +17,14 @@
       "InsufficientHP": "Insufficient HP to activate Crimson Rite",
       "NotBloodHunter": "You must be a Blood Hunter to use Crimson Rites",
 
+      "Features": {
+        "AddedToActor": "Added {count} Crimson Rite feature(s) to {actor}",
+        "AlreadyHas": "{actor} already has {count} Crimson Rite feature(s)",
+        "RemovedFromActor": "Removed {count} Crimson Rite feature(s) from {actor}",
+        "NoFeaturesToAdd": "No Crimson Rite features to add",
+        "NoFeaturesToRemove": "No Crimson Rite features to remove"
+      },
+
       "Types": {
         "flame": "Rite of the Flame (Fire)",
         "frozen": "Rite of the Frozen (Cold)",

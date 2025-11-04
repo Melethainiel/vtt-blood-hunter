@@ -4,6 +4,7 @@
  */
 
 import { CrimsonRite } from './crimson-rite.js';
+import { CrimsonRiteFeatures } from './crimson-rite-features.js';
 import { BloodHunterUtils } from './utils.js';
 import { BloodHunterIntegrations } from './integrations.js';
 import { BloodCurse } from './blood-curse.js';
@@ -22,6 +23,7 @@ Hooks.once('init', async function() {
   // Initialize classes
   game.bloodhunter = {
     CrimsonRite,
+    CrimsonRiteFeatures,
     BloodCurse,
     OrderOfTheLycan,
     utils: BloodHunterUtils,
@@ -47,6 +49,9 @@ Hooks.once('ready', async function() {
 
   // Initialize Order of the Lycan system
   OrderOfTheLycan.init();
+
+  // Initialize Crimson Rite Features system
+  CrimsonRiteFeatures.init();
 
   // Setup DAE special durations
   BloodHunterIntegrations.setupDAEDurations();
@@ -169,6 +174,26 @@ async function createMacros() {
       type: 'script',
       img: 'icons/magic/fire/flame-burning-hand-purple.webp',
       command: 'game.bloodhunter.CrimsonRite.activateDialog();',
+      flags: { 'vtt-blood-hunter': { macro: true } }
+    });
+  }
+
+  // Create Crimson Rite Features macro (for adding features to character)
+  const featureMacroName = 'Add Crimson Rite Features';
+  const existingFeatureMacro = game.macros.find(m => m.name === featureMacroName);
+
+  if (!existingFeatureMacro) {
+    await Macro.create({
+      name: featureMacroName,
+      type: 'script',
+      img: 'icons/magic/fire/flame-burning-creature-pink.webp',
+      command: `// Add Crimson Rite features to selected character
+const token = canvas.tokens.controlled[0];
+if (!token) {
+  ui.notifications.warn('Please select a token');
+} else {
+  await game.bloodhunter.CrimsonRiteFeatures.addRiteFeaturesToActor(token.actor);
+}`,
       flags: { 'vtt-blood-hunter': { macro: true } }
     });
   }
