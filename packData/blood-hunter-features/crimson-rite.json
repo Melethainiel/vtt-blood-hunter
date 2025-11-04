@@ -1,32 +1,92 @@
 {
-  "_id": "bloodhunter.crimsonrite.x7k9m2p4",
-  "_key": "!items!bloodhunter.crimsonrite.x7k9m2p4",
+  "_id": "x7k9m2p4bloodhunter",
+  "_key": "!items!x7k9m2p4bloodhunter",
   "name": "Crimson Rite",
   "type": "feat",
   "img": "icons/skills/melee/strike-sword-blood-red.webp",
   "system": {
     "description": {
-      "value": "<p>As a bonus action, you can activate a Crimson Rite on a single weapon. The rite lasts until you finish a short or long rest.</p>",
-      "chat": ""
+      "value": "<p>As a bonus action, you can activate a Crimson Rite on a single weapon. The rite lasts until you finish a short or long rest.</p><p>When you activate a Crimson Rite, you take damage equal to one roll of your hemocraft die. While active, attacks with this weapon deal extra damage of the rite's damage type.</p>",
+      "chat": "",
+      "unidentified": ""
     },
-    "source": {
-      "custom": "Blood Hunter"
+    "source": "",
+    "activation": {
+      "type": "bonus",
+      "cost": 1,
+      "condition": ""
+    },
+    "duration": {
+      "value": "",
+      "units": ""
+    },
+    "cover": null,
+    "crewed": false,
+    "target": {
+      "value": null,
+      "width": null,
+      "units": "",
+      "type": "self"
+    },
+    "range": {
+      "value": null,
+      "long": null,
+      "units": ""
+    },
+    "uses": {
+      "value": null,
+      "max": "",
+      "per": "",
+      "recovery": ""
+    },
+    "consume": {
+      "type": "",
+      "target": "",
+      "amount": null
+    },
+    "ability": "",
+    "actionType": "other",
+    "attackBonus": "",
+    "chatFlavor": "",
+    "critical": {
+      "threshold": null,
+      "damage": ""
+    },
+    "damage": {
+      "parts": [],
+      "versatile": ""
+    },
+    "formula": "",
+    "save": {
+      "ability": "",
+      "dc": null,
+      "scaling": "spell"
     },
     "type": {
       "value": "class",
       "subtype": ""
     },
-    "properties": [],
-    "prerequisites": {
-      "level": null
-    },
-    "identifier": "crimson-rite"
+    "requirements": "",
+    "recharge": {
+      "value": null,
+      "charged": false
+    }
   },
   "effects": [],
   "flags": {
     "vtt-blood-hunter": {
       "crimsonRiteActivation": true
     }
+  },
+  "_stats": {
+    "systemId": "dnd5e",
+    "systemVersion": "3.0.0",
+    "coreVersion": "11.0.0",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null
   },
   "folder": null,
   "sort": 0,
