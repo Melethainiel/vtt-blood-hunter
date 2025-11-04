@@ -79,7 +79,12 @@ jobs:
     - name: Build and package
       run: npm run clean && npm run package
     
+    - name: Rename zip to module.zip
+      run: mv vtt-blood-hunter.zip module.zip
+    
     - name: Upload release asset
       uses: softprops/action-gh-release@v1
       with:
-        files: vtt-blood-hunter.zip
+        files: |
+          module.zip
+          module.json
