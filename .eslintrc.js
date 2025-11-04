@@ -5,17 +5,25 @@ module.exports = {
     node: true
   },
   extends: [
-    'standard'
+    'eslint:recommended'
   ],
   parserOptions: {
     ecmaVersion: 'latest',
-    sourceType: 'module'
+    sourceType: 'script'
   },
   rules: {
-    'no-console': 'warn',
+    'no-console': 'off',
     'no-unused-vars': 'warn',
-    'prefer-const': 'error',
-    'no-var': 'error'
+    'no-undef': 'off',
+    'semi': 'off',
+    'quotes': 'off',
+    'indent': 'off',
+    'comma-dangle': 'off',
+    'space-before-function-paren': 'off',
+    'no-multiple-empty-lines': 'off',
+    'eol-last': 'off',
+    'padded-blocks': 'off',
+    'no-trailing-spaces': 'off'
   },
   globals: {
     'game': 'readonly',
@@ -30,6 +38,12 @@ module.exports = {
     'Roll': 'readonly',
     'Token': 'readonly',
     'TokenDocument': 'readonly',
-    'ActiveEffect': 'readonly'
+    'ActiveEffect': 'readonly',
+    'ui': 'readonly',
+    'Dialog': 'readonly',
+    'mergeObject': 'readonly',
+    'duplicate': 'readonly',
+    'fromUuidSync': 'readonly',
+    'loadTemplates': 'readonly'
   }
 };
