@@ -78,72 +78,92 @@ export class CrimsonRite {
       const name = feature.name.toLowerCase();
       const description = feature.system?.description?.value?.toLowerCase() || '';
 
-      // Check for D&D Beyond format: "Crimson Rite: Rite of the [Type]"
-      // Example: "Crimson Rite: Rite of the Flame"
-      if (name.includes('crimson rite:') || name.includes('rite of the')) {
-        for (const key of Object.keys(this.RITE_TYPES)) {
-          const riteName = game.i18n.localize(`BLOODHUNTER.CrimsonRite.Types.${key}`).toLowerCase();
-
-          // Match patterns like "rite of the flame", "rite of the frozen", etc.
-          if (name.includes(`rite of the ${key}`) ||
-              name.includes(`rite of the ${riteName}`) ||
-              name.includes(`rite of ${key}`) ||
-              name.includes(`rite of ${riteName}`)) {
-            if (!knownRites.includes(key)) {
-              knownRites.push(key);
-              console.log(`${MODULE_ID} | Detected rite from D&D Beyond format: ${key} (from "${feature.name}")`);
-            }
-          }
-        }
-      }
-
-      // Check for each rite type
-      for (const [key, value] of Object.entries(this.RITE_TYPES)) {
-        const riteName = game.i18n.localize(`BLOODHUNTER.CrimsonRite.Types.${key}`).toLowerCase();
-
-        // Check if feature mentions this rite
-        if (name.includes(key) ||
-            name.includes(riteName) ||
-            description.includes(key) ||
-            description.includes(riteName) ||
-            name.includes(value.damageType)) {
-
-          if (!knownRites.includes(key)) {
-            knownRites.push(key);
-          }
-        }
-
-        // Check for specific rite names from D&D Beyond
-        const riteNames = {
-          flame: ['flame', 'fire'],
-          frozen: ['frozen', 'cold'],
-          storm: ['storm', 'lightning'],
-          corrosion: ['corrosion', 'acid'],
-          toxin: ['toxin', 'poison'],
-          dead: ['dead', 'necrotic'],
-          oracle: ['oracle', 'psychic'],
-          dawn: ['dawn', 'radiant'],
-          roar: ['roar', 'thunder']
-        };
-
-        if (riteNames[key]) {
-          for (const riteName of riteNames[key]) {
-            if (name.includes(riteName) || description.includes(riteName)) {
-              if (!knownRites.includes(key)) {
-                knownRites.push(key);
-              }
-            }
-          }
-        }
-      }
-
-      // Check for module flag
+      // Priority 1: Check for module flag (most reliable)
       if (feature.flags[MODULE_ID]?.crimsonRite) {
         const riteType = feature.flags[MODULE_ID].riteType;
-        if (riteType && !knownRites.includes(riteType)) {
+        if (riteType && this.RITE_TYPES[riteType] && !knownRites.includes(riteType)) {
           knownRites.push(riteType);
+          console.log(`${MODULE_ID} | Detected rite from module flag: ${riteType} (from "${feature.name}")`);
+          continue; // Skip other checks for this feature
         }
       }
+
+      // Check if this feature is related to Crimson Rite at all
+      // Support both English and French
+      const isCrimsonRiteFeature = name.includes('crimson rite') ||
+                                    name.includes('rite écarlate') ||
+                                    description.includes('crimson rite') ||
+                                    description.includes('rite écarlate');
+
+      if (!isCrimsonRiteFeature) {
+        continue; // Skip features that aren't related to Crimson Rite
+      }
+
+      // Priority 2: Check for specific rite patterns with context
+      for (const key of Object.keys(this.RITE_TYPES)) {
+        // Get localized name and clean it (remove damage type in parentheses)
+        const localizedName = game.i18n.localize(`BLOODHUNTER.CrimsonRite.Types.${key}`);
+        // Remove everything after and including the opening parenthesis
+        const cleanedName = localizedName.replace(/\s*\([^)]*\).*$/, '').toLowerCase();
+
+        // Debug log to see what we're comparing
+        console.log(`${MODULE_ID} | Checking rite ${key}: cleanedName="${cleanedName}"`);
+
+        // Check for D&D Beyond format patterns:
+        // English: "Crimson Rite: Rite of the Flame"
+        // French: "Rite Écarlate: Rite de la Flamme"
+
+        // Pattern 1: Full localized name (e.g., "rite of the flame", "rite de la flamme")
+        if (name.includes(cleanedName)) {
+          if (!knownRites.includes(key)) {
+            knownRites.push(key);
+            console.log(`${MODULE_ID} | Detected rite from localized name: ${key} (from "${feature.name}")`);
+            continue;
+          }
+        }
+
+        // Pattern 2: English D&D Beyond patterns with rite key
+        // "rite of the flame", "rite of flame"
+        const englishPatterns = [
+          `rite of the ${key}`,
+          `rite of ${key}`
+        ];
+
+        for (const pattern of englishPatterns) {
+          if (name.includes(pattern)) {
+            if (!knownRites.includes(key)) {
+              knownRites.push(key);
+              console.log(`${MODULE_ID} | Detected rite from English pattern: ${key} (pattern: "${pattern}", from "${feature.name}")`);
+              break;
+            }
+          }
+        }
+
+        // Pattern 3: French D&D Beyond patterns with rite key
+        // "rite de la flamme", "rite du givre"
+        const frenchPatterns = [
+          `rite de la ${key}`,
+          `rite de l'${key}`,
+          `rite du ${key}`,
+          `rite des ${key}`
+        ];
+
+        for (const pattern of frenchPatterns) {
+          if (name.includes(pattern)) {
+            if (!knownRites.includes(key)) {
+              knownRites.push(key);
+              console.log(`${MODULE_ID} | Detected rite from French pattern: ${key} (pattern: "${pattern}", from "${feature.name}")`);
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    if (knownRites.length > 0) {
+      console.log(`${MODULE_ID} | Total rites detected from features: ${knownRites.length}`, knownRites);
+    } else {
+      console.log(`${MODULE_ID} | No rites detected from features`);
     }
 
     return knownRites;
