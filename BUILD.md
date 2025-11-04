@@ -1,5 +1,10 @@
 # Build and Development
 
+## Prérequis
+
+- Node.js 20+ 
+- npm 9+
+
 ## Installation
 
 ```bash
