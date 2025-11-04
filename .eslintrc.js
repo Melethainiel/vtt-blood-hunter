@@ -12,18 +12,30 @@ module.exports = {
     sourceType: 'script'
   },
   rules: {
-    'no-console': 'off',
-    'no-unused-vars': 'warn',
-    'no-undef': 'off',
-    'semi': 'off',
-    'quotes': 'off',
-    'indent': 'off',
-    'comma-dangle': 'off',
-    'space-before-function-paren': 'off',
-    'no-multiple-empty-lines': 'off',
-    'eol-last': 'off',
-    'padded-blocks': 'off',
-    'no-trailing-spaces': 'off'
+    // Erreurs critiques - toujours actives
+    'no-unused-vars': ['error', { 
+      'vars': 'all',
+      'args': 'none',
+      'ignoreRestSiblings': true 
+    }],
+    'no-undef': 'error',
+    'no-unreachable': 'error',
+    'no-redeclare': 'error',
+    
+    // Bonnes pratiques - warnings pour amélioration progressive
+    'no-console': 'warn',
+    'prefer-const': 'warn',
+    'no-var': 'warn',
+    
+    // Style - auto-fixable, warnings seulement
+    'semi': ['warn', 'always'],
+    'quotes': ['warn', 'single', { 'avoidEscape': true }],
+    'indent': ['warn', 2, { 'SwitchCase': 1 }],
+    'comma-dangle': ['warn', 'never'],
+    'space-before-function-paren': ['warn', 'never'],
+    'eol-last': ['warn', 'always'],
+    'no-trailing-spaces': 'warn',
+    'no-multiple-empty-lines': ['warn', { 'max': 2 }]
   },
   globals: {
     'game': 'readonly',
@@ -44,6 +56,13 @@ module.exports = {
     'mergeObject': 'readonly',
     'duplicate': 'readonly',
     'fromUuidSync': 'readonly',
-    'loadTemplates': 'readonly'
+    'fromUuid': 'readonly',
+    'loadTemplates': 'readonly',
+    'renderTemplate': 'readonly',
+    'getProperty': 'readonly',
+    'setProperty': 'readonly',
+    'hasProperty': 'readonly',
+    'isNewerVersion': 'readonly',
+    'AudioHelper': 'readonly'
   }
 };
