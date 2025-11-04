@@ -9,7 +9,7 @@ module.exports = {
   ],
   parserOptions: {
     ecmaVersion: 'latest',
-    sourceType: 'script'
+    sourceType: 'module'
   },
   rules: {
     // Erreurs critiques - toujours actives
