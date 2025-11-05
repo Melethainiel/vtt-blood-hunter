@@ -33,22 +33,30 @@ export class FeatureSync {
     // Load the compendium index
     await pack.getDocuments();
 
-    // Find all Blood Hunter features on the actor
-    const actorFeatures = actor.items.filter(item =>
-      item.type === 'feat' &&
-      item.system?.type?.subtype === 'bloodHunter' &&
-      item.system?.identifier
-    );
+    // Prepare sync plan (dry run to match features)
+    const syncPlan = await this._prepareSyncPlan(actor, pack);
 
-    if (actorFeatures.length === 0) {
+    // Check if any features with identifiers were found
+    if (syncPlan.total === 0) {
       ui.notifications.warn(
         game.i18n.localize('BLOODHUNTER.FeatureSync.NoFeaturesFound')
       );
       return { synced: 0, failed: 0, skipped: 0 };
     }
 
-    // Show confirmation dialog
-    const proceed = await this._confirmSync(actor, actorFeatures);
+    // Check if any features have compendium matches
+    if (syncPlan.matched.length === 0) {
+      ui.notifications.info(
+        game.i18n.format('BLOODHUNTER.FeatureSync.NoMatchingFeatures', {
+          name: actor.name,
+          count: syncPlan.total
+        })
+      );
+      return { synced: 0, failed: 0, skipped: syncPlan.total };
+    }
+
+    // Show confirmation dialog with preview
+    const proceed = await this._confirmSync(actor, syncPlan);
     if (!proceed) {
       return { synced: 0, failed: 0, skipped: 0 };
     }
@@ -57,27 +65,16 @@ export class FeatureSync {
     const results = {
       synced: 0,
       failed: 0,
-      skipped: 0
+      skipped: syncPlan.unmatched.length
     };
 
-    // Process each feature
-    for (const actorFeature of actorFeatures) {
-      const identifier = actorFeature.system.identifier;
-
-      // Find matching compendium feature by identifier
-      const compendiumFeature = pack.contents.find(item =>
-        item.system?.identifier === identifier
-      );
-
-      if (!compendiumFeature) {
-        console.log(`Blood Hunter | No compendium match for: ${actorFeature.name} (${identifier})`);
-        results.skipped++;
-        continue;
-      }
+    // Process each matched feature
+    for (const match of syncPlan.matched) {
+      const { actor: actorFeature, compendium: compendiumFeature } = match;
 
       try {
-        // Delete the old feature
-        await actorFeature.delete();
+        // Delete the old feature (proper embedded document deletion)
+        await actor.deleteEmbeddedDocuments('Item', [actorFeature.id]);
 
         // Create the new feature from compendium
         const itemData = compendiumFeature.toObject();
@@ -98,26 +95,91 @@ export class FeatureSync {
   }
 
   /**
-   * Show confirmation dialog before syncing
+   * Prepare a sync plan by analyzing features and matching with compendium
+   * @param {Actor} actor - The actor to analyze
+   * @param {CompendiumCollection} pack - The compendium pack
+   * @returns {Promise<Object>} Sync plan with matched and unmatched features
+   * @private
+   */
+  static async _prepareSyncPlan(actor, pack) {
+    // Find all features with identifiers (no subtype filter - more flexible)
+    const candidateFeatures = actor.items.filter(item =>
+      item.type === 'feat' &&
+      item.system?.identifier
+    );
+
+    const matched = [];
+    const unmatched = [];
+
+    // Dry run: check each feature against compendium
+    for (const actorFeature of candidateFeatures) {
+      const identifier = actorFeature.system.identifier;
+      const compendiumFeature = pack.contents.find(item =>
+        item.system?.identifier === identifier
+      );
+
+      if (compendiumFeature) {
+        matched.push({
+          actor: actorFeature,
+          compendium: compendiumFeature
+        });
+      } else {
+        unmatched.push(actorFeature);
+      }
+    }
+
+    return { matched, unmatched, total: candidateFeatures.length };
+  }
+
+  /**
+   * Show confirmation dialog before syncing with preview of matched/unmatched features
    * @param {Actor} actor - The actor to sync
-   * @param {Array} features - Features that will be synced
+   * @param {Object} syncPlan - Sync plan with matched and unmatched features
    * @returns {Promise<boolean>} True if user confirms
    * @private
    */
-  static async _confirmSync(actor, features) {
-    const featureList = features.map(f => `• ${f.name}`).join('\n');
+  static async _confirmSync(actor, syncPlan) {
+    const { matched, unmatched } = syncPlan;
+
+    // Build matched features list (will be synced)
+    const matchedList = matched.length > 0
+      ? matched.map(m => `<span style="color: #4CAF50;">✓</span> ${m.actor.name} → ${m.compendium.name}`).join('<br>')
+      : `<em style="color: #888;">${game.i18n.localize('BLOODHUNTER.FeatureSync.NoMatched')}</em>`;
+
+    // Build unmatched features list (will be skipped)
+    const unmatchedList = unmatched.length > 0
+      ? unmatched.map(f => `<span style="color: #888;">○</span> ${f.name}`).join('<br>')
+      : `<em style="color: #888;">${game.i18n.localize('BLOODHUNTER.FeatureSync.NoUnmatched')}</em>`;
 
     return Dialog.confirm({
       title: game.i18n.localize('BLOODHUNTER.FeatureSync.ConfirmTitle'),
       content: `
         <p>${game.i18n.format('BLOODHUNTER.FeatureSync.ConfirmMessage', {
     name: actor.name,
-    count: features.length
+    count: matched.length
   })}</p>
-        <div style="max-height: 200px; overflow-y: auto; margin: 1em 0; padding: 0.5em; background: rgba(0,0,0,0.1); border-radius: 3px;">
-          <pre style="margin: 0; font-size: 0.9em;">${featureList}</pre>
+        
+        <div style="margin: 1em 0;">
+          <h3 style="margin: 0.5em 0; font-size: 1.1em; border-bottom: 2px solid #4CAF50;">
+            ${game.i18n.localize('BLOODHUNTER.FeatureSync.WillSync')} (${matched.length})
+          </h3>
+          <div style="max-height: 150px; overflow-y: auto; padding: 0.5em; background: rgba(76, 175, 80, 0.1); border-radius: 3px; font-size: 0.9em;">
+            ${matchedList}
+          </div>
         </div>
-        <p style="color: #ff6400; font-weight: bold;">
+
+        ${unmatched.length > 0 ? `
+        <div style="margin: 1em 0;">
+          <h3 style="margin: 0.5em 0; font-size: 1.1em; border-bottom: 2px solid #888;">
+            ${game.i18n.localize('BLOODHUNTER.FeatureSync.WillSkip')} (${unmatched.length})
+          </h3>
+          <div style="max-height: 100px; overflow-y: auto; padding: 0.5em; background: rgba(0,0,0,0.1); border-radius: 3px; font-size: 0.9em;">
+            ${unmatchedList}
+          </div>
+        </div>
+        ` : ''}
+
+        <p style="color: #ff6400; font-weight: bold; margin-top: 1em;">
           ${game.i18n.localize('BLOODHUNTER.FeatureSync.ConfirmWarning')}
         </p>
       `,

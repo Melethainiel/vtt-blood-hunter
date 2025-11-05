@@ -5,6 +5,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.9] - 2025-11-05
+
+### Fixed
+- **Feature sync filter** - Removed overly restrictive `bloodHunter` subtype filter that prevented syncing of valid Blood Hunter features from D&D Beyond imports (scripts/feature-sync.js:106-109)
+  - Now filters by `item.type === 'feat' && item.system?.identifier` only
+  - Allows all features with identifiers to be candidates for syncing
+  - Improves D&D Beyond import compatibility
+- **Feature deletion bug** - Fixed incorrect embedded document deletion method (scripts/feature-sync.js:77)
+  - Changed from `actorFeature.delete()` (doesn't work for embedded documents) 
+  - To `actor.deleteEmbeddedDocuments('Item', [actorFeature.id])` (correct API)
+
+### Added
+- **Enhanced sync preview dialog** - Feature sync now shows a dry-run preview before making changes
+  - Pre-matches all features with compendium entries before showing confirmation
+  - Displays matched features (green checkmark) that will be synced
+  - Displays unmatched features (gray circle) that will be skipped
+  - Categorized sections with counts for better UX
+  - New localization keys: `WillSync`, `WillSkip`, `NoMatched`, `NoUnmatched`
+  - Users can see exactly what will happen before proceeding
+
+### Changed
+- **Sync workflow optimization** - Eliminated redundant compendium lookups
+  - New `_prepareSyncPlan()` method performs dry-run analysis once
+  - Sync operation uses pre-matched features from plan
+  - Reduces compendium queries from 2x to 1x per feature
+
+### Technical Details
+- New method: `_prepareSyncPlan(actor, pack)` returns `{ matched, unmatched, total }`
+- Updated `_confirmSync(actor, syncPlan)` to display categorized preview with HTML formatting
+- Updated `syncFeatures()` to use sync plan results instead of re-querying compendium
+- Filter changed from `item.system?.type?.subtype === 'bloodHunter'` to `item.type === 'feat' && item.system?.identifier`
+- Proper embedded document API: `actor.deleteEmbeddedDocuments('Item', [id])`
+
 ## [1.2.3] - 2025-11-05
 
 ### Added
