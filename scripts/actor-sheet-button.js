@@ -35,9 +35,10 @@ export class ActorSheetButton {
    * Add buttons to actor sheet header (called by getActorSheetHeaderButtons hook)
    * @param {Application} app - The actor sheet application
    * @param {Array} buttons - Array of button configurations to modify
+   * @param {Object} [data] - Optional render data passed by the hook
    */
-  static addHeaderButtons(app, buttons) {
-    const actor = app.object;
+  static addHeaderButtons(app, buttons, data) {
+    const actor = data?.actor || app.object;
     if (!actor) return;
 
     // Add each registered button if visible
@@ -67,9 +68,10 @@ export class ActorSheetButton {
    * This is needed because ApplicationV2 doesn't always respect header buttons from the hook
    * @param {Application} app - The actor sheet application
    * @param {HTMLElement} html - The actor sheet HTML element
+   * @param {Object} [data] - Optional render data passed by the hook
    */
-  static injectHeaderButtonsV2(app, html) {
-    const actor = app.object;
+  static injectHeaderButtonsV2(app, html, data) {
+    const actor = data?.actor || app.object;
     if (!actor) return;
 
     // Get the native element (handle both jQuery and native)
