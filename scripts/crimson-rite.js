@@ -38,7 +38,7 @@ export class CrimsonRite {
    */
   static async rollHPCost(actor) {
     const hemocraftDie = BloodHunterUtils.getHemocraftDie(actor, 'crimson-rite');
-    const roll = await new Roll(hemocraftDie).evaluate();
+    const roll = await new Roll(`${hemocraftDie}[necrotic]`).evaluate();
 
     // Display roll in chat
     await roll.toMessage({
@@ -47,20 +47,6 @@ export class CrimsonRite {
     });
 
     return roll.total;
-  }
-
-  /**
-   * Get the damage die for Crimson Rite based on character level
-   * @param {Actor} actor - The Blood Hunter actor
-   * @returns {string} Damage die (e.g., "1d4", "1d6")
-   */
-  static getRiteDamage(actor) {
-    const bloodHunterLevel = BloodHunterUtils.getBloodHunterLevel(actor);
-
-    if (bloodHunterLevel < 5) return '1d4';
-    if (bloodHunterLevel < 11) return '1d6';
-    if (bloodHunterLevel < 17) return '1d8';
-    return '1d10';
   }
 
   /**
@@ -266,7 +252,7 @@ export class CrimsonRite {
     }
 
     const hpCost = this.calculateHPCost(actor);
-    const riteDamage = this.getRiteDamage(actor);
+    const riteDamage = BloodHunterUtils.getHemocraftDie(actor, 'crimson-rite');
 
     // Create dialog content
     const content = `
@@ -364,7 +350,7 @@ export class CrimsonRite {
     }
 
     // Get rite damage and type
-    const riteDamage = this.getRiteDamage(actor);
+    const riteDamage = BloodHunterUtils.getHemocraftDie(actor, 'crimson-rite');
     const damageType = this.RITE_TYPES[riteType].damageType;
 
     // Create Active Effect for the rite
