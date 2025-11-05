@@ -299,12 +299,6 @@ export class CrimsonRite {
     new Dialog({
       title: game.i18n.localize('BLOODHUNTER.CrimsonRite.Title'),
       content: content,
-      options: {
-        width: 400,
-        height: 'auto',
-        resizable: true,
-        minimizable: false
-      },
       buttons: {
         activate: {
           icon: '<i class="fas fa-fire"></i>',
@@ -322,16 +316,6 @@ export class CrimsonRite {
       },
       default: 'activate',
       render: (html) => {
-        // Ensure proper dialog positioning and sizing
-        const dialog = html.closest('.dialog');
-        if (dialog.length) {
-          // Set max-height for the dialog content area
-          dialog.find('.dialog-content').css({
-            'max-height': '60vh',
-            'overflow-y': 'auto'
-          });
-        }
-
         // Add deactivate button handler
         html.find('#deactivate-rite').on('click', async() => {
           const weaponId = html.find('[name="weapon"]').val();
@@ -340,6 +324,8 @@ export class CrimsonRite {
           html.closest('.dialog').find('.dialog-button.cancel').trigger('click');
         });
       }
+    }, {
+      width: 400
     }).render(true);
   }
 
