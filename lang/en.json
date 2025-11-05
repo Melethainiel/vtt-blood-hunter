@@ -49,7 +49,11 @@
         "psychic": "Psychic",
         "radiant": "Radiant",
         "thunder": "Thunder"
-      }
+      },
+
+      "ShortRest": "short rest",
+      "LongRest": "long rest",
+      "RitesEndedOnRest": "{count} Crimson Rite(s) ended after {restType}"
     },
 
     "Settings": {
