@@ -42,24 +42,32 @@ export class BloodHunterUtils {
    * Get the hemocraft die based on Blood Hunter level
    * Prioritizes DDB scale value if available, falls back to level-based calculation
    * @param {Actor} actor - The Blood Hunter actor
+   * @param {string} scalePath - Optional scale path (default: 'blood-maledict', use 'crimson-rite' for Crimson Rite)
    * @returns {string} Hemocraft die (e.g., "1d4", "1d6")
    */
-  static getHemocraftDie(actor) {
+  static getHemocraftDie(actor, scalePath = 'blood-maledict') {
     // Check for DDB Importer scale value first
-    const scaleValue = actor?.system?.scale?.['blood-hunter']?.['blood-maledict'];
+    const scaleValue = actor?.system?.scale?.['blood-hunter']?.[scalePath];
 
     if (scaleValue) {
-      // Validate the scale value format (should be like "1d4", "1d6", etc.)
+      // Handle DDB object format: { number, faces, modifiers }
+      if (typeof scaleValue === 'object' && scaleValue.number && scaleValue.faces) {
+        const die = `${scaleValue.number}d${scaleValue.faces}`;
+        console.log(`vtt-blood-hunter | Using DDB scale value for hemocraft die (${scalePath}): ${die}`);
+        return die;
+      }
+
+      // Handle string format (legacy or alternative format)
       const diePattern = /^\d+d\d+$/;
       if (typeof scaleValue === 'string' && diePattern.test(scaleValue)) {
-        console.log(`vtt-blood-hunter | Using DDB scale value for hemocraft die: ${scaleValue}`);
+        console.log(`vtt-blood-hunter | Using DDB scale value for hemocraft die (${scalePath}): ${scaleValue}`);
         return scaleValue;
       } else if (scaleValue.value && typeof scaleValue.value === 'string' && diePattern.test(scaleValue.value)) {
         // Handle case where scale value is an object with a 'value' property
-        console.log(`vtt-blood-hunter | Using DDB scale value for hemocraft die: ${scaleValue.value}`);
+        console.log(`vtt-blood-hunter | Using DDB scale value for hemocraft die (${scalePath}): ${scaleValue.value}`);
         return scaleValue.value;
       } else {
-        console.warn(`vtt-blood-hunter | Invalid DDB scale value format: ${JSON.stringify(scaleValue)}, falling back to level-based calculation`);
+        console.warn(`vtt-blood-hunter | Invalid DDB scale value format for ${scalePath}: ${JSON.stringify(scaleValue)}, falling back to level-based calculation`);
       }
     }
 

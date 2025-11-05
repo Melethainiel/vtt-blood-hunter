@@ -50,11 +50,13 @@ Si vous utilisez le module **D&D Beyond Importer** :
 
 ### Hemocraft Die - Valeur Native DDB
 
-Le module détecte et utilise automatiquement la valeur `actor.system.scale["blood-hunter"]["blood-maledict"]` importée par DDB Importer. Cette valeur correspond au dé d'hemocraft selon votre niveau :
+Le module détecte et utilise automatiquement la valeur `actor.system.scale["blood-hunter"]["crimson-rite"]` importée par DDB Importer. Cette valeur correspond au dé d'hemocraft selon votre niveau :
 - Niveau 1-4 : 1d4
 - Niveau 5-10 : 1d6
 - Niveau 11-16 : 1d8
 - Niveau 17+ : 1d10
+
+**Format DDB** : Les valeurs sont stockées comme objet avec `{ number: 1, faces: 6, modifiers: [] }`, le module convertit automatiquement en format `1d6`.
 
 **Avantages** :
 - ✅ Toujours synchronisé avec votre niveau réel
@@ -63,6 +65,10 @@ Le module détecte et utilise automatiquement la valeur `actor.system.scale["blo
 - ✅ Aucune maintenance manuelle nécessaire
 
 **Fallback** : Si la valeur DDB n'est pas disponible (personnage créé manuellement), le module utilise un calcul basé sur le niveau de Blood Hunter.
+
+**Résolution de Problèmes** :
+- Si vous constatez que le mauvais dé est utilisé, vérifiez la console pour voir si le module détecte correctement la valeur DDB
+- Le module affiche des messages de log indiquant quelle méthode est utilisée (DDB vs fallback)
 
 ### Comment ça fonctionne
 

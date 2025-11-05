@@ -28,7 +28,7 @@ export class CrimsonRite {
    * @returns {string} HP cost die (e.g., "1d4")
    */
   static calculateHPCost(actor) {
-    return BloodHunterUtils.getHemocraftDie(actor);
+    return BloodHunterUtils.getHemocraftDie(actor, 'crimson-rite');
   }
 
   /**
@@ -37,7 +37,7 @@ export class CrimsonRite {
    * @returns {Promise<number>} The rolled HP cost
    */
   static async rollHPCost(actor) {
-    const hemocraftDie = BloodHunterUtils.getHemocraftDie(actor);
+    const hemocraftDie = BloodHunterUtils.getHemocraftDie(actor, 'crimson-rite');
     const roll = await new Roll(hemocraftDie).evaluate();
 
     // Display roll in chat

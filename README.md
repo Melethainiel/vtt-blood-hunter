@@ -14,7 +14,7 @@ Module d'automatisation pour la classe Blood Hunter de Matthew Mercer dans Found
 ### Crimson Rites ✓
 - Activation/désactivation automatique des rites
 - **🔄 Détection automatique depuis D&D Beyond** : Ne montre que les rites que vous possédez !
-- **🎲 Utilise les valeurs natives DDB** : Détecte automatiquement `@scale.blood-hunter.blood-maledict` pour les dés d'hemocraft
+- **🎲 Utilise les valeurs natives DDB** : Détecte automatiquement `@scale.blood-hunter.crimson-rite` pour les dés d'hemocraft
 - **Configuration flexible** : 3 modes (Auto, Features-Only, Level-Based)
 - Calcul automatique du coût en HP selon le niveau (utilise les valeurs DDB quand disponibles)
 - Application automatique des dégâts élémentaires aux armes
@@ -63,7 +63,7 @@ Module d'automatisation pour la classe Blood Hunter de Matthew Mercer dans Found
 
 1. **Importez votre personnage depuis D&D Beyond** (ou créez des features manuellement)
 2. Le module **détecte automatiquement** vos rites depuis vos features
-3. Le module **utilise automatiquement** la valeur native `@scale.blood-hunter.blood-maledict` de DDB pour les dés d'hemocraft
+3. Le module **utilise automatiquement** la valeur native `@scale.blood-hunter.crimson-rite` de DDB pour les dés d'hemocraft
 4. Utilisez la macro "Crimson Rite" ou le bouton dans votre feuille
 5. **Seuls vos rites apparaissent** dans la liste de sélection !
 6. Sélectionnez l'arme à enchanter
