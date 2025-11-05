@@ -16,7 +16,7 @@ export class ActorSheetButton {
    * @param {string} config.icon - FontAwesome icon class (e.g., 'fa-sync')
    * @param {string} config.label - Button label (localization key or text)
    * @param {string} config.tooltip - Button tooltip (localization key or text)
-   * @param {Function} config.onClick - Click handler (receives app as parameter)
+   * @param {Function} config.onClick - Click handler (receives actor as parameter)
    * @param {Function} [config.isVisible] - Optional visibility check (receives actor, defaults to always visible)
    * @param {string} [config.cssClass] - Optional additional CSS class
    */
@@ -56,7 +56,7 @@ export class ActorSheetButton {
         label: label,
         class: `bloodhunter-header-button ${config.cssClass || ''}`,
         icon: `fas ${config.icon}`,
-        onclick: () => config.onClick(app)
+        onclick: () => config.onClick(actor)
       };
 
       buttons.unshift(buttonData);
@@ -107,7 +107,7 @@ export class ActorSheetButton {
       headerButton.setAttribute('data-tooltip', tooltip);
 
       // Add click handler
-      headerButton.addEventListener('click', () => config.onClick(app));
+      headerButton.addEventListener('click', () => config.onClick(actor));
 
       // Insert before close button
       closeButton.parentNode.insertBefore(headerButton, closeButton);

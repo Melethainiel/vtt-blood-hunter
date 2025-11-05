@@ -92,6 +92,18 @@
       "Placeholder": "Feature update for {name} - Coming soon!"
     },
 
+    "FeatureSync": {
+      "CompendiumNotFound": "Compendium '{compendium}' not found",
+      "NoFeaturesFound": "No Blood Hunter features found on this actor",
+      "ConfirmTitle": "Sync Blood Hunter Features",
+      "ConfirmMessage": "Sync {count} Blood Hunter feature(s) for {name}?",
+      "ConfirmWarning": "⚠️ This will replace existing features with compendium versions. This cannot be undone!",
+      "Success": "Successfully synced {count} feature(s) for {name}",
+      "PartialSuccess": "Synced {synced} feature(s) for {name}, but {failed} failed",
+      "Failed": "Failed to sync {count} feature(s) for {name}",
+      "NoMatchingFeatures": "{name} has {count} Blood Hunter feature(s) but none match compendium entries"
+    },
+
     "Lycan": {
       "Title": "Order of the Lycan",
       "Transformation": "Hybrid Transformation",
