@@ -183,7 +183,7 @@ export class BloodHunterIntegrations {
       changes: []
     };
 
-    // If DAE is active, add damage bonus changes
+    // If DAE is active, add damage bonus changes and special duration
     if (this.isDAEActive()) {
       // DAE will handle the damage bonus automatically
       // This adds the bonus to the weapon's damage formula
@@ -193,115 +193,18 @@ export class BloodHunterIntegrations {
         value: JSON.stringify([riteDamage, damageType]),
         priority: 20
       });
+
+      // Add DAE special duration for rest removal
+      // DAE expects flags.dae.specialDuration for its special duration system
+      effectData.flags.dae = {
+        specialDuration: ['shortRest', 'longRest']
+      };
     }
 
     // Add transfer flag so effect appears on actor when weapon is equipped
     effectData.transfer = true;
 
     return effectData;
-  }
-
-  /**
-   * Create item macro for midi-qol OnUse
-   * @param {string} macroType - Type of macro (crimsonRite, bloodCurse, etc.)
-   * @param {Object} data - Macro data
-   * @returns {string} Macro code
-   */
-  static createItemMacro(macroType, data = {}) {
-    switch (macroType) {
-      case 'crimsonRite':
-        return this.createCrimsonRiteMacro(data);
-      case 'bloodCurse':
-        return this.createBloodCurseMacro(data);
-      default:
-        return '';
-    }
-  }
-
-  /**
-   * Create Crimson Rite activation macro
-   * @param {Object} data - Macro data
-   * @returns {string} Macro code
-   */
-  static createCrimsonRiteMacro(data) {
-    return `
-// Crimson Rite Activation Macro
-(async () => {
-  const actor = game.actors.get("${data.actorId}");
-  const item = actor.items.get("${data.itemId}");
-
-  if (!actor || !item) {
-    ui.notifications.error("Actor or item not found");
-    return;
-  }
-
-  // Call the Crimson Rite dialog
-  game.bloodhunter.CrimsonRite.activateDialog(actor);
-})();
-    `.trim();
-  }
-
-  /**
-   * Create Blood Curse macro
-   * @param {Object} data - Macro data
-   * @returns {string} Macro code
-   */
-  static createBloodCurseMacro(data) {
-    return `
-// Blood Curse Macro
-(async () => {
-  const actor = game.actors.get("${data.actorId}");
-  const curse = actor.items.get("${data.curseId}");
-
-  if (!actor || !curse) {
-    ui.notifications.error("Actor or curse not found");
-    return;
-  }
-
-  // Execute the Blood Curse
-  game.bloodhunter.BloodCurse.execute(actor, curse);
-})();
-    `.trim();
-  }
-
-  /**
-   * Get rite icon
-   * @param {string} riteType - The rite type
-   * @returns {string} Icon path
-   */
-  static getRiteIcon(riteType) {
-    const icons = {
-      flame: 'icons/magic/fire/flame-burning-hand-purple.webp',
-      frozen: 'icons/magic/water/ice-snowflake-white.webp',
-      storm: 'icons/magic/lightning/bolt-strike-blue.webp',
-      corrosion: 'icons/magic/acid/dissolve-bone-white.webp',
-      toxin: 'icons/magic/death/skull-poison-green.webp',
-      dead: 'icons/magic/death/skull-shadow-black.webp',
-      oracle: 'icons/magic/perception/eye-tendrils-purple.webp',
-      dawn: 'icons/magic/holy/angel-winged-humanoid-blue.webp',
-      roar: 'icons/magic/sonic/explosion-shock-sound-wave.webp'
-    };
-
-    return icons[riteType] || 'icons/magic/fire/flame-burning-hand-purple.webp';
-  }
-
-  /**
-   * Create a midi-qol compatible item with OnUse macro
-   * @param {Object} itemData - Base item data
-   * @param {string} macroCode - Macro code to execute
-   * @returns {Object} Enhanced item data
-   */
-  static enhanceItemForMidiQOL(itemData, macroCode) {
-    if (!this.isMidiQOLActive()) return itemData;
-
-    // Add midi-qol flags
-    itemData.flags = itemData.flags || {};
-    itemData.flags['midi-qol'] = {
-      onUseMacroName: macroCode,
-      effectActivation: true
-    };
-
-    return itemData;
   }
 
   /**
@@ -325,26 +228,5 @@ export class BloodHunterIntegrations {
     }
   }
 
-  /**
-   * Setup DAE special durations
-   */
-  static setupDAEDurations() {
-    if (!this.isDAEActive()) return;
 
-    // Register custom durations for Blood Hunter effects
-    const customDurations = {
-      'crimsonRite': {
-        type: 'special',
-        label: 'Until Dismissed or Rest'
-      },
-      'lycanthropyTransform': {
-        type: 'turns',
-        label: 'Transformation Duration'
-      }
-    };
-
-    // These will be used with DAE's special duration system
-    game.bloodhunter = game.bloodhunter || {};
-    game.bloodhunter.customDurations = customDurations;
-  }
 }
