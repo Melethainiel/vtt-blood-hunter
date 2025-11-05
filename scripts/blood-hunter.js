@@ -124,19 +124,6 @@ Hooks.on('dnd5e.preUseActivity', async(activity, usageConfig, dialogConfig, mess
   }
 });
 
-// Hook into item sheet rendering to add Crimson Rite buttons
-Hooks.on('renderItemSheet5e', (app, html, data) => {
-  if (!game.settings.get(MODULE_ID, 'showRiteButtons')) return;
-
-  const item = app.object;
-  if (!item.actor || item.type !== 'weapon') return;
-
-  // Check if actor is a Blood Hunter
-  if (!BloodHunterUtils.isBloodHunter(item.actor)) return;
-
-  CrimsonRite.addRiteButtonToSheet(html, item);
-});
-
 // Hook into character sheet rendering
 Hooks.on('renderActorSheet5e', (app, html, data) => {
   const actor = app.object;
@@ -159,30 +146,6 @@ Hooks.on('renderActorSheet5e', (app, html, data) => {
     isVisible: (actor) => BloodHunterUtils.isBloodHunter(actor)
   });
 
-  // Add Crimson Rite button
-  ActorSheetButton.addButton(app, html, {
-    id: 'bloodhunter-crimson-rite',
-    icon: 'fa-fire-alt',
-    label: 'BLOODHUNTER.CrimsonRite.Title',
-    tooltip: 'BLOODHUNTER.CrimsonRite.Title',
-    onClick: (actor) => {
-      CrimsonRite.activateDialog(actor);
-    },
-    isVisible: (actor) => BloodHunterUtils.isBloodHunter(actor)
-  });
-
-  // Add Lycan Transformation button if Order of the Lycan
-  ActorSheetButton.addButton(app, html, {
-    id: 'bloodhunter-lycan-transform',
-    icon: 'fa-wolf-pack-battalion',
-    label: OrderOfTheLycan.isTransformed(actor) ? 'BLOODHUNTER.Lycan.Hybrid' : 'BLOODHUNTER.Lycan.Human',
-    tooltip: 'BLOODHUNTER.Lycan.Transformation',
-    onClick: (actor) => {
-      OrderOfTheLycan.transformationDialog(actor);
-    },
-    isVisible: (actor) => OrderOfTheLycan.isLycan(actor),
-    cssClass: OrderOfTheLycan.isTransformed(actor) ? 'active' : ''
-  });
 });
 
 function registerSettings() {
@@ -240,20 +203,6 @@ function registerHandlebarsHelpers() {
 }
 
 async function createMacros() {
-  // Create Crimson Rite macro
-  const macroName = 'BH: Crimson Rite';
-  const existingMacro = game.macros.find(m => m.name === macroName);
-
-  if (!existingMacro) {
-    await Macro.create({
-      name: macroName,
-      type: 'script',
-      command: 'game.bloodhunter.CrimsonRite.activateDialog();',
-      flags: { 'vtt-blood-hunter': { macro: true } }
-    });
-  }
-
-
   // Create Hybrid Transformation macro
   const lycanMacroName = 'BH: Hybrid Transformation';
   const existingLycanMacro = game.macros.find(m => m.name === lycanMacroName);
