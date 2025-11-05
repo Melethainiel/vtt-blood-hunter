@@ -5,6 +5,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.2] - 2025-11-05
+
+### Fixed
+- **Crimson Rite effect duration** - DAE special duration flags now properly applied when DAE module is active, enabling automatic removal of Crimson Rite effects after short/long rest
+
+### Changed
+- **Code cleanup** - Removed ~130 lines of dead code:
+  - Removed unused utility functions: `calculateRiteDamage()`, `createChatMessage()`, `isValidRiteWeapon()`, `formatDuration()`, `rollHemocraft()`
+  - Removed unused macro helpers: `createItemMacro()`, `createCrimsonRiteMacro()`, `createBloodCurseMacro()`, `enhanceItemForMidiQOL()`
+  - Removed duplicate `getRiteIcon()` function from integrations.js
+  - Removed unused `setupDAEDurations()` function
+
+### Technical Details
+- Effect data now includes `flags.dae.specialDuration: ['shortRest', 'longRest']` when DAE is active (scripts/integrations.js:198-201)
+- Fallback to manual removal via `dnd5e.restCompleted` hook when DAE is not active (scripts/blood-hunter.js:68-86)
+
+## [1.2.1] - 2025-11-05
+
+### Added
+- **Automatic Crimson Rite removal on rest** - Active Crimson Rites are now automatically removed after short or long rest (when DAE is not active)
+- **D&D Beyond integration** - Hemocraft die now reads from DDB Importer scale values if available
+- **Improved dialog compatibility** - Crimson Rite dialog now works properly with PopOut! module
+
+### Changed
+- **Crimson Rite HP cost** - Now uses `actor.applyDamage()` API instead of direct HP updates, enabling midi-qol damage interception and rollback capabilities
+- **Dialog improvements** - Fixed text cropping in select elements, improved layout with flex positioning
+
+### Technical Details
+- Added `dnd5e.restCompleted` hook for automatic rite removal (only when DAE is not active)
+- New helper method: `CrimsonRite.removeAllActiveRites(actor)` for batch removal
+- Hemocraft die prioritizes DDB scale values: `actor.system.scale['blood-hunter'][scalePath]`
+- Added localization strings: `ShortRest`, `LongRest`, `RitesEndedOnRest`
+
 ## [1.0.0] - 2025
 
 ### Added
