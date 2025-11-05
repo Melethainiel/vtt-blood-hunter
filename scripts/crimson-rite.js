@@ -13,23 +13,10 @@ export class CrimsonRite {
     flame: { damageType: 'fire', level: 1 },
     frozen: { damageType: 'cold', level: 1 },
     storm: { damageType: 'lightning', level: 1 },
-    corrosion: { damageType: 'acid', level: 6 },
-    toxin: { damageType: 'poison', level: 6 },
     dead: { damageType: 'necrotic', level: 14 },
     oracle: { damageType: 'psychic', level: 14 },
-    dawn: { damageType: 'radiant', level: 14 },
     roar: { damageType: 'thunder', level: 14 }
   };
-
-  /**
-   * Calculate HP cost for activating a Crimson Rite
-   * Returns the hemocraft die string for display
-   * @param {Actor} actor - The Blood Hunter actor
-   * @returns {string} HP cost die (e.g., "1d4")
-   */
-  static calculateHPCost(actor) {
-    return BloodHunterUtils.getHemocraftDie(actor);
-  }
 
   /**
    * Roll HP cost for Crimson Rite activation
@@ -37,8 +24,8 @@ export class CrimsonRite {
    * @returns {Promise<number>} The rolled HP cost
    */
   static async rollHPCost(actor) {
-    const hemocraftDie = BloodHunterUtils.getHemocraftDie(actor);
-    const roll = await new Roll(hemocraftDie).evaluate();
+    const hemocraftDie = BloodHunterUtils.getHemocraftDie(actor, 'crimson-rite');
+    const roll = await new Roll(`${hemocraftDie}[necrotic]`).evaluate();
 
     // Display roll in chat
     await roll.toMessage({
@@ -47,20 +34,6 @@ export class CrimsonRite {
     });
 
     return roll.total;
-  }
-
-  /**
-   * Get the damage die for Crimson Rite based on character level
-   * @param {Actor} actor - The Blood Hunter actor
-   * @returns {string} Damage die (e.g., "1d4", "1d6")
-   */
-  static getRiteDamage(actor) {
-    const bloodHunterLevel = BloodHunterUtils.getBloodHunterLevel(actor);
-
-    if (bloodHunterLevel < 5) return '1d4';
-    if (bloodHunterLevel < 11) return '1d6';
-    if (bloodHunterLevel < 17) return '1d8';
-    return '1d10';
   }
 
   /**
@@ -265,8 +238,7 @@ export class CrimsonRite {
       riteOptions += `<option value="${key}">${game.i18n.localize('BLOODHUNTER.CrimsonRite.Types.' + key)}</option>`;
     }
 
-    const hpCost = this.calculateHPCost(actor);
-    const riteDamage = this.getRiteDamage(actor);
+    const hemocraftDie = BloodHunterUtils.getHemocraftDie(actor, 'crimson-rite');
 
     // Create dialog content
     const content = `
@@ -284,8 +256,8 @@ export class CrimsonRite {
           </select>
         </div>
         <div class="form-group info">
-          <p><strong>${game.i18n.localize('BLOODHUNTER.CrimsonRite.Cost')}:</strong> ${hpCost} HP</p>
-          <p><strong>Bonus Damage:</strong> ${riteDamage}</p>
+          <p><strong>${game.i18n.localize('BLOODHUNTER.CrimsonRite.Cost')}:</strong> ${hemocraftDie} HP</p>
+          <p><strong>Bonus Damage:</strong> ${hemocraftDie}</p>
         </div>
         <div class="form-group">
           <button type="button" id="deactivate-rite" class="deactivate-button">
@@ -364,7 +336,7 @@ export class CrimsonRite {
     }
 
     // Get rite damage and type
-    const riteDamage = this.getRiteDamage(actor);
+    const riteDamage = BloodHunterUtils.getHemocraftDie(actor, 'crimson-rite');
     const damageType = this.RITE_TYPES[riteType].damageType;
 
     // Create Active Effect for the rite

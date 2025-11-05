@@ -14,8 +14,9 @@ Module d'automatisation pour la classe Blood Hunter de Matthew Mercer dans Found
 ### Crimson Rites ✓
 - Activation/désactivation automatique des rites
 - **🔄 Détection automatique depuis D&D Beyond** : Ne montre que les rites que vous possédez !
+- **🎲 Utilise les valeurs natives DDB** : Détecte automatiquement `@scale.blood-hunter.crimson-rite` pour les dés d'hemocraft
 - **Configuration flexible** : 3 modes (Auto, Features-Only, Level-Based)
-- Calcul automatique du coût en HP selon le niveau
+- Calcul automatique du coût en HP selon le niveau (utilise les valeurs DDB quand disponibles)
 - Application automatique des dégâts élémentaires aux armes
 - Types de rites : Fire, Cold, Lightning, Acid, Poison, Necrotic, Psychic, Radiant, Thunder
 - **Intégration DAE** : Les effets sont automatiquement ajoutés à la formule de dégâts
@@ -62,14 +63,16 @@ Module d'automatisation pour la classe Blood Hunter de Matthew Mercer dans Found
 
 1. **Importez votre personnage depuis D&D Beyond** (ou créez des features manuellement)
 2. Le module **détecte automatiquement** vos rites depuis vos features
-3. Utilisez la macro "Crimson Rite" ou le bouton dans votre feuille
-4. **Seuls vos rites apparaissent** dans la liste de sélection !
-5. Sélectionnez l'arme à enchanter
-6. Le module calculera automatiquement le coût en HP et appliquera les dégâts
+3. Le module **utilise automatiquement** la valeur native `@scale.blood-hunter.crimson-rite` de DDB pour les dés d'hemocraft
+4. Utilisez la macro "Crimson Rite" ou le bouton dans votre feuille
+5. **Seuls vos rites apparaissent** dans la liste de sélection !
+6. Sélectionnez l'arme à enchanter
+7. Le module calculera automatiquement le coût en HP et appliquera les dégâts
 
 **Exemple** : Blood Hunter niveau 7 avec Rite of Flame et Storm uniquement
 - ✅ Dialog affiche : Flame et Storm
 - ❌ Dialog ne montre PAS : Frozen, Corrosion, Toxin
+- ✅ Utilise automatiquement 1d6 depuis DDB (ou calcul par niveau si non disponible)
 
 **Avec DAE** : Les dégâts sont automatiquement ajoutés à chaque attaque
 **Avec midi-qol** : Les dégâts apparaissent dans le workflow de combat automatisé

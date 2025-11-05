@@ -151,6 +151,29 @@ MIT License - See LICENSE file for details
 
 ## Version History
 
+### [1.1.11] - 2025-11-05
+#### Added
+- **D&D Beyond Integration**: Automatic hemocraft die detection from DDB scale values
+  - Now reads native `actor.system.scale["blood-hunter"]["crimson-rite"]` variable (DDB format: `{ number, faces, modifiers }`)
+  - Supports configurable scale path parameter for different features
+  - Crimson Rite specifically uses 'crimson-rite' scale path
+  - Eliminates manual level checking for imported characters
+  - Falls back to level-based calculation when scale path is null or DDB value unavailable
+  - Validation ensures only valid die formats are used (e.g., "1d6", "1d8")
+
+#### Changed
+- `BloodHunterUtils.getHemocraftDie()` now accepts optional `scalePath` parameter (default: `null`)
+  - When `null`: Uses level-based calculation directly (no DDB lookup)
+  - When provided (e.g., 'crimson-rite'): Tries DDB value first, then falls back to level-based
+- Crimson Rite functions updated to use 'crimson-rite' scale path
+- Improved DDB object format handling: `{ number: 1, faces: 6 }` → `"1d6"`
+- Enhanced logging to show which method and scale path was used
+
+#### Documentation
+- Updated README.md with correct DDB scale path references
+- Updated DDB-CONFIGURATION.md with object format explanation and troubleshooting
+- Added detailed troubleshooting guide for hemocraft die detection
+
 ### [1.0.0] - 2025-01-XX
 - Initial release with Crimson Rites and Blood Curse framework
 - Full DAE and midi-qol integration
