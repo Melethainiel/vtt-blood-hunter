@@ -65,6 +65,28 @@ Hooks.on('combatTurn', async(combat, updateData, options) => {
   await BloodCurse.resetCurseUses(combat, updateData);
 });
 
+// Hook into rest completion to remove Crimson Rites
+// Only use this hook if DAE is NOT active (DAE handles duration via special durations)
+Hooks.on('dnd5e.restCompleted', async(actor, result) => {
+  // If DAE is active, it handles rest durations automatically
+  if (BloodHunterIntegrations.isDAEActive()) return;
+
+  if (!BloodHunterUtils.isBloodHunter(actor)) return;
+
+  // Remove all active Crimson Rites
+  const ritesRemoved = await CrimsonRite.removeAllActiveRites(actor);
+
+  if (ritesRemoved > 0) {
+    const restType = result.longRest ? 'BLOODHUNTER.CrimsonRite.LongRest' : 'BLOODHUNTER.CrimsonRite.ShortRest';
+    ui.notifications.info(
+      game.i18n.format('BLOODHUNTER.CrimsonRite.RitesEndedOnRest', {
+        count: ritesRemoved,
+        restType: game.i18n.localize(restType)
+      })
+    );
+  }
+});
+
 // Hook into damage rolls to add Crimson Rite damage
 // Only use this hook if DAE is NOT active (DAE handles damage via active effects)
 // AND midi-qol is NOT active (midi-qol has its own hooks)

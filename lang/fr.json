@@ -49,7 +49,11 @@
         "psychic": "Psychique",
         "radiant": "Radiant",
         "thunder": "Tonnerre"
-      }
+      },
+
+      "ShortRest": "repos court",
+      "LongRest": "repos long",
+      "RitesEndedOnRest": "{count} Rite(s) Écarlate(s) terminé(s) après un {restType}"
     },
 
     "Settings": {

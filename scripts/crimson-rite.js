@@ -327,11 +327,9 @@ export class CrimsonRite {
       return;
     }
 
-    // Apply HP cost
+    // Apply HP cost using applyDamage() for better integration with midi-qol
     if (game.settings.get(MODULE_ID, 'autoCalculateHP')) {
-      await actor.update({
-        'system.attributes.hp.value': currentHP - hpCost
-      });
+      await actor.applyDamage(hpCost);
       ui.notifications.info(game.i18n.format('BLOODHUNTER.Notifications.HPCostApplied', { cost: hpCost }));
     }
 
@@ -485,5 +483,29 @@ export class CrimsonRite {
       event.preventDefault();
       await this.activateDialog(item.actor);
     });
+  }
+
+  /**
+   * Remove all active Crimson Rites from an actor's weapons
+   * Called when actor completes a short or long rest
+   * @param {Actor} actor - The Blood Hunter actor
+   * @returns {Promise<number>} Number of rites removed
+   */
+  static async removeAllActiveRites(actor) {
+    if (!actor) return 0;
+
+    let ritesRemoved = 0;
+    const weapons = actor.items.filter(i => i.type === 'weapon');
+
+    for (const weapon of weapons) {
+      const activeRite = this.getActiveRite(weapon);
+      if (activeRite) {
+        await activeRite.delete();
+        ritesRemoved++;
+        console.log(`${MODULE_ID} | Removed Crimson Rite from ${weapon.name}`);
+      }
+    }
+
+    return ritesRemoved;
   }
 }
