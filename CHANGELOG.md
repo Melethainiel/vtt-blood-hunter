@@ -151,6 +151,23 @@ MIT License - See LICENSE file for details
 
 ## Version History
 
+### [1.1.11] - 2025-11-05
+#### Added
+- **D&D Beyond Integration**: Automatic hemocraft die detection from DDB scale values
+  - Now reads native `actor.system.scale["blood-hunter"]["blood-maledict"]` variable
+  - Eliminates manual level checking for imported characters
+  - Falls back to level-based calculation for manually created characters
+  - Validation ensures only valid die formats are used (e.g., "1d6", "1d8")
+
+#### Changed
+- `BloodHunterUtils.getHemocraftDie()` now prioritizes DDB scale values over hardcoded level ranges
+- Improved logging to show whether DDB value or fallback calculation was used
+
+#### Documentation
+- Updated README.md with DDB integration notes
+- Added DDB-CONFIGURATION.md section explaining auto-detection
+- Added troubleshooting guide for hemocraft die detection
+
 ### [1.0.0] - 2025-01-XX
 - Initial release with Crimson Rites and Blood Curse framework
 - Full DAE and midi-qol integration

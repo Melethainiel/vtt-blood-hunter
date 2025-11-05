@@ -45,7 +45,24 @@ Si vous utilisez le module **D&D Beyond Importer** :
 
 1. **Importez votre personnage** depuis D&D Beyond
 2. Le module détectera automatiquement les rites dans vos features
-3. **Aucune configuration supplémentaire nécessaire !**
+3. Le module **utilisera automatiquement** la valeur native `@scale.blood-hunter.blood-maledict` pour calculer les dés d'hemocraft
+4. **Aucune configuration supplémentaire nécessaire !**
+
+### Hemocraft Die - Valeur Native DDB
+
+Le module détecte et utilise automatiquement la valeur `actor.system.scale["blood-hunter"]["blood-maledict"]` importée par DDB Importer. Cette valeur correspond au dé d'hemocraft selon votre niveau :
+- Niveau 1-4 : 1d4
+- Niveau 5-10 : 1d6
+- Niveau 11-16 : 1d8
+- Niveau 17+ : 1d10
+
+**Avantages** :
+- ✅ Toujours synchronisé avec votre niveau réel
+- ✅ Compatible avec les mécaniques de scaling de DDB
+- ✅ Fonctionne automatiquement avec tous les imports DDB
+- ✅ Aucune maintenance manuelle nécessaire
+
+**Fallback** : Si la valeur DDB n'est pas disponible (personnage créé manuellement), le module utilise un calcul basé sur le niveau de Blood Hunter.
 
 ### Comment ça fonctionne
 
@@ -179,6 +196,23 @@ La détection automatique sera étendue aux autres Orders :
 - Order of the Profane Soul
 
 ## Résolution de Problèmes
+
+### Problème : Le module n'utilise pas la bonne valeur de dé d'hemocraft
+
+**Solutions :**
+
+1. **Vérifiez que votre personnage est importé depuis DDB**
+   - Ouvrez la console (F12) et tapez : `game.actors.getName("VOTRE_NOM").system.scale`
+   - Vérifiez que `blood-hunter.blood-maledict` existe et contient la bonne valeur
+
+2. **Vérifiez les messages de la console**
+   - F12 → Console
+   - Cherchez : `vtt-blood-hunter | Using DDB scale value for hemocraft die: 1dX`
+   - Ou : `vtt-blood-hunter | Using level-based hemocraft die: 1dX (level Y)`
+
+3. **Réimportez votre personnage**
+   - Parfois, une réimportation complète résout le problème
+   - Assurez-vous que ddb-importer est à jour
 
 ### Problème : Aucun rite n'apparaît
 

@@ -40,16 +40,40 @@ export class BloodHunterUtils {
 
   /**
    * Get the hemocraft die based on Blood Hunter level
+   * Prioritizes DDB scale value if available, falls back to level-based calculation
    * @param {Actor} actor - The Blood Hunter actor
    * @returns {string} Hemocraft die (e.g., "1d4", "1d6")
    */
   static getHemocraftDie(actor) {
-    const level = this.getBloodHunterLevel(actor);
+    // Check for DDB Importer scale value first
+    const scaleValue = actor?.system?.scale?.['blood-hunter']?.['blood-maledict'];
 
-    if (level < 5) return '1d4';
-    if (level < 11) return '1d6';
-    if (level < 17) return '1d8';
-    return '1d10';
+    if (scaleValue) {
+      // Validate the scale value format (should be like "1d4", "1d6", etc.)
+      const diePattern = /^\d+d\d+$/;
+      if (typeof scaleValue === 'string' && diePattern.test(scaleValue)) {
+        console.log(`vtt-blood-hunter | Using DDB scale value for hemocraft die: ${scaleValue}`);
+        return scaleValue;
+      } else if (scaleValue.value && typeof scaleValue.value === 'string' && diePattern.test(scaleValue.value)) {
+        // Handle case where scale value is an object with a 'value' property
+        console.log(`vtt-blood-hunter | Using DDB scale value for hemocraft die: ${scaleValue.value}`);
+        return scaleValue.value;
+      } else {
+        console.warn(`vtt-blood-hunter | Invalid DDB scale value format: ${JSON.stringify(scaleValue)}, falling back to level-based calculation`);
+      }
+    }
+
+    // Fall back to level-based calculation
+    const level = this.getBloodHunterLevel(actor);
+    let die;
+
+    if (level < 5) die = '1d4';
+    else if (level < 11) die = '1d6';
+    else if (level < 17) die = '1d8';
+    else die = '1d10';
+
+    console.log(`vtt-blood-hunter | Using level-based hemocraft die: ${die} (level ${level})`);
+    return die;
   }
 
   /**
