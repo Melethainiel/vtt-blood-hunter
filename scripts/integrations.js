@@ -331,26 +331,5 @@ export class BloodHunterIntegrations {
     }
   }
 
-  /**
-   * Setup DAE special durations
-   */
-  static setupDAEDurations() {
-    if (!this.isDAEActive()) return;
 
-    // Register custom durations for Blood Hunter effects
-    const customDurations = {
-      'crimsonRite': {
-        type: 'special',
-        label: 'Until Dismissed or Rest'
-      },
-      'lycanthropyTransform': {
-        type: 'turns',
-        label: 'Transformation Duration'
-      }
-    };
-
-    // These will be used with DAE's special duration system
-    game.bloodhunter = game.bloodhunter || {};
-    game.bloodhunter.customDurations = customDurations;
-  }
 }

@@ -53,9 +53,6 @@ Hooks.once('ready', async function() {
   // Initialize Order of the Lycan system
   OrderOfTheLycan.init();
 
-  // Setup DAE special durations
-  BloodHunterIntegrations.setupDAEDurations();
-
   // Create macro compendium if needed
   await createMacros();
 });
