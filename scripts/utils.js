@@ -42,32 +42,34 @@ export class BloodHunterUtils {
    * Get the hemocraft die based on Blood Hunter level
    * Prioritizes DDB scale value if available, falls back to level-based calculation
    * @param {Actor} actor - The Blood Hunter actor
-   * @param {string} scalePath - Optional scale path (default: 'blood-maledict', use 'crimson-rite' for Crimson Rite)
+   * @param {string|null} scalePath - Optional scale path (e.g., 'crimson-rite', 'blood-maledict'). If null, uses level-based calculation.
    * @returns {string} Hemocraft die (e.g., "1d4", "1d6")
    */
-  static getHemocraftDie(actor, scalePath = 'blood-maledict') {
-    // Check for DDB Importer scale value first
-    const scaleValue = actor?.system?.scale?.['blood-hunter']?.[scalePath];
+  static getHemocraftDie(actor, scalePath = null) {
+    // If scalePath is provided, check for DDB Importer scale value first
+    if (scalePath) {
+      const scaleValue = actor?.system?.scale?.['blood-hunter']?.[scalePath];
 
-    if (scaleValue) {
-      // Handle DDB object format: { number, faces, modifiers }
-      if (typeof scaleValue === 'object' && scaleValue.number && scaleValue.faces) {
-        const die = `${scaleValue.number}d${scaleValue.faces}`;
-        console.log(`vtt-blood-hunter | Using DDB scale value for hemocraft die (${scalePath}): ${die}`);
-        return die;
-      }
+      if (scaleValue) {
+        // Handle DDB object format: { number, faces, modifiers }
+        if (typeof scaleValue === 'object' && scaleValue.number && scaleValue.faces) {
+          const die = `${scaleValue.number}d${scaleValue.faces}`;
+          console.log(`vtt-blood-hunter | Using DDB scale value for hemocraft die (${scalePath}): ${die}`);
+          return die;
+        }
 
-      // Handle string format (legacy or alternative format)
-      const diePattern = /^\d+d\d+$/;
-      if (typeof scaleValue === 'string' && diePattern.test(scaleValue)) {
-        console.log(`vtt-blood-hunter | Using DDB scale value for hemocraft die (${scalePath}): ${scaleValue}`);
-        return scaleValue;
-      } else if (scaleValue.value && typeof scaleValue.value === 'string' && diePattern.test(scaleValue.value)) {
-        // Handle case where scale value is an object with a 'value' property
-        console.log(`vtt-blood-hunter | Using DDB scale value for hemocraft die (${scalePath}): ${scaleValue.value}`);
-        return scaleValue.value;
-      } else {
-        console.warn(`vtt-blood-hunter | Invalid DDB scale value format for ${scalePath}: ${JSON.stringify(scaleValue)}, falling back to level-based calculation`);
+        // Handle string format (legacy or alternative format)
+        const diePattern = /^\d+d\d+$/;
+        if (typeof scaleValue === 'string' && diePattern.test(scaleValue)) {
+          console.log(`vtt-blood-hunter | Using DDB scale value for hemocraft die (${scalePath}): ${scaleValue}`);
+          return scaleValue;
+        } else if (scaleValue.value && typeof scaleValue.value === 'string' && diePattern.test(scaleValue.value)) {
+          // Handle case where scale value is an object with a 'value' property
+          console.log(`vtt-blood-hunter | Using DDB scale value for hemocraft die (${scalePath}): ${scaleValue.value}`);
+          return scaleValue.value;
+        } else {
+          console.warn(`vtt-blood-hunter | Invalid DDB scale value format for ${scalePath}: ${JSON.stringify(scaleValue)}, falling back to level-based calculation`);
+        }
       }
     }
 
