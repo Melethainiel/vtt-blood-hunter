@@ -128,12 +128,18 @@ Hooks.on('dnd5e.preUseActivity', async(activity, usageConfig, dialogConfig, mess
 });
 
 // Hook into actor sheet header buttons (ApplicationV1 compatibility)
-Hooks.on('getActorSheetHeaderButtons', (app, buttons) => {
+Hooks.on('renderApplicationV1', (app, buttons) => {
+  if (app.document?.type === 'Actor') {
+    console.log('Fiche personnage ouverte :', app.document);
+  }
   ActorSheetButton.addHeaderButtons(app, buttons);
 });
 
 // Hook into actor sheet rendering (ApplicationV2 compatibility)
-Hooks.on('renderActorSheet5e', (app, html, data) => {
+Hooks.on('renderApplicationV2', (app, html, data) => {
+  if (app.document?.type === 'Actor') {
+    console.log('Fiche personnage ouverte :', app.document);
+  }
   // Inject buttons for ApplicationV2 sheets
   ActorSheetButton.injectHeaderButtonsV2(app, html);
 });
