@@ -4,26 +4,10 @@
 /* Main dialog container - prefixed to avoid conflicts */
 .bh-rite-dialog {
   padding: 1rem;
-  max-height: 70vh;
-  overflow-y: auto;
-  box-sizing: border-box;
 }
 
 .bh-rite-dialog .form-group {
   margin-bottom: 1rem;
-}
-
-/* Dialog window positioning and sizing */
-.dialog-window .bh-rite-dialog {
-  max-height: 60vh;
-}
-
-/* Responsive design for smaller screens */
-@media (max-width: 600px) {
-  .bh-rite-dialog {
-    max-height: 80vh;
-    padding: 0.75rem;
-  }
 }
 
 /* Custom label styling for Blood Hunter theme */
@@ -86,25 +70,6 @@
   background: var(--color-border-dark-tertiary, #888);
 }
 
-/* Scrollbar styling for better UX */
-.bh-rite-dialog::-webkit-scrollbar {
-  width: 8px;
-}
-
-.bh-rite-dialog::-webkit-scrollbar-track {
-  background: var(--color-bg-dark, #f0f0f0);
-  border-radius: 4px;
-}
-
-.bh-rite-dialog::-webkit-scrollbar-thumb {
-  background: var(--color-border-dark-primary, #8b0000);
-  border-radius: 4px;
-}
-
-.bh-rite-dialog::-webkit-scrollbar-thumb:hover {
-  background: #dc143c;
-}
-
 /* Ensure select options don't get cropped */
 .bh-rite-dialog select option {
   padding: 0.5rem;
@@ -124,11 +89,4 @@
 .bh-rite-dialog select::-webkit-scrollbar-thumb {
   background: var(--color-border-dark-primary, #8b0000);
   border-radius: 3px;
-}
-
-/* Ensure dialog doesn't exceed viewport on small screens */
-@media (max-height: 500px) {
-  .bh-rite-dialog {
-    max-height: 90vh;
-  }
 }
