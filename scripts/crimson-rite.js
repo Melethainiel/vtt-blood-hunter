@@ -352,7 +352,7 @@ export class CrimsonRite {
       // Fallback to basic effect
       effectData = {
         name: `${game.i18n.localize('BLOODHUNTER.CrimsonRite.Title')} - ${game.i18n.localize('BLOODHUNTER.CrimsonRite.Types.' + riteType)}`,
-        icon: this.getRiteIcon(riteType),
+        icon: BloodHunterUtils.getRiteIcon(riteType),
         origin: actor.uuid,
         duration: {
           seconds: null // Lasts until dismissed or rest
@@ -417,27 +417,6 @@ export class CrimsonRite {
    */
   static getActiveRite(weapon) {
     return weapon.effects.find(e => e.flags['vtt-blood-hunter']?.crimsonRite);
-  }
-
-  /**
-   * Get icon for rite type
-   * @param {string} riteType - The rite type
-   * @returns {string} Icon path
-   */
-  static getRiteIcon(riteType) {
-    const icons = {
-      flame: 'icons/magic/fire/flame-burning-hand-purple.webp',
-      frozen: 'icons/magic/water/ice-snowflake-white.webp',
-      storm: 'icons/magic/lightning/bolt-strike-blue.webp',
-      corrosion: 'icons/magic/acid/dissolve-bone-white.webp',
-      toxin: 'icons/magic/death/skull-poison-green.webp',
-      dead: 'icons/magic/death/skull-shadow-black.webp',
-      oracle: 'icons/magic/perception/eye-tendrils-purple.webp',
-      dawn: 'icons/magic/holy/angel-winged-humanoid-blue.webp',
-      roar: 'icons/magic/sonic/explosion-shock-sound-wave.webp'
-    };
-
-    return icons[riteType] || 'icons/magic/fire/flame-burning-hand-purple.webp';
   }
 
   /**

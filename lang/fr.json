@@ -86,6 +86,12 @@
       "RiteEnded": "Le Rite Écarlate s'est terminé"
     },
 
+    "UpdateFeatures": {
+      "Title": "Mettre à Jour",
+      "Tooltip": "Mettre à jour les capacités Blood Hunter depuis le compendium",
+      "Placeholder": "Mise à jour des capacités pour {name} - Bientôt disponible !"
+    },
+
     "Lycan": {
       "Title": "Ordre du Lycan",
       "Transformation": "Transformation Hybride",

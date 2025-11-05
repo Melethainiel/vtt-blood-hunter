@@ -3,6 +3,7 @@
  */
 
 import { MODULE_ID } from './blood-hunter.js';
+import { BloodHunterUtils } from './utils.js';
 
 export class BloodHunterIntegrations {
 
@@ -166,7 +167,7 @@ export class BloodHunterIntegrations {
   static createCrimsonRiteEffect(riteType, damageType, riteDamage, weaponId, actor) {
     const effectData = {
       name: `${game.i18n.localize('BLOODHUNTER.CrimsonRite.Title')} - ${game.i18n.localize('BLOODHUNTER.CrimsonRite.Types.' + riteType)}`,
-      icon: this.getRiteIcon(riteType),
+      icon: BloodHunterUtils.getRiteIcon(riteType),
       origin: actor.uuid,
       duration: {
         seconds: null // Lasts until dismissed or rest

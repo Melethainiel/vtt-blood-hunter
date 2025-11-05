@@ -538,32 +538,4 @@ export class OrderOfTheLycan {
       }
     });
   }
-
-  /**
-   * Create Lycan button for actor sheet
-   * @param {jQuery} html - The sheet HTML
-   * @param {Actor} actor - The actor
-   */
-  static addLycanButtonToSheet(html, actor) {
-    if (!this.isLycan(actor)) return;
-
-    const headerActions = html.find('.sheet-header .header-actions');
-    if (headerActions.length === 0) return;
-
-    const isTransformed = this.isTransformed(actor);
-
-    const button = $(`
-      <div class="bloodhunter-lycan-button ${isTransformed ? 'active' : ''}"
-           title="${game.i18n.localize('BLOODHUNTER.Lycan.Transformation')}">
-        <i class="fas fa-paw-claws"></i>
-        <span>${isTransformed ? game.i18n.localize('BLOODHUNTER.Lycan.Hybrid') : game.i18n.localize('BLOODHUNTER.Lycan.Human')}</span>
-      </div>
-    `);
-
-    button.on('click', () => {
-      this.transformationDialog(actor);
-    });
-
-    headerActions.append(button);
-  }
 }

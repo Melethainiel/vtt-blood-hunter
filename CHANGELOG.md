@@ -5,6 +5,66 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.3] - 2025-11-05
+
+### Added
+- **Reusable actor sheet button system** - New `ActorSheetButton` utility class for adding custom buttons to actor sheets
+  - Compatible with both dnd5e v2 and v3 sheet structures
+  - Supports localization, custom icons, and click handlers
+  - Three Blood Hunter buttons implemented: Update Features, Crimson Rite, Lycan Transformation
+  - Provides consistent UI/UX across different sheet types (scripts/actor-sheet-button.js)
+
+### Fixed
+- **DAE integration runtime error** - Fixed missing `getRiteIcon()` method that caused crashes when DAE module was active (scripts/integrations.js:169)
+  - Moved `getRiteIcon()` from `CrimsonRite` class to `BloodHunterUtils` as static method for shared access
+  - Now properly supports only the 6 official Crimson Rites (flame, frozen, storm, dead, oracle, roar)
+
+### Changed
+- **Removed unofficial rites** - `getRiteIcon()` no longer includes non-official rites (corrosion, toxin, dawn)
+- **Code consolidation** - Removed duplicate `getRiteIcon()` implementation from `CrimsonRite` class (21 lines removed)
+- **Improved architecture** - Order of the Lycan now uses centralized button system instead of custom implementation
+
+### Technical Details
+- New utility class: `ActorSheetButton` in scripts/actor-sheet-button.js with methods:
+  - `addButton(html, config)` - Adds button to actor sheet with localization support
+  - `findTargetElement(html)` - Auto-detects dnd5e v2/v3 sheet structure
+- `BloodHunterUtils.getRiteIcon(riteType)` now centralized in scripts/utils.js:103-116
+- Button styling added to styles/blood-hunter.css with hover effects
+- Localization keys: `UpdateFeaturesButton`, `CrimsonRiteButton`, `HybridTransformationButton`
+
+## [1.2.2] - 2025-11-05
+
+### Fixed
+- **Crimson Rite effect duration** - DAE special duration flags now properly applied when DAE module is active, enabling automatic removal of Crimson Rite effects after short/long rest
+
+### Changed
+- **Code cleanup** - Removed ~130 lines of dead code:
+  - Removed unused utility functions: `calculateRiteDamage()`, `createChatMessage()`, `isValidRiteWeapon()`, `formatDuration()`, `rollHemocraft()`
+  - Removed unused macro helpers: `createItemMacro()`, `createCrimsonRiteMacro()`, `createBloodCurseMacro()`, `enhanceItemForMidiQOL()`
+  - Removed duplicate `getRiteIcon()` function from integrations.js
+  - Removed unused `setupDAEDurations()` function
+
+### Technical Details
+- Effect data now includes `flags.dae.specialDuration: ['shortRest', 'longRest']` when DAE is active (scripts/integrations.js:198-201)
+- Fallback to manual removal via `dnd5e.restCompleted` hook when DAE is not active (scripts/blood-hunter.js:68-86)
+
+## [1.2.1] - 2025-11-05
+
+### Added
+- **Automatic Crimson Rite removal on rest** - Active Crimson Rites are now automatically removed after short or long rest (when DAE is not active)
+- **D&D Beyond integration** - Hemocraft die now reads from DDB Importer scale values if available
+- **Improved dialog compatibility** - Crimson Rite dialog now works properly with PopOut! module
+
+### Changed
+- **Crimson Rite HP cost** - Now uses `actor.applyDamage()` API instead of direct HP updates, enabling midi-qol damage interception and rollback capabilities
+- **Dialog improvements** - Fixed text cropping in select elements, improved layout with flex positioning
+
+### Technical Details
+- Added `dnd5e.restCompleted` hook for automatic rite removal (only when DAE is not active)
+- New helper method: `CrimsonRite.removeAllActiveRites(actor)` for batch removal
+- Hemocraft die prioritizes DDB scale values: `actor.system.scale['blood-hunter'][scalePath]`
+- Added localization strings: `ShortRest`, `LongRest`, `RitesEndedOnRest`
+
 ## [1.0.0] - 2025
 
 ### Added
