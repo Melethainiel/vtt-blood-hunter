@@ -8,6 +8,7 @@ import { BloodHunterUtils } from './utils.js';
 import { BloodHunterIntegrations } from './integrations.js';
 import { BloodCurse } from './blood-curse.js';
 import { OrderOfTheLycan } from './order-lycan.js';
+import { ActorSheetButton } from './actor-sheet-button.js';
 
 // Module constants
 const MODULE_ID = 'vtt-blood-hunter';
@@ -141,8 +142,47 @@ Hooks.on('renderActorSheet5e', (app, html, data) => {
   const actor = app.object;
   if (!BloodHunterUtils.isBloodHunter(actor)) return;
 
-  // Add Blood Hunter specific UI elements
-  addBloodHunterUI(html, actor);
+  // Add "Update Features" button
+  ActorSheetButton.addButton(app, html, {
+    id: 'bloodhunter-update-features',
+    icon: 'fa-sync',
+    label: 'BLOODHUNTER.UpdateFeatures.Title',
+    tooltip: 'BLOODHUNTER.UpdateFeatures.Tooltip',
+    onClick: (actor) => {
+      // Placeholder: Will implement compendium update logic later
+      ui.notifications.info(
+        game.i18n.format('BLOODHUNTER.UpdateFeatures.Placeholder', {
+          name: actor.name
+        })
+      );
+    },
+    isVisible: (actor) => BloodHunterUtils.isBloodHunter(actor)
+  });
+
+  // Add Crimson Rite button
+  ActorSheetButton.addButton(app, html, {
+    id: 'bloodhunter-crimson-rite',
+    icon: 'fa-fire-alt',
+    label: 'BLOODHUNTER.CrimsonRite.Title',
+    tooltip: 'BLOODHUNTER.CrimsonRite.Title',
+    onClick: (actor) => {
+      CrimsonRite.activateDialog(actor);
+    },
+    isVisible: (actor) => BloodHunterUtils.isBloodHunter(actor)
+  });
+
+  // Add Lycan Transformation button if Order of the Lycan
+  ActorSheetButton.addButton(app, html, {
+    id: 'bloodhunter-lycan-transform',
+    icon: 'fa-wolf-pack-battalion',
+    label: OrderOfTheLycan.isTransformed(actor) ? 'BLOODHUNTER.Lycan.Hybrid' : 'BLOODHUNTER.Lycan.Human',
+    tooltip: 'BLOODHUNTER.Lycan.Transformation',
+    onClick: (actor) => {
+      OrderOfTheLycan.transformationDialog(actor);
+    },
+    isVisible: (actor) => OrderOfTheLycan.isLycan(actor),
+    cssClass: OrderOfTheLycan.isTransformed(actor) ? 'active' : ''
+  });
 });
 
 function registerSettings() {
@@ -227,34 +267,6 @@ async function createMacros() {
       flags: { 'vtt-blood-hunter': { macro: true } }
     });
   }
-}
-
-function addBloodHunterUI(html, actor) {
-  // Find the header actions area
-  // dnd5e v3 uses .sheet-header-buttons, v2 uses .header-actions
-  let headerActions = html.find('.sheet-header .sheet-header-buttons');
-  if (headerActions.length === 0) {
-    // Fallback to v2 selector for backward compatibility
-    headerActions = html.find('.sheet-header .header-actions');
-  }
-  if (headerActions.length === 0) return;
-
-  // Add Crimson Rite button
-  const riteButton = $(`
-    <div class="bloodhunter-rite-button" title="${game.i18n.localize('BLOODHUNTER.CrimsonRite.Title')}">
-      <i class="fas fa-fire-alt"></i>
-      <span>${game.i18n.localize('BLOODHUNTER.CrimsonRite.Title')}</span>
-    </div>
-  `);
-
-  riteButton.on('click', () => {
-    CrimsonRite.activateDialog(actor);
-  });
-
-  headerActions.append(riteButton);
-
-  // Add Lycan Transformation button if Order of the Lycan
-  OrderOfTheLycan.addLycanButtonToSheet(html, actor);
 }
 
 export { MODULE_ID, MODULE_NAME };

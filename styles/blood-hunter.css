@@ -90,3 +90,77 @@
   background: var(--color-border-dark-primary, #8b0000);
   border-radius: 3px;
 }
+
+/* Actor Sheet Buttons */
+.bloodhunter-sheet-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  margin-left: 0.5rem;
+  background: linear-gradient(135deg, rgba(139, 0, 0, 0.8) 0%, rgba(220, 20, 60, 0.8) 100%);
+  color: white;
+  border: 1px solid rgba(139, 0, 0, 0.9);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.bloodhunter-sheet-button:hover {
+  background: linear-gradient(135deg, rgba(139, 0, 0, 1) 0%, rgba(220, 20, 60, 1) 100%);
+  border-color: #8b0000;
+  box-shadow: 0 0 8px rgba(220, 20, 60, 0.4);
+  color: white;
+  text-decoration: none;
+}
+
+.bloodhunter-sheet-button i {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.bloodhunter-sheet-button span {
+  display: inline-block;
+}
+
+/* Active state for transformation button */
+.bloodhunter-sheet-button.active {
+  background: linear-gradient(135deg, rgba(34, 139, 34, 0.8) 0%, rgba(0, 128, 0, 0.8) 100%);
+  border-color: rgba(34, 139, 34, 0.9);
+}
+
+.bloodhunter-sheet-button.active:hover {
+  background: linear-gradient(135deg, rgba(34, 139, 34, 1) 0%, rgba(0, 128, 0, 1) 100%);
+  border-color: #228b22;
+  box-shadow: 0 0 8px rgba(34, 139, 34, 0.4);
+}
+
+/* Responsive: Hide button text on smaller screens, keep icon */
+@media (max-width: 768px) {
+  .bloodhunter-sheet-button span {
+    display: none;
+  }
+  
+  .bloodhunter-sheet-button {
+    padding: 0.25rem;
+  }
+}
+
+/* ApplicationV2 specific styles (header-control) */
+.header-control.bloodhunter-sheet-button {
+  margin: 0;
+  padding: 0.25rem 0.5rem;
+  background: linear-gradient(135deg, rgba(139, 0, 0, 0.8) 0%, rgba(220, 20, 60, 0.8) 100%);
+  border: 1px solid rgba(139, 0, 0, 0.9);
+  border-radius: 4px;
+}
+
+.header-control.bloodhunter-sheet-button:hover {
+  background: linear-gradient(135deg, rgba(139, 0, 0, 1) 0%, rgba(220, 20, 60, 1) 100%);
+  box-shadow: 0 0 8px rgba(220, 20, 60, 0.4);
+}
+

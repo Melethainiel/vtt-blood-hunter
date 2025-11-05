@@ -86,6 +86,12 @@
       "RiteEnded": "Crimson Rite has ended"
     },
 
+    "UpdateFeatures": {
+      "Title": "Update Features",
+      "Tooltip": "Update Blood Hunter features from compendium",
+      "Placeholder": "Feature update for {name} - Coming soon!"
+    },
+
     "Lycan": {
       "Title": "Order of the Lycan",
       "Transformation": "Hybrid Transformation",
