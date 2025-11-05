@@ -54,6 +54,9 @@ Hooks.once('ready', async function() {
   // Initialize Order of the Lycan system
   OrderOfTheLycan.init();
 
+  // Register actor sheet buttons
+  registerActorSheetButtons();
+
   // Create macro compendium if needed
   await createMacros();
 });
@@ -124,28 +127,15 @@ Hooks.on('dnd5e.preUseActivity', async(activity, usageConfig, dialogConfig, mess
   }
 });
 
-// Hook into character sheet rendering
+// Hook into actor sheet header buttons (ApplicationV1 compatibility)
+Hooks.on('getActorSheetHeaderButtons', (app, buttons) => {
+  ActorSheetButton.addHeaderButtons(app, buttons);
+});
+
+// Hook into actor sheet rendering (ApplicationV2 compatibility)
 Hooks.on('renderActorSheet5e', (app, html, data) => {
-  const actor = app.object;
-  if (!BloodHunterUtils.isBloodHunter(actor)) return;
-
-  // Add "Update Features" button
-  ActorSheetButton.addButton(app, html, {
-    id: 'bloodhunter-update-features',
-    icon: 'fa-sync',
-    label: 'BLOODHUNTER.UpdateFeatures.Title',
-    tooltip: 'BLOODHUNTER.UpdateFeatures.Tooltip',
-    onClick: (actor) => {
-      // Placeholder: Will implement compendium update logic later
-      ui.notifications.info(
-        game.i18n.format('BLOODHUNTER.UpdateFeatures.Placeholder', {
-          name: actor.name
-        })
-      );
-    },
-    isVisible: (actor) => BloodHunterUtils.isBloodHunter(actor)
-  });
-
+  // Inject buttons for ApplicationV2 sheets
+  ActorSheetButton.injectHeaderButtonsV2(app, html);
 });
 
 function registerSettings() {
@@ -199,6 +189,51 @@ function registerSettings() {
 function registerHandlebarsHelpers() {
   Handlebars.registerHelper('bloodhunter-localize', function(key) {
     return game.i18n.localize(key);
+  });
+}
+
+function registerActorSheetButtons() {
+  // Register Update Features button
+  ActorSheetButton.registerButton({
+    id: 'bloodhunter-update-features',
+    icon: 'fa-sync',
+    label: 'BLOODHUNTER.UpdateFeatures.Title',
+    tooltip: 'BLOODHUNTER.UpdateFeatures.Tooltip',
+    onClick: (app) => {
+      const actor = app.object;
+      // Placeholder: Will implement compendium update logic later
+      ui.notifications.info(
+        game.i18n.format('BLOODHUNTER.UpdateFeatures.Placeholder', {
+          name: actor.name
+        })
+      );
+    },
+    isVisible: (actor) => BloodHunterUtils.isBloodHunter(actor)
+  });
+
+  // Register Crimson Rite button
+  ActorSheetButton.registerButton({
+    id: 'bloodhunter-crimson-rite',
+    icon: 'fa-fire-alt',
+    label: 'BLOODHUNTER.CrimsonRite.Title',
+    tooltip: 'BLOODHUNTER.CrimsonRite.Title',
+    onClick: (app) => {
+      CrimsonRite.activateDialog(app.object);
+    },
+    isVisible: (actor) => BloodHunterUtils.isBloodHunter(actor)
+  });
+
+  // Register Lycan Transformation button
+  ActorSheetButton.registerButton({
+    id: 'bloodhunter-lycan-transform',
+    icon: 'fa-wolf-pack-battalion',
+    label: 'BLOODHUNTER.Lycan.Transformation',
+    tooltip: 'BLOODHUNTER.Lycan.Transformation',
+    onClick: (app) => {
+      OrderOfTheLycan.transformationDialog(app.object);
+    },
+    isVisible: (actor) => OrderOfTheLycan.isLycan(actor),
+    cssClass: '' // Dynamic class will be handled via re-render
   });
 }
 
