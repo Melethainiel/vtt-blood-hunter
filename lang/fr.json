@@ -92,6 +92,18 @@
       "Placeholder": "Mise à jour des capacités pour {name} - Bientôt disponible !"
     },
 
+    "FeatureSync": {
+      "CompendiumNotFound": "Compendium '{compendium}' introuvable",
+      "NoFeaturesFound": "Aucune capacité Blood Hunter trouvée sur cet acteur",
+      "ConfirmTitle": "Synchroniser les Capacités Blood Hunter",
+      "ConfirmMessage": "Synchroniser {count} capacité(s) Blood Hunter pour {name} ?",
+      "ConfirmWarning": "⚠️ Cela remplacera les capacités existantes par les versions du compendium. Cette action est irréversible !",
+      "Success": "{count} capacité(s) synchronisée(s) avec succès pour {name}",
+      "PartialSuccess": "{synced} capacité(s) synchronisée(s) pour {name}, mais {failed} ont échoué",
+      "Failed": "Échec de la synchronisation de {count} capacité(s) pour {name}",
+      "NoMatchingFeatures": "{name} possède {count} capacité(s) Blood Hunter mais aucune ne correspond aux entrées du compendium"
+    },
+
     "Lycan": {
       "Title": "Ordre du Lycan",
       "Transformation": "Transformation Hybride",

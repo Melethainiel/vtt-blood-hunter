@@ -9,6 +9,7 @@ import { BloodHunterIntegrations } from './integrations.js';
 import { BloodCurse } from './blood-curse.js';
 import { OrderOfTheLycan } from './order-lycan.js';
 import { ActorSheetButton } from './actor-sheet-button.js';
+import { FeatureSync } from './feature-sync.js';
 
 // Module constants
 const MODULE_ID = 'vtt-blood-hunter';
@@ -25,6 +26,7 @@ Hooks.once('init', async function() {
     CrimsonRite,
     BloodCurse,
     OrderOfTheLycan,
+    FeatureSync,
     utils: BloodHunterUtils,
     integrations: BloodHunterIntegrations,
     MODULE_ID
@@ -201,14 +203,8 @@ function registerActorSheetButtons() {
     icon: 'fa-sync',
     label: 'BLOODHUNTER.UpdateFeatures.Title',
     tooltip: 'BLOODHUNTER.UpdateFeatures.Tooltip',
-    onClick: (app) => {
-      const actor = app.object;
-      // Placeholder: Will implement compendium update logic later
-      ui.notifications.info(
-        game.i18n.format('BLOODHUNTER.UpdateFeatures.Placeholder', {
-          name: actor.name
-        })
-      );
+    onClick: async(actor) => {
+      await FeatureSync.syncFeatures(actor);
     },
     isVisible: (actor) => BloodHunterUtils.isBloodHunter(actor)
   });
