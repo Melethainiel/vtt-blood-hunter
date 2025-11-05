@@ -212,31 +212,6 @@ function registerActorSheetButtons() {
     },
     isVisible: (actor) => BloodHunterUtils.isBloodHunter(actor)
   });
-
-  // Register Crimson Rite button
-  ActorSheetButton.registerButton({
-    id: 'bloodhunter-crimson-rite',
-    icon: 'fa-fire-alt',
-    label: 'BLOODHUNTER.CrimsonRite.Title',
-    tooltip: 'BLOODHUNTER.CrimsonRite.Title',
-    onClick: (app) => {
-      CrimsonRite.activateDialog(app.object);
-    },
-    isVisible: (actor) => BloodHunterUtils.isBloodHunter(actor)
-  });
-
-  // Register Lycan Transformation button
-  ActorSheetButton.registerButton({
-    id: 'bloodhunter-lycan-transform',
-    icon: 'fa-wolf-pack-battalion',
-    label: 'BLOODHUNTER.Lycan.Transformation',
-    tooltip: 'BLOODHUNTER.Lycan.Transformation',
-    onClick: (app) => {
-      OrderOfTheLycan.transformationDialog(app.object);
-    },
-    isVisible: (actor) => OrderOfTheLycan.isLycan(actor),
-    cssClass: '' // Dynamic class will be handled via re-render
-  });
 }
 
 async function createMacros() {

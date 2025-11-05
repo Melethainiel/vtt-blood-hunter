@@ -75,7 +75,7 @@ export class ActorSheetButton {
     if (!actor) return;
 
     // Get the native element (handle both jQuery and native)
-    const appElement = html[0] || html;
+    const appElement = html;
 
     // For ApplicationV2, add to header controls area
     const header = appElement.querySelector('.window-header');
