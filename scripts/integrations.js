@@ -183,7 +183,7 @@ export class BloodHunterIntegrations {
       changes: []
     };
 
-    // If DAE is active, add damage bonus changes
+    // If DAE is active, add damage bonus changes and special duration
     if (this.isDAEActive()) {
       // DAE will handle the damage bonus automatically
       // This adds the bonus to the weapon's damage formula
@@ -193,6 +193,12 @@ export class BloodHunterIntegrations {
         value: JSON.stringify([riteDamage, damageType]),
         priority: 20
       });
+
+      // Add DAE special duration for rest removal
+      // DAE expects flags.dae.specialDuration for its special duration system
+      effectData.flags.dae = {
+        specialDuration: ['shortRest', 'longRest']
+      };
     }
 
     // Add transfer flag so effect appears on actor when weapon is equipped
