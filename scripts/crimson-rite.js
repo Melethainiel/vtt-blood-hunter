@@ -95,7 +95,29 @@ export class CrimsonRite {
           }
         }
 
-        // Pattern 2: English D&D Beyond patterns with rite key
+        // Pattern 2: DDB Importer format with "Crimson Rite: " prefix
+        // English: "crimson rite: rite of the flame", "crimson rite: rite of flame"
+        // French: "rite écarlate: rite de la flamme", "rite écarlate: rite du givre"
+        const ddbPatterns = [
+          `crimson rite: rite of the ${key}`,
+          `crimson rite: rite of ${key}`,
+          `rite écarlate: rite de la ${key}`,
+          `rite écarlate: rite de l'${key}`,
+          `rite écarlate: rite du ${key}`,
+          `rite écarlate: rite des ${key}`
+        ];
+
+        for (const pattern of ddbPatterns) {
+          if (name.includes(pattern)) {
+            if (!knownRites.includes(key)) {
+              knownRites.push(key);
+              console.log(`${MODULE_ID} | Detected rite from DDB Importer pattern: ${key} (pattern: "${pattern}", from "${feature.name}")`);
+              break;
+            }
+          }
+        }
+
+        // Pattern 3: English D&D Beyond patterns with rite key (without prefix)
         // "rite of the flame", "rite of flame"
         const englishPatterns = [
           `rite of the ${key}`,
@@ -112,7 +134,7 @@ export class CrimsonRite {
           }
         }
 
-        // Pattern 3: French D&D Beyond patterns with rite key
+        // Pattern 4: French D&D Beyond patterns with rite key (without prefix)
         // "rite de la flamme", "rite du givre"
         const frenchPatterns = [
           `rite de la ${key}`,
