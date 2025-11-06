@@ -30,8 +30,9 @@ export class FeatureSync {
       return { synced: 0, failed: 0, skipped: 0 };
     }
 
-    // Load the compendium index
-    await pack.getDocuments();
+    // Load the compendium documents
+    const documents = await pack.getDocuments();
+    console.log(`Blood Hunter | Loaded ${documents.length} features from compendium for sync`);
 
     // Prepare sync plan (dry run to match features)
     const syncPlan = await this._prepareSyncPlan(actor, pack);
