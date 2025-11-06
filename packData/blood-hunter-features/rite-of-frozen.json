@@ -1,0 +1,58 @@
+{
+  "_id": "RiteOfFrozenFeature01",
+  "_key": "!items!RiteOfFrozenFeature01",
+  "name": "Rite of the Frozen",
+  "type": "feat",
+  "img": "icons/magic/water/snowflake-ice-crystal-white.webp",
+  "system": {
+    "description": {
+      "value": "<p>You have learned the Rite of the Frozen, which allows you to channel cold damage through your Crimson Rite. When you activate a Crimson Rite on a weapon, you can choose to deal cold damage.</p><p>This rite is available at 1st level.</p>",
+      "chat": ""
+    },
+    "source": {
+      "custom": "Blood Hunter Class",
+      "revision": 1,
+      "rules": "2014"
+    },
+    "type": {
+      "value": "background",
+      "subtype": ""
+    },
+    "identifier": "rite-of-frozen",
+    "activities": {},
+    "uses": {
+      "spent": 0,
+      "max": "",
+      "recovery": []
+    },
+    "prerequisites": {
+      "level": 1
+    },
+    "properties": [],
+    "enchantment": null,
+    "enchant": {}
+  },
+  "effects": [],
+  "flags": {
+    "vtt-blood-hunter": {
+      "crimsonRite": true,
+      "riteType": "frozen"
+    }
+  },
+  "_stats": {
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "coreVersion": "13.346",
+    "systemId": "dnd5e",
+    "systemVersion": "4.3.6",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "exportSource": null
+  },
+  "folder": null,
+  "sort": 0,
+  "ownership": {
+    "default": 0
+  }
+}

@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.10] - 2025-11-06
+
+### Added
+- **Individual Crimson Rite compendium items** - Added 6 new background-type features for each Crimson Rite type (Issue #33)
+  - Rite of the Flame (level 1, fire damage)
+  - Rite of the Frozen (level 1, cold damage)
+  - Rite of the Storm (level 1, lightning damage)
+  - Rite of the Dead (level 14, necrotic damage)
+  - Rite of the Oracle (level 14, psychic damage)
+  - Rite of the Roar (level 14, thunder damage)
+  - These items are marked as `type: "background"` instead of `type: "class"`
+  - Allows UI filtering to display only the main Crimson Rite activation feature in bonus actions
+  - Each rite includes appropriate module flags (`crimsonRite: true`, `riteType: "<key>"`) for automatic detection
+  - Main Crimson Rite feature retains activation dialog functionality
+
+### Technical Details
+- New compendium items in `packData/blood-hunter-features/`:
+  - `rite-of-flame.json`, `rite-of-frozen.json`, `rite-of-storm.json`
+  - `rite-of-dead.json`, `rite-of-oracle.json`, `rite-of-roar.json`
+- All items use `system.type.value: "background"` to enable filtering
+- Detection logic in `scripts/crimson-rite.js` unchanged (flag-based priority detection works automatically)
+
 ## [1.2.9] - 2025-11-05
 
 ### Fixed

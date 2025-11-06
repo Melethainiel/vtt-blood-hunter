@@ -1,0 +1,58 @@
+{
+  "_id": "RiteOfOracleFeature01",
+  "_key": "!items!RiteOfOracleFeature01",
+  "name": "Rite of the Oracle",
+  "type": "feat",
+  "img": "icons/magic/perception/eye-ringed-glow-purple.webp",
+  "system": {
+    "description": {
+      "value": "<p>You have learned the Rite of the Oracle, which allows you to channel psychic damage through your Crimson Rite. When you activate a Crimson Rite on a weapon, you can choose to deal psychic damage.</p><p>This rite becomes available at 14th level.</p>",
+      "chat": ""
+    },
+    "source": {
+      "custom": "Blood Hunter Class",
+      "revision": 1,
+      "rules": "2014"
+    },
+    "type": {
+      "value": "background",
+      "subtype": ""
+    },
+    "identifier": "rite-of-oracle",
+    "activities": {},
+    "uses": {
+      "spent": 0,
+      "max": "",
+      "recovery": []
+    },
+    "prerequisites": {
+      "level": 14
+    },
+    "properties": [],
+    "enchantment": null,
+    "enchant": {}
+  },
+  "effects": [],
+  "flags": {
+    "vtt-blood-hunter": {
+      "crimsonRite": true,
+      "riteType": "oracle"
+    }
+  },
+  "_stats": {
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "coreVersion": "13.346",
+    "systemId": "dnd5e",
+    "systemVersion": "4.3.6",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "exportSource": null
+  },
+  "folder": null,
+  "sort": 0,
+  "ownership": {
+    "default": 0
+  }
+}
