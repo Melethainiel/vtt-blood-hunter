@@ -70,16 +70,21 @@ export class FeatureSync {
     };
 
     // Process each matched feature
+    console.log(`Blood Hunter | Starting sync execution for ${syncPlan.matched.length} matched features`);
     for (const match of syncPlan.matched) {
       const { actor: actorFeature, compendium: compendiumFeature } = match;
 
       try {
+        console.log(`Blood Hunter | Processing: "${actorFeature.name}" (ID: ${actorFeature.id}) → "${compendiumFeature.name}" (Compendium ID: ${compendiumFeature.id})`);
+
         // Delete the old feature (proper embedded document deletion)
         await actor.deleteEmbeddedDocuments('Item', [actorFeature.id]);
+        console.log(`Blood Hunter | Deleted actor feature: ${actorFeature.name} (${actorFeature.id})`);
 
         // Create the new feature from compendium
         const itemData = compendiumFeature.toObject();
-        await actor.createEmbeddedDocuments('Item', [itemData]);
+        const created = await actor.createEmbeddedDocuments('Item', [itemData]);
+        console.log(`Blood Hunter | Created compendium feature: ${compendiumFeature.name} (New ID: ${created[0].id})`);
 
         console.log(`Blood Hunter | Synced feature: ${actorFeature.name} → ${compendiumFeature.name}`);
         results.synced++;
@@ -88,6 +93,7 @@ export class FeatureSync {
         results.failed++;
       }
     }
+    console.log(`Blood Hunter | Sync execution complete: ${results.synced} synced, ${results.failed} failed, ${results.skipped} skipped`);
 
     // Show results notification
     this._showSyncResults(actor, results);
@@ -98,11 +104,7 @@ export class FeatureSync {
   /**
    * Prepare a sync plan by analyzing features and matching with compendium
    * @param {Actor} actor - The actor to analyze
-<<<<<<< HEAD
-   * @param {Array} documents - The compendium documents
-=======
    * @param {Array<Item>} documents - The compendium documents
->>>>>>> f95d6a2 (fix: improve feature sync identifier matching for DDB Importer format)
    * @returns {Promise<Object>} Sync plan with matched and unmatched features
    * @private
    */
@@ -115,6 +117,7 @@ export class FeatureSync {
 
     const matched = [];
     const unmatched = [];
+    const usedCompendiumIds = new Set(); // Track which compendium features have been matched
 
     // Dry run: check each feature against compendium
     for (const actorFeature of candidateFeatures) {
@@ -122,42 +125,24 @@ export class FeatureSync {
 
       // Try to find exact match first
       let compendiumFeature = documents.find(item =>
-        item.system?.identifier === actorIdentifier
+        item.system?.identifier === actorIdentifier &&
+        !usedCompendiumIds.has(item.id) // Ensure not already matched
       );
 
-      // If no exact match, try flexible matching for DDB Importer format
-      // DDB creates identifiers like "crimson-rite-rite-of-the-storm"
-      // Compendium has "rite-of-storm"
+      // If no exact match, try flexible matching as fallback
+      // This handles edge cases and backwards compatibility
       if (!compendiumFeature) {
         compendiumFeature = documents.find(item => {
           const compIdentifier = item.system?.identifier;
-          if (!compIdentifier) return false;
+          if (!compIdentifier || usedCompendiumIds.has(item.id)) return false;
 
-          // Check if actor identifier contains the compendium identifier
-          // "crimson-rite-rite-of-the-storm" contains "rite-of-storm"
-          if (actorIdentifier.includes(compIdentifier)) {
-            console.log(`${this.MODULE_ID} | Flexible match: "${actorIdentifier}" → "${compIdentifier}"`);
-            return true;
-          }
-
-          // Check if compendium identifier contains the actor identifier
-          // (reverse case, just in case)
-          if (compIdentifier.includes(actorIdentifier)) {
-            console.log(`${this.MODULE_ID} | Flexible match: "${actorIdentifier}" → "${compIdentifier}"`);
-            return true;
-          }
-
-          // Try removing "crimson-rite-" prefix from DDB format
-          // "crimson-rite-rite-of-the-storm" → "rite-of-the-storm"
-          const withoutPrefix = actorIdentifier.replace(/^crimson-rite-/, '');
-
-          // Compare normalized versions (convert "the" variations)
-          // "rite-of-the-storm" → "rite-of-storm"
-          const normalizedActor = withoutPrefix.replace(/-the-/g, '-');
+          // Normalize both identifiers for comparison (remove "the" variations)
+          const normalizedActor = actorIdentifier.replace(/-the-/g, '-');
           const normalizedComp = compIdentifier.replace(/-the-/g, '-');
 
-          if (normalizedActor === normalizedComp) {
-            console.log(`${this.MODULE_ID} | Flexible match (normalized): "${actorIdentifier}" → "${compIdentifier}"`);
+          // Check if one contains the other (for partial matches)
+          if (normalizedActor.includes(normalizedComp) || normalizedComp.includes(normalizedActor)) {
+            console.log(`${this.MODULE_ID} | Flexible match: "${actorIdentifier}" → "${compIdentifier}"`);
             return true;
           }
 
@@ -170,6 +155,7 @@ export class FeatureSync {
           actor: actorFeature,
           compendium: compendiumFeature
         });
+        usedCompendiumIds.add(compendiumFeature.id); // Mark this compendium feature as used
         console.log(`${this.MODULE_ID} | Matched: "${actorFeature.name}" (${actorIdentifier}) → "${compendiumFeature.name}" (${compendiumFeature.system.identifier})`);
       } else {
         unmatched.push(actorFeature);
