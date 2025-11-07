@@ -250,7 +250,8 @@ export class CrimsonRite {
     let weaponOptions = '';
     for (const weapon of weapons) {
       const activeRite = this.getActiveRite(weapon);
-      const activeText = activeRite ? ` (${game.i18n.localize('BLOODHUNTER.CrimsonRite.Active')}: ${game.i18n.localize('BLOODHUNTER.CrimsonRite.Types.' + activeRite.riteType)})` : '';
+      const riteFlag = weapon.getFlag(MODULE_ID, 'crimsonRite');
+      const activeText = activeRite && riteFlag ? ` (${game.i18n.localize('BLOODHUNTER.CrimsonRite.Active')}: ${game.i18n.localize('BLOODHUNTER.CrimsonRite.Types.' + riteFlag.riteType)})` : '';
       weaponOptions += `<option value="${weapon.id}">${weapon.name}${activeText}</option>`;
     }
 
@@ -359,7 +360,7 @@ export class CrimsonRite {
     const riteDamage = BloodHunterUtils.getHemocraftDie(actor, 'crimson-rite');
     const damageType = this.RITE_TYPES[riteType].damageType;
 
-    // Create enchantment effect data
+    // Create Active Effect data for the weapon
     const effectData = BloodHunterIntegrations.createCrimsonRiteEffect(
       riteType,
       damageType,
@@ -368,49 +369,22 @@ export class CrimsonRite {
       actor
     );
 
-    // Create a temporary enchantment item
-    const enchantmentData = {
-      name: `${game.i18n.localize('BLOODHUNTER.CrimsonRite.Title')} - ${game.i18n.localize('BLOODHUNTER.CrimsonRite.Types.' + riteType)}`,
-      type: 'consumable',
-      img: BloodHunterUtils.getRiteIcon(riteType),
-      system: {
-        type: {
-          value: 'trinket'
-        },
-        uses: {
-          max: '1',
-          per: null,
-          autoDestroy: false
-        },
-        enchant: {
-          level: null
-        }
-      },
-      effects: [effectData],
-      flags: {
-        [MODULE_ID]: {
-          crimsonRite: true,
-          riteType: riteType,
-          damageType: damageType,
-          riteDamage: riteDamage,
-          weaponId: weaponId,
-          isEnchantment: true
-        }
-      }
-    };
-
-    // Create the enchantment item in the actor's inventory temporarily
-    const [enchantmentItem] = await actor.createEmbeddedDocuments('Item', [enchantmentData]);
-
-    // Apply the enchantment to the weapon using dnd5e v4.x API
+    // Apply Active Effect directly to the weapon
     try {
-      await weapon.applyEnchantment(enchantmentItem);
-      console.log(`${MODULE_ID} | Applied Crimson Rite enchantment to ${weapon.name}`);
+      const [effect] = await weapon.createEmbeddedDocuments('ActiveEffect', [effectData]);
+
+      // Store effect metadata in weapon flags for easy retrieval
+      await weapon.setFlag(MODULE_ID, 'crimsonRite', {
+        effectId: effect.id,
+        riteType: riteType,
+        damageType: damageType,
+        riteDamage: riteDamage
+      });
+
+      console.log(`${MODULE_ID} | Applied Crimson Rite Active Effect to ${weapon.name}`);
     } catch (error) {
-      console.error(`${MODULE_ID} | Failed to apply enchantment:`, error);
-      // Fallback: delete the enchantment item if application failed
-      await enchantmentItem.delete();
-      ui.notifications.error('Failed to apply Crimson Rite enchantment');
+      console.error(`${MODULE_ID} | Failed to apply Crimson Rite:`, error);
+      ui.notifications.error('Failed to apply Crimson Rite');
       return;
     }
 
@@ -440,17 +414,18 @@ export class CrimsonRite {
       return;
     }
 
-    // Remove the enchantment from the weapon using dnd5e v4.x API
+    // Remove the Active Effect from the weapon
     try {
-      await weapon.removeEnchantment(activeRite);
-      console.log(`${MODULE_ID} | Removed Crimson Rite enchantment from ${weapon.name}`);
+      await activeRite.delete();
 
-      // Delete the enchantment item from actor's inventory
-      await activeRite.delete();
+      // Clear the weapon flag
+      await weapon.unsetFlag(MODULE_ID, 'crimsonRite');
+
+      console.log(`${MODULE_ID} | Removed Crimson Rite Active Effect from ${weapon.name}`);
     } catch (error) {
-      console.error(`${MODULE_ID} | Failed to remove enchantment:`, error);
-      // Fallback: try to delete the enchantment item directly
-      await activeRite.delete();
+      console.error(`${MODULE_ID} | Failed to remove Active Effect:`, error);
+      ui.notifications.error('Failed to remove Crimson Rite');
+      return;
     }
 
     if (showNotification) {
@@ -463,24 +438,21 @@ export class CrimsonRite {
   }
 
   /**
-   * Get the active Crimson Rite enchantment on a weapon
+   * Get the active Crimson Rite Active Effect on a weapon
    * @param {Item} weapon - The weapon item
-   * @returns {Item|null} The active rite enchantment item or null
+   * @returns {ActiveEffect|null} The active rite effect or null
    */
   static getActiveRite(weapon) {
-    // Check if weapon has an enchantment applied
-    const enchantmentId = weapon.system?.enchant?.items?.[0];
-    if (!enchantmentId) return null;
+    // Check if weapon has a Crimson Rite flag
+    const riteFlag = weapon.getFlag(MODULE_ID, 'crimsonRite');
+    if (!riteFlag?.effectId) return null;
 
-    // Get the enchantment item from the actor
-    const actor = weapon.actor;
-    if (!actor) return null;
+    // Get the Active Effect from the weapon
+    const effect = weapon.effects.get(riteFlag.effectId);
 
-    const enchantment = actor.items.get(enchantmentId);
-
-    // Verify it's a Crimson Rite enchantment
-    if (enchantment?.flags?.[MODULE_ID]?.crimsonRite) {
-      return enchantment;
+    // Verify it exists
+    if (effect) {
+      return effect;
     }
 
     return null;
@@ -501,10 +473,10 @@ export class CrimsonRite {
     let buttonHtml = '';
 
     if (activeRite) {
-      const flags = activeRite.flags?.[MODULE_ID];
-      const riteType = flags?.riteType;
-      const riteDamage = flags?.riteDamage;
-      const damageType = flags?.damageType;
+      const riteFlag = item.getFlag(MODULE_ID, 'crimsonRite');
+      const riteType = riteFlag?.riteType;
+      const riteDamage = riteFlag?.riteDamage;
+      const damageType = riteFlag?.damageType;
 
       buttonHtml = `
         <div class="bloodhunter-active-rite">
@@ -548,17 +520,14 @@ export class CrimsonRite {
       const activeRite = this.getActiveRite(weapon);
       if (activeRite) {
         try {
-          // Remove enchantment from weapon
-          await weapon.removeEnchantment(activeRite);
-          // Delete the enchantment item
+          // Remove Active Effect from weapon
           await activeRite.delete();
+          // Clear the weapon flag
+          await weapon.unsetFlag(MODULE_ID, 'crimsonRite');
           ritesRemoved++;
           console.log(`${MODULE_ID} | Removed Crimson Rite from ${weapon.name}`);
         } catch (error) {
           console.error(`${MODULE_ID} | Failed to remove rite from ${weapon.name}:`, error);
-          // Fallback: just delete the enchantment item
-          await activeRite.delete();
-          ritesRemoved++;
         }
       }
     }
