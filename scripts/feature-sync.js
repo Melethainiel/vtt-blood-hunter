@@ -35,7 +35,7 @@ export class FeatureSync {
     console.log(`Blood Hunter | Loaded ${documents.length} features from compendium for sync`);
 
     // Prepare sync plan (dry run to match features)
-    const syncPlan = await this._prepareSyncPlan(actor, pack);
+    const syncPlan = await this._prepareSyncPlan(actor, documents);
 
     // Check if any features with identifiers were found
     if (syncPlan.total === 0) {
@@ -98,11 +98,11 @@ export class FeatureSync {
   /**
    * Prepare a sync plan by analyzing features and matching with compendium
    * @param {Actor} actor - The actor to analyze
-   * @param {CompendiumCollection} pack - The compendium pack
+   * @param {Array<Item>} documents - The compendium documents
    * @returns {Promise<Object>} Sync plan with matched and unmatched features
    * @private
    */
-  static async _prepareSyncPlan(actor, pack) {
+  static async _prepareSyncPlan(actor, documents) {
     // Find all features with identifiers (no subtype filter - more flexible)
     const candidateFeatures = actor.items.filter(item =>
       item.type === 'feat' &&
@@ -114,18 +114,62 @@ export class FeatureSync {
 
     // Dry run: check each feature against compendium
     for (const actorFeature of candidateFeatures) {
-      const identifier = actorFeature.system.identifier;
-      const compendiumFeature = pack.contents.find(item =>
-        item.system?.identifier === identifier
+      const actorIdentifier = actorFeature.system.identifier;
+
+      // Try to find exact match first
+      let compendiumFeature = documents.find(item =>
+        item.system?.identifier === actorIdentifier
       );
+
+      // If no exact match, try flexible matching for DDB Importer format
+      // DDB creates identifiers like "crimson-rite-rite-of-the-storm"
+      // Compendium has "rite-of-storm"
+      if (!compendiumFeature) {
+        compendiumFeature = documents.find(item => {
+          const compIdentifier = item.system?.identifier;
+          if (!compIdentifier) return false;
+
+          // Check if actor identifier contains the compendium identifier
+          // "crimson-rite-rite-of-the-storm" contains "rite-of-storm"
+          if (actorIdentifier.includes(compIdentifier)) {
+            console.log(`${this.MODULE_ID} | Flexible match: "${actorIdentifier}" → "${compIdentifier}"`);
+            return true;
+          }
+
+          // Check if compendium identifier contains the actor identifier
+          // (reverse case, just in case)
+          if (compIdentifier.includes(actorIdentifier)) {
+            console.log(`${this.MODULE_ID} | Flexible match: "${actorIdentifier}" → "${compIdentifier}"`);
+            return true;
+          }
+
+          // Try removing "crimson-rite-" prefix from DDB format
+          // "crimson-rite-rite-of-the-storm" → "rite-of-the-storm"
+          const withoutPrefix = actorIdentifier.replace(/^crimson-rite-/, '');
+
+          // Compare normalized versions (convert "the" variations)
+          // "rite-of-the-storm" → "rite-of-storm"
+          const normalizedActor = withoutPrefix.replace(/-the-/g, '-');
+          const normalizedComp = compIdentifier.replace(/-the-/g, '-');
+
+          if (normalizedActor === normalizedComp) {
+            console.log(`${this.MODULE_ID} | Flexible match (normalized): "${actorIdentifier}" → "${compIdentifier}"`);
+            return true;
+          }
+
+          return false;
+        });
+      }
 
       if (compendiumFeature) {
         matched.push({
           actor: actorFeature,
           compendium: compendiumFeature
         });
+        console.log(`${this.MODULE_ID} | Matched: "${actorFeature.name}" (${actorIdentifier}) → "${compendiumFeature.name}" (${compendiumFeature.system.identifier})`);
       } else {
         unmatched.push(actorFeature);
+        console.log(`${this.MODULE_ID} | No match for: "${actorFeature.name}" (${actorIdentifier})`);
       }
     }
 
