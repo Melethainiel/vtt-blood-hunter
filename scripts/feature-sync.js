@@ -35,7 +35,7 @@ export class FeatureSync {
     console.log(`Blood Hunter | Loaded ${documents.length} features from compendium for sync`);
 
     // Prepare sync plan (dry run to match features)
-    const syncPlan = await this._prepareSyncPlan(actor, pack);
+    const syncPlan = await this._prepareSyncPlan(actor, documents);
 
     // Check if any features with identifiers were found
     if (syncPlan.total === 0) {
@@ -98,11 +98,11 @@ export class FeatureSync {
   /**
    * Prepare a sync plan by analyzing features and matching with compendium
    * @param {Actor} actor - The actor to analyze
-   * @param {CompendiumCollection} pack - The compendium pack
+   * @param {Array} documents - The compendium documents
    * @returns {Promise<Object>} Sync plan with matched and unmatched features
    * @private
    */
-  static async _prepareSyncPlan(actor, pack) {
+  static async _prepareSyncPlan(actor, documents) {
     // Find all features with identifiers (no subtype filter - more flexible)
     const candidateFeatures = actor.items.filter(item =>
       item.type === 'feat' &&
@@ -115,7 +115,7 @@ export class FeatureSync {
     // Dry run: check each feature against compendium
     for (const actorFeature of candidateFeatures) {
       const identifier = actorFeature.system.identifier;
-      const compendiumFeature = pack.contents.find(item =>
+      const compendiumFeature = documents.find(item =>
         item.system?.identifier === identifier
       );
 
