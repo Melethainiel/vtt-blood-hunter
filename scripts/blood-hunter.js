@@ -113,23 +113,33 @@ Hooks.on('dnd5e.preRollDamage', async(item, rollConfig) => {
   }
 });
 
-// Hook into activity usage to handle Crimson Rite feature activation
-// This allows the "Crimson Rite" feature from the compendium to trigger the activation dialog
+// Hook into activity usage to handle Blood Hunter feature activations
+// This allows features from the compendium to trigger custom dialogs and behaviors
 Hooks.on('dnd5e.preUseActivity', async(activity, usageConfig, dialogConfig, messageConfig) => {
   const item = activity?.item;
   if (!item) return;
 
-  // Check if this item is flagged as a Crimson Rite activation feature
-  if (item.getFlag('vtt-blood-hunter', 'crimsonRiteActivation')) {
-    await CrimsonRite.activateDialog();
-    return false; // Prevent default item usage
-  }
+  // Get all Blood Hunter flags from the item
+  const bhFlags = item.flags?.[MODULE_ID] || {};
 
-  // Check if this item is flagged as a Hybrid Transformation feature
-  if (item.getFlag('vtt-blood-hunter', 'hybridTransformation')) {
-    // TODO: Call OrderOfTheLycan.transformationDialog() in a future update
-    // For now, just infrastructure is in place
-    return false; // Prevent default item usage
+  // Map of feature flags to their handler functions
+  const featureHandlers = {
+    crimsonRiteActivation: async() => {
+      await CrimsonRite.activateDialog();
+      return false; // Prevent default item usage
+    },
+    hybridTransformation: async() => {
+      // TODO: Call OrderOfTheLycan.transformationDialog() in a future update
+      // For now, just infrastructure is in place
+      return false; // Prevent default item usage
+    }
+  };
+
+  // Check each flag and call its handler if found
+  for (const [flagKey, handler] of Object.entries(featureHandlers)) {
+    if (bhFlags[flagKey]) {
+      return await handler();
+    }
   }
 });
 
