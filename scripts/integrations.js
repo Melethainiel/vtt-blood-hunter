@@ -24,14 +24,6 @@ export class BloodHunterIntegrations {
   }
 
   /**
-   * Check if Advanced Macros is installed and active
-   * @returns {boolean} True if Advanced Macros is available
-   */
-  static isAdvancedMacrosActive() {
-    return game.modules.get('advanced-macros')?.active || false;
-  }
-
-  /**
    * Initialize integrations
    */
   static init() {
@@ -44,10 +36,6 @@ export class BloodHunterIntegrations {
     if (this.isMidiQOLActive()) {
       console.log(`${MODULE_ID} | midi-qol detected - Enhanced combat automation enabled`);
       this.setupMidiQOLIntegration();
-    }
-
-    if (this.isAdvancedMacrosActive()) {
-      console.log(`${MODULE_ID} | Advanced Macros detected - Item macro support enabled`);
     }
   }
 

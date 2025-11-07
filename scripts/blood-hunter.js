@@ -58,9 +58,6 @@ Hooks.once('ready', async function() {
 
   // Register actor sheet buttons
   registerActorSheetButtons();
-
-  // Create macro compendium if needed
-  await createMacros();
 });
 
 // Hook into combat turn changes to reset Blood Curse uses
@@ -125,6 +122,13 @@ Hooks.on('dnd5e.preUseActivity', async(activity, usageConfig, dialogConfig, mess
   // Check if this item is flagged as a Crimson Rite activation feature
   if (item.getFlag('vtt-blood-hunter', 'crimsonRiteActivation')) {
     await CrimsonRite.activateDialog();
+    return false; // Prevent default item usage
+  }
+
+  // Check if this item is flagged as a Hybrid Transformation feature
+  if (item.getFlag('vtt-blood-hunter', 'hybridTransformation')) {
+    // TODO: Call OrderOfTheLycan.transformationDialog() in a future update
+    // For now, just infrastructure is in place
     return false; // Prevent default item usage
   }
 });
@@ -208,22 +212,6 @@ function registerActorSheetButtons() {
     },
     isVisible: (actor) => BloodHunterUtils.isBloodHunter(actor)
   });
-}
-
-async function createMacros() {
-  // Create Hybrid Transformation macro
-  const lycanMacroName = 'BH: Hybrid Transformation';
-  const existingLycanMacro = game.macros.find(m => m.name === lycanMacroName);
-
-  if (!existingLycanMacro) {
-    await Macro.create({
-      name: lycanMacroName,
-      type: 'script',
-      img: 'icons/creatures/mammals/wolf-howl-moon-white.webp',
-      command: 'game.bloodhunter.OrderOfTheLycan.transformationDialog();',
-      flags: { 'vtt-blood-hunter': { macro: true } }
-    });
-  }
 }
 
 export { MODULE_ID, MODULE_NAME };

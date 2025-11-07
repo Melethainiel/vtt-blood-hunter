@@ -1,0 +1,133 @@
+{
+  "_id": "HybridTransform01",
+  "_key": "!items!HybridTransform01",
+  "name": "Hybrid Transformation",
+  "type": "feat",
+  "img": "icons/creatures/abilities/wolf-howl-moon-gray.webp",
+  "system": {
+    "description": {
+      "value": "<p>As a bonus action, you can transform into your hybrid form for up to 1 hour. You can speak, use equipment, and wear armor in this form.</p><p>You can transform a number of times equal to your proficiency bonus, and regain all expended uses when you finish a long rest.</p><p>While you are transformed, you gain the following benefits:</p><ul><li>You have advantage on Strength checks and saving throws.</li><li>Your speed increases by 10 feet.</li><li>You gain darkvision out to 60 feet if you don't already have it. If you already have darkvision, its range increases by 60 feet.</li><li>Your unarmed strikes are considered magical and deal 1d6 slashing damage. This die increases to 1d8 at 11th level, and 1d10 at 18th level.</li><li>You can use your Dexterity modifier instead of Strength for attack and damage rolls with your unarmed strikes.</li></ul>",
+      "chat": ""
+    },
+    "source": {
+      "custom": "Order of the Lycan",
+      "revision": 1,
+      "rules": "2014"
+    },
+    "type": {
+      "value": "class",
+      "subtype": "bloodHunter"
+    },
+    "identifier": "hybrid-transformation",
+    "activities": {
+      "dnd5eactivity000": {
+        "_id": "dnd5eactivity000",
+        "type": "utility",
+        "activation": {
+          "type": "bonus",
+          "value": 1,
+          "condition": "",
+          "override": false
+        },
+        "consumption": {
+          "targets": [],
+          "scaling": {
+            "allowed": false,
+            "max": ""
+          },
+          "spellSlot": true
+        },
+        "description": {
+          "chatFlavor": ""
+        },
+        "duration": {
+          "concentration": false,
+          "value": "1",
+          "units": "hour",
+          "special": "",
+          "override": false
+        },
+        "effects": [],
+        "range": {
+          "units": "self",
+          "special": "",
+          "override": false
+        },
+        "target": {
+          "template": {
+            "count": "",
+            "contiguous": false,
+            "type": "",
+            "size": "",
+            "width": "",
+            "height": "",
+            "units": ""
+          },
+          "affects": {
+            "count": "",
+            "type": "self",
+            "choice": false,
+            "special": ""
+          },
+          "prompt": true,
+          "override": false
+        },
+        "uses": {
+          "spent": 0,
+          "max": "",
+          "recovery": []
+        },
+        "roll": {
+          "formula": "",
+          "name": "",
+          "prompt": false,
+          "visible": false
+        },
+        "sort": 0,
+        "name": "",
+        "img": ""
+      }
+    },
+    "uses": {
+      "spent": 0,
+      "max": "@prof",
+      "recovery": [
+        {
+          "period": "lr",
+          "type": "recoverAll"
+        }
+      ]
+    },
+    "prerequisites": {
+      "level": null
+    },
+    "properties": [],
+    "enchantment": null,
+    "enchant": {}
+  },
+  "effects": [],
+  "flags": {
+    "vtt-blood-hunter": {
+      "hybridTransformation": true
+    },
+    "dnd5e": {
+      "advancementOrigin": null
+    }
+  },
+  "_stats": {
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "coreVersion": "13.346",
+    "systemId": "dnd5e",
+    "systemVersion": "4.3.6",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "exportSource": null
+  },
+  "folder": null,
+  "sort": 0,
+  "ownership": {
+    "default": 0
+  }
+}
