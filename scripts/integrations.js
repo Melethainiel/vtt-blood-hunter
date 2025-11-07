@@ -24,14 +24,6 @@ export class BloodHunterIntegrations {
   }
 
   /**
-   * Check if Advanced Macros is installed and active
-   * @returns {boolean} True if Advanced Macros is available
-   */
-  static isAdvancedMacrosActive() {
-    return game.modules.get('advanced-macros')?.active || false;
-  }
-
-  /**
    * Initialize integrations
    */
   static init() {
@@ -44,10 +36,6 @@ export class BloodHunterIntegrations {
     if (this.isMidiQOLActive()) {
       console.log(`${MODULE_ID} | midi-qol detected - Enhanced combat automation enabled`);
       this.setupMidiQOLIntegration();
-    }
-
-    if (this.isAdvancedMacrosActive()) {
-      console.log(`${MODULE_ID} | Advanced Macros detected - Item macro support enabled`);
     }
   }
 
@@ -156,15 +144,19 @@ export class BloodHunterIntegrations {
   }
 
   /**
-   * Create DAE-compatible effect data for Crimson Rite
+   * Create Crimson Rite effect data for weapon enchantment
+   * Uses dnd5e v4.x enchantment system for proper damage application
    * @param {string} riteType - The rite type
    * @param {string} damageType - The damage type
-   * @param {string} riteDamage - The damage dice
+   * @param {string} riteDamage - The damage dice (e.g., "1d6")
    * @param {string} weaponId - The weapon ID
    * @param {Actor} actor - The Blood Hunter actor
-   * @returns {Object} Effect data
+   * @returns {Object} Effect data for enchantment
    */
   static createCrimsonRiteEffect(riteType, damageType, riteDamage, weaponId, actor) {
+    // Parse damage dice (e.g., "1d6" -> {number: 1, denomination: 6})
+    const dice = BloodHunterUtils.parseDamageDice(riteDamage);
+
     const effectData = {
       name: `${game.i18n.localize('BLOODHUNTER.CrimsonRite.Title')} - ${game.i18n.localize('BLOODHUNTER.CrimsonRite.Types.' + riteType)}`,
       icon: BloodHunterUtils.getRiteIcon(riteType),
@@ -181,29 +173,29 @@ export class BloodHunterIntegrations {
           weaponId: weaponId
         }
       },
-      changes: []
+      changes: [],
+      transfer: false
     };
 
-    // If DAE is active, add damage bonus changes and special duration
-    if (this.isDAEActive()) {
-      // DAE will handle the damage bonus automatically
-      // This adds the bonus to the weapon's damage formula
-      effectData.changes.push({
-        key: 'system.damage.parts',
-        mode: CONST.ACTIVE_EFFECT_MODES.ADD,
-        value: JSON.stringify([riteDamage, damageType]),
-        priority: 20
-      });
+    // Add damage to activities[attack].damage.parts using the dnd5e v4.x format
+    // This works with or without DAE, as it's the native dnd5e v4.x system
+    effectData.changes.push({
+      key: 'activities[attack].damage.parts',
+      mode: CONST.ACTIVE_EFFECT_MODES.ADD,
+      value: JSON.stringify({
+        number: dice.number,
+        denomination: dice.denomination,
+        types: [damageType]
+      }),
+      priority: 20
+    });
 
-      // Add DAE special duration for rest removal
-      // DAE expects flags.dae.specialDuration for its special duration system
+    // If DAE is active, add special duration for rest removal
+    if (this.isDAEActive()) {
       effectData.flags.dae = {
         specialDuration: ['shortRest', 'longRest']
       };
     }
-
-    // Add transfer flag so effect appears on actor when weapon is equipped
-    effectData.transfer = true;
 
     return effectData;
   }

@@ -151,4 +151,23 @@ export class BloodHunterUtils {
 
     return icons[riteType] || 'icons/magic/fire/flame-burning-hand-purple.webp';
   }
+
+  /**
+   * Parse damage dice string into number and denomination
+   * @param {string} diceString - Dice string like "1d6" or "2d8"
+   * @returns {Object} Object with number and denomination properties
+   */
+  static parseDamageDice(diceString) {
+    // Match pattern like "1d6", "2d8", etc.
+    const match = diceString.match(/^(\d+)d(\d+)$/);
+    if (!match) {
+      console.warn(`vtt-blood-hunter | Invalid dice string: ${diceString}, defaulting to 1d6`);
+      return { number: 1, denomination: 6 };
+    }
+
+    return {
+      number: parseInt(match[1], 10),
+      denomination: parseInt(match[2], 10)
+    };
+  }
 }
