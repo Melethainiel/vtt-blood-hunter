@@ -117,7 +117,7 @@ export class FeatureSync {
 
     const matched = [];
     const unmatched = [];
-    const usedCompendiumIds = new Set(); // Track which compendium features have been matched
+    const usedCompendiumIdentifiers = new Set(); // Track which compendium features have been matched
 
     // Dry run: check each feature against compendium
     for (const actorFeature of candidateFeatures) {
@@ -126,7 +126,7 @@ export class FeatureSync {
       // Try to find exact match first
       let compendiumFeature = documents.find(item =>
         item.system?.identifier === actorIdentifier &&
-        !usedCompendiumIds.has(item.id) // Ensure not already matched
+        !usedCompendiumIdentifiers.has(item.system?.identifier) // Ensure not already matched
       );
 
       // If no exact match, try flexible matching as fallback
@@ -134,7 +134,7 @@ export class FeatureSync {
       if (!compendiumFeature) {
         compendiumFeature = documents.find(item => {
           const compIdentifier = item.system?.identifier;
-          if (!compIdentifier || usedCompendiumIds.has(item.id)) return false;
+          if (!compIdentifier || usedCompendiumIdentifiers.has(compIdentifier)) return false;
 
           // Normalize both identifiers for comparison (remove "the" variations)
           const normalizedActor = actorIdentifier.replace(/-the-/g, '-');
@@ -155,7 +155,7 @@ export class FeatureSync {
           actor: actorFeature,
           compendium: compendiumFeature
         });
-        usedCompendiumIds.add(compendiumFeature.id); // Mark this compendium feature as used
+        usedCompendiumIdentifiers.add(compendiumFeature.system.identifier); // Mark this compendium feature as used
         console.log(`${this.MODULE_ID} | Matched: "${actorFeature.name}" (${actorIdentifier}) → "${compendiumFeature.name}" (${compendiumFeature.system.identifier})`);
       } else {
         unmatched.push(actorFeature);
