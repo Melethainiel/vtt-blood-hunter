@@ -132,13 +132,17 @@ export function getAvailableCurses(actor, timing = null) {
     knownCurses = getKnownCursesByLevel(bloodHunterLevel);
   }
 
+  // Check if actor has Blood Maledict uses remaining
+  if (!hasUsesRemaining(actor)) {
+    return [];
+  }
+
   // Filter actor's items to only those curses that are known
   return actor.items.filter(i =>
     i.type === 'feat' &&
     i.flags[MODULE_ID]?.bloodCurse &&
     (!timing || i.flags[MODULE_ID]?.timing === timing) &&
     knownCurses.includes(i.flags[MODULE_ID]?.curseType) &&
-    bloodHunterLevel >= (i.flags[MODULE_ID]?.minLevel || 1) &&
-    hasUsesRemaining(actor, i)
+    bloodHunterLevel >= (i.flags[MODULE_ID]?.minLevel || 1)
   );
 }
