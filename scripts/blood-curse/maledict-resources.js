@@ -91,23 +91,24 @@ export async function consumeBloodMaledictUse(actor) {
 /**
  * Check if actor has uses remaining for Blood Curses
  * @param {Actor} actor - The Blood Hunter actor
- * @param {Item} curse - The curse item
  * @returns {boolean} True if uses remain
  */
-export function hasUsesRemaining(actor, curse) {
-  // Check if already used this turn
-  const usedThisTurn = curse.flags[MODULE_ID]?.usedThisTurn || false;
-  if (usedThisTurn) return false;
-
-  // Check Blood Maledict uses
+export function hasUsesRemaining(actor) {
+  // Check Blood Maledict uses only
   const maledictFeature = getBloodMaledictFeature(actor);
   if (maledictFeature) {
     const uses = maledictFeature.system.uses;
     if (uses && uses.max) {
-      // dnd5e v3+ uses 'spent' field
-      // Remaining uses = max - spent
-      const spent = uses.spent || 0;
-      const remaining = uses.max - spent;
+      // Check remaining uses - compatible with both dnd5e v3 (spent) and v4 (value)
+      let remaining;
+      if (uses.spent !== undefined) {
+        // dnd5e v3+ uses 'spent' field: remaining = max - spent
+        const spent = uses.spent || 0;
+        remaining = uses.max - spent;
+      } else {
+        // dnd5e v2 and some v4 uses 'value' field: remaining = value
+        remaining = uses.value || 0;
+      }
       return remaining > 0;
     }
   }
@@ -118,22 +119,12 @@ export function hasUsesRemaining(actor, curse) {
 
 /**
  * Reset Blood Curse uses at start of turn
+ * DEPRECATED: No longer needed as we only track Blood Maledict charges
  * @param {Combat} combat - The combat instance
  * @param {Object} updateData - Update data
  */
 export async function resetCurseUses(combat, updateData) {
-  const combatant = combat.combatant;
-  if (!combatant?.actor) return;
-
-  const actor = combatant.actor;
-  if (!BloodHunterUtils.isBloodHunter(actor)) return;
-
-  // Reset all Blood Curse uses
-  const curses = actor.items.filter(i =>
-    i.type === 'feat' && i.flags[MODULE_ID]?.bloodCurse
-  );
-
-  for (const curse of curses) {
-    await curse.unsetFlag(MODULE_ID, 'usedThisTurn');
-  }
+  // No longer needed - Blood Maledict charges are tracked directly
+  // Keeping this function for backward compatibility
+  return;
 }
