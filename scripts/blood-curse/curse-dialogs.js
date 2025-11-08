@@ -203,11 +203,6 @@ export async function promptFallenPuppet(bloodHunter, fallenCreature, fallenToke
 
   if (!curse) return;
 
-  // Check if already used this turn
-  if (curse.flags[MODULE_ID]?.usedThisTurn) {
-    return;
-  }
-
   // Check if Blood Maledict uses are available
   if (!hasUsesRemaining(bloodHunter, curse)) {
     return;
@@ -263,9 +258,6 @@ export async function promptFallenPuppet(bloodHunter, fallenCreature, fallenToke
 
             // Execute the curse
             await CurseImplementations.executeCurseOfTheFallenPuppet(bloodHunter, fallenCreature, fallenToken, amplify);
-
-            // Mark curse as used this turn
-            await curse.setFlag(MODULE_ID, 'usedThisTurn', true);
 
             resolve(true);
           }
