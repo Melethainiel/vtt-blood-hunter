@@ -1,5 +1,13 @@
 /**
  * Blood Curse of the Fallen Puppet implementation
+ *
+ * When a creature within 30 feet of you falls to 0 hit points, you can use your
+ * reaction to give that creature a final act of aggression. That creature immediately
+ * makes a single weapon attack against a target of your choice within its attack range.
+ *
+ * Amplified: You can first move the cursed creature up to half its walking speed.
+ * The attack roll of the cursed creature's attack gains a bonus equal to your
+ * hemocraft die.
  */
 
 import { BloodHunterUtils } from '../../utils.js';
@@ -7,10 +15,10 @@ import { MODULE_ID } from '../../blood-hunter.js';
 
 /**
  * Execute Blood Curse of the Fallen Puppet
- * @param {Actor} actor - The Blood Hunter actor
- * @param {Actor} fallenCreature - The creature that fell to 0 HP
- * @param {Token} fallenToken - The specific token that fell to 0 HP
- * @param {boolean} amplify - Whether amplified
+ * @param {Actor} actor - The Blood Hunter actor using the curse
+ * @param {Actor} fallenCreature - The creature that fell to 0 HP (to be controlled)
+ * @param {Token} fallenToken - The token of the fallen creature
+ * @param {boolean} amplify - Whether the curse is amplified
  */
 export async function executeCurseOfTheFallenPuppet(actor, fallenCreature, fallenToken, amplify) {
   if (!fallenCreature) {
@@ -18,10 +26,10 @@ export async function executeCurseOfTheFallenPuppet(actor, fallenCreature, falle
     return;
   }
 
-  // Get the hemocraft die for amplified bonus
+  // Get hemocraft die for amplified attack bonus
   const hemocraftDie = amplify ? BloodHunterUtils.getHemocraftDie(actor, 'blood-maledict') : null;
 
-  // Get available weapons from the fallen creature
+  // Find equipped weapons on the fallen creature
   const weapons = fallenCreature.items.filter(i =>
     i.type === 'weapon' && i.system.equipped
   );
@@ -31,13 +39,13 @@ export async function executeCurseOfTheFallenPuppet(actor, fallenCreature, falle
     return;
   }
 
-  // Build weapon options
+  // Build weapon selection options for dialog
   let weaponOptions = '';
   for (const weapon of weapons) {
     weaponOptions += `<option value="${weapon.id}">${weapon.name}</option>`;
   }
 
-  // Get all potential targets in range (exclude the specific fallen token)
+  // Get all available targets (exclude the fallen creature itself)
   const tokens = canvas.tokens.placeables.filter(t =>
     t.actor && (!fallenToken || t.id !== fallenToken.id)
   );
@@ -47,7 +55,7 @@ export async function executeCurseOfTheFallenPuppet(actor, fallenCreature, falle
     targetOptions += `<option value="${token.id}">${token.name}</option>`;
   }
 
-  // Create dialog for choosing weapon and target
+  // Prompt player to choose weapon and target
   const content = `
     <form class="bloodhunter-fallen-puppet">
       <p>${game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.Description')}</p>
@@ -88,7 +96,7 @@ export async function executeCurseOfTheFallenPuppet(actor, fallenCreature, falle
               return;
             }
 
-            // If amplified, move the creature first
+            // If amplified, notify about movement option
             if (amplify && fallenToken) {
               const speed = fallenCreature.system.attributes.movement?.walk || 30;
               const halfSpeed = Math.floor(speed / 2);
@@ -120,18 +128,17 @@ export async function executeCurseOfTheFallenPuppet(actor, fallenCreature, falle
               }
             });
 
-            // Trigger the weapon attack
+            // Execute weapon attack
             try {
-              // Store current targets to restore later
+              // Store and clear current targets
               const previousTargets = Array.from(game.user.targets);
 
-              // Clear all targets first
               previousTargets.forEach(t => t.setTarget(false, { user: game.user, releaseOthers: false }));
 
-              // Target the selected token exclusively
+              // Set the chosen target
               targetToken.setTarget(true, { user: game.user, releaseOthers: true, groupSelection: false });
 
-              // If amplified, add bonus to attack roll
+              // Apply amplified bonus to attack if needed
               let attackOptions = {};
               if (amplify && hemocraftDie) {
                 attackOptions = {
@@ -141,10 +148,10 @@ export async function executeCurseOfTheFallenPuppet(actor, fallenCreature, falle
                 };
               }
 
-              // Roll the attack using the weapon item from the fallen creature
+              // Execute weapon attack using dnd5e v4 item.use()
               await weapon.use(attackOptions, { createMessage: true });
 
-              // Clear target after attack and restore previous targets
+              // Restore previous targeting state
               targetToken.setTarget(false, { user: game.user, releaseOthers: false });
               previousTargets.forEach(t => {
                 if (t.id !== targetToken.id) {

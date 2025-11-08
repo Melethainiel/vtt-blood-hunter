@@ -127,18 +127,9 @@ Hooks.on('updateActor', async(actor, change, options, userId) => {
               continue;
             }
 
-            // Check remaining uses - compatible with both dnd5e v3 (spent) and v4 (value)
-            let remaining;
-            if (uses.spent !== undefined) {
-              // dnd5e v3+ uses 'spent' field
-              const spent = uses.spent || 0;
-              remaining = uses.max - spent;
-              console.log(`${MODULE_ID} | ${bloodHunter.name} Blood Maledict: ${remaining} remaining (${spent}/${uses.max} spent) [v3 format]`);
-            } else {
-              // dnd5e v2 and some v4 uses 'value' field
-              remaining = uses.value || 0;
-              console.log(`${MODULE_ID} | ${bloodHunter.name} Blood Maledict: ${remaining}/${uses.max} remaining [v2/v4 format]`);
-            }
+            // Check remaining uses (dnd5e v4)
+            const remaining = uses.value || 0;
+            console.log(`${MODULE_ID} | ${bloodHunter.name} Blood Maledict: ${remaining}/${uses.max} remaining`);
 
             if (remaining <= 0) {
               console.log(`${MODULE_ID} | ${bloodHunter.name} has no Blood Maledict uses remaining`);
