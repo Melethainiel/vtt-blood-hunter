@@ -121,17 +121,36 @@ export async function executeCurseOfTheFallenPuppet(actor, fallenCreature, falle
             });
 
             // Trigger the weapon attack
-            // Note: This would ideally trigger the actual weapon item's attack
-            // For now, we create a notification
-            ui.notifications.info(
-              game.i18n.format('BLOODHUNTER.BloodCurse.FallenPuppet.RollAttack', {
-                creature: fallenCreature.name,
-                weapon: weapon.name,
-                target: targetToken.name
-              })
-            );
+            try {
+              // Target the selected token
+              targetToken.setTarget(true, { user: game.user, releaseOthers: true, groupSelection: false });
 
-            resolve(true);
+              // If amplified, add bonus to attack roll
+              let attackOptions = {};
+              if (amplify && hemocraftDie) {
+                attackOptions = {
+                  advantage: false,
+                  disadvantage: false,
+                  bonus: hemocraftDie
+                };
+              }
+
+              // Roll the attack using the weapon item
+              await weapon.use(attackOptions, { createMessage: true });
+
+              // Clear target after attack
+              targetToken.setTarget(false, { user: game.user, releaseOthers: false, groupSelection: false });
+
+              resolve(true);
+            } catch (error) {
+              console.error('Error triggering Fallen Puppet attack:', error);
+              ui.notifications.error(
+                game.i18n.format('BLOODHUNTER.BloodCurse.FallenPuppet.AttackError', {
+                  error: error.message
+                })
+              );
+              resolve(false);
+            }
           }
         },
         cancel: {

@@ -167,7 +167,8 @@
         "With": "avec",
         "AmplifiedBonus": "Bonus Amplifié",
         "CanMove": "La marionnette peut se déplacer jusqu'à {distance} pieds avant d'attaquer",
-        "RollAttack": "Lancez l'attaque pour {creature} en utilisant {weapon} contre {target}"
+        "RollAttack": "Lancez l'attaque pour {creature} en utilisant {weapon} contre {target}",
+        "AttackError": "Erreur lors du déclenchement de l'attaque : {error}"
       }
     }
   }
