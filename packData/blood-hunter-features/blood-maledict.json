@@ -1,0 +1,127 @@
+{
+  "_id": "BloodMaledictFeature01",
+  "_key": "!items!BloodMaledictFeature01",
+  "name": "Blood Maledict",
+  "type": "feat",
+  "img": "icons/magic/death/skull-energy-light-purple.webp",
+  "system": {
+    "description": {
+      "value": "<p>You gain the ability to channel, or sometimes sacrifice, a part of your vital essence to curse and manipulate creatures through hemocraft magic.</p><p>You know one Blood Curse of your choice. You learn one additional blood curse at 6th, 10th, 14th, and 18th level. Each time you learn a new blood curse, you can also choose one of the blood curses you know and replace it with another blood curse.</p><p>While invoking a blood curse, but before it affects the target, you can choose to <strong>amplify</strong> the curse by taking necrotic damage equal to one roll of your hemocraft die. This damage can't be reduced in any way. An amplified curse gains an additional effect, noted in the curse's description.</p><p>Creatures that do not have blood are immune to blood curses unless you have amplified the curse.</p>",
+      "chat": ""
+    },
+    "source": {
+      "custom": "Blood Hunter Class",
+      "revision": 1,
+      "rules": "2014"
+    },
+    "type": {
+      "value": "class",
+      "subtype": "bloodHunter"
+    },
+    "identifier": "blood-maledict",
+    "activities": {},
+    "uses": {
+      "spent": 0,
+      "max": "1",
+      "recovery": [
+        {
+          "period": "sr",
+          "type": "recoverAll"
+        }
+      ]
+    },
+    "prerequisites": {
+      "level": 1
+    },
+    "properties": [],
+    "advancement": [
+      {
+        "_id": "bloodmaledict001",
+        "type": "ScaleValue",
+        "configuration": {
+          "identifier": "blood-maledict-uses",
+          "type": "number",
+          "distance": {
+            "units": ""
+          },
+          "scale": {
+            "1": {
+              "value": 1
+            },
+            "6": {
+              "value": 2
+            },
+            "13": {
+              "value": 3
+            },
+            "17": {
+              "value": 4
+            }
+          }
+        },
+        "value": {},
+        "title": "Blood Maledict Uses",
+        "icon": ""
+      },
+      {
+        "_id": "bloodmaledict002",
+        "type": "ScaleValue",
+        "configuration": {
+          "identifier": "blood-maledict",
+          "type": "dice",
+          "distance": {
+            "units": ""
+          },
+          "scale": {
+            "1": {
+              "number": 1,
+              "faces": 4
+            },
+            "5": {
+              "number": 1,
+              "faces": 6
+            },
+            "11": {
+              "number": 1,
+              "faces": 8
+            },
+            "17": {
+              "number": 1,
+              "faces": 10
+            }
+          }
+        },
+        "value": {},
+        "title": "Hemocraft Die",
+        "icon": ""
+      }
+    ],
+    "enchantment": null,
+    "enchant": {}
+  },
+  "effects": [],
+  "flags": {
+    "vtt-blood-hunter": {
+      "bloodMaledict": true
+    },
+    "dnd5e": {
+      "advancementOrigin": "bmtkWJ5tOnXmTdqv"
+    }
+  },
+  "_stats": {
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "coreVersion": "13.346",
+    "systemId": "dnd5e",
+    "systemVersion": "4.3.6",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "exportSource": null
+  },
+  "folder": null,
+  "sort": 0,
+  "ownership": {
+    "default": 0
+  }
+}

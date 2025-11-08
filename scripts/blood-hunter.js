@@ -65,6 +65,55 @@ Hooks.on('combatTurn', async(combat, updateData, options) => {
   await BloodCurse.resetCurseUses(combat, updateData);
 });
 
+// Hook into actor updates to detect when creatures drop to 0 HP (for Fallen Puppet curse)
+Hooks.on('updateActor', async(actor, change, options, userId) => {
+  // Check if HP changed to 0 or below
+  if (change.system?.attributes?.hp?.value !== undefined) {
+    const newHP = change.system.attributes.hp.value;
+    const oldHP = actor.system.attributes.hp.value;
+
+    // Creature just dropped to 0 HP
+    if (oldHP > 0 && newHP <= 0) {
+      // Find all Blood Hunters in the scene with Fallen Puppet curse
+      const bloodHunters = canvas.tokens?.placeables.filter(t =>
+        t.actor &&
+        BloodHunterUtils.isBloodHunter(t.actor) &&
+        t.actor.items.some(i =>
+          i.flags?.[MODULE_ID]?.bloodCurse &&
+          i.flags[MODULE_ID]?.curseType === 'fallen_puppet'
+        )
+      ) || [];
+
+      for (const bhToken of bloodHunters) {
+        const bloodHunter = bhToken.actor;
+        const fallenToken = canvas.tokens?.placeables.find(t => t.actor?.id === actor.id);
+
+        // Check if fallen creature is within 30 feet
+        if (fallenToken && bhToken) {
+          const distance = canvas.grid?.measureDistance(bhToken, fallenToken);
+          if (distance <= 30) {
+            // Check if Blood Hunter has Blood Maledict uses remaining
+            const maledictFeature = BloodCurse.getBloodMaledictFeature(bloodHunter);
+            if (!maledictFeature) {
+              console.warn(`${MODULE_ID} | ${bloodHunter.name} has no Blood Maledict feature`);
+              continue;
+            }
+
+            const uses = maledictFeature.system.uses;
+            if (!uses || !uses.max || (uses.value || 0) <= 0) {
+              console.log(`${MODULE_ID} | ${bloodHunter.name} has no Blood Maledict uses remaining`);
+              continue;
+            }
+
+            // Prompt the Blood Hunter to use Fallen Puppet
+            await BloodCurse.promptFallenPuppet(bloodHunter, actor);
+          }
+        }
+      }
+    }
+  }
+});
+
 // Hook into rest completion to remove Crimson Rites
 // Only use this hook if DAE is NOT active (DAE handles duration via special durations)
 Hooks.on('dnd5e.restCompleted', async(actor, result) => {

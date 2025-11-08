@@ -273,10 +273,98 @@ export class BloodCurse {
    * @returns {boolean} True if uses remain
    */
   static hasUsesRemaining(actor, curse) {
-    // Blood Curses can be used once per turn as a reaction/bonus action
-    // Track uses via a resource or flag
+    // Check if already used this turn
     const usedThisTurn = curse.flags[MODULE_ID]?.usedThisTurn || false;
-    return !usedThisTurn;
+    if (usedThisTurn) return false;
+
+    // Check Blood Maledict uses
+    const maledictFeature = this.getBloodMaledictFeature(actor);
+    if (maledictFeature) {
+      const uses = maledictFeature.system.uses;
+      if (uses && uses.max) {
+        return (uses.value || 0) > 0;
+      }
+    }
+
+    // Fallback: if no Blood Maledict feature found, allow use (backward compatibility)
+    return true;
+  }
+
+  /**
+   * Get the Blood Maledict feature from actor
+   * @param {Actor} actor - The Blood Hunter actor
+   * @returns {Item|null} The Blood Maledict feature or null
+   */
+  static getBloodMaledictFeature(actor) {
+    return actor.items.find(i =>
+      i.type === 'feat' &&
+      (i.name.toLowerCase().includes('blood maledict') ||
+       i.system?.identifier === 'blood-maledict')
+    );
+  }
+
+  /**
+   * Get max Blood Maledict uses based on Blood Hunter level
+   * @param {Actor} actor - The Blood Hunter actor
+   * @returns {number} Max uses (1/2/3/4 based on level)
+   */
+  static getBloodMaledictMaxUses(actor) {
+    const level = BloodHunterUtils.getBloodHunterLevel(actor);
+    if (level >= 17) return 4;
+    if (level >= 13) return 3;
+    if (level >= 6) return 2;
+    return 1;
+  }
+
+  /**
+   * Update Blood Maledict max uses based on current level
+   * @param {Actor} actor - The Blood Hunter actor
+   * @returns {Promise<boolean>} True if updated
+   */
+  static async updateBloodMaledictMaxUses(actor) {
+    const maledictFeature = this.getBloodMaledictFeature(actor);
+    if (!maledictFeature) return false;
+
+    const expectedMax = this.getBloodMaledictMaxUses(actor);
+    const currentMax = maledictFeature.system.uses.max;
+
+    // Only update if different
+    if (currentMax !== expectedMax.toString()) {
+      await maledictFeature.update({
+        'system.uses.max': expectedMax.toString()
+      });
+      console.log(`${MODULE_ID} | Updated Blood Maledict max uses to ${expectedMax}`);
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Consume one use of Blood Maledict
+   * @param {Actor} actor - The Blood Hunter actor
+   * @returns {Promise<boolean>} True if use was consumed
+   */
+  static async consumeBloodMaledictUse(actor) {
+    const maledictFeature = this.getBloodMaledictFeature(actor);
+    if (!maledictFeature) {
+      console.warn(`${MODULE_ID} | No Blood Maledict feature found on ${actor.name}`);
+      return false;
+    }
+
+    // Ensure max uses is correct for current level
+    await this.updateBloodMaledictMaxUses(actor);
+
+    const uses = maledictFeature.system.uses;
+    if (uses && uses.max) {
+      const remaining = (uses.value || 0) - 1;
+      await maledictFeature.update({
+        'system.uses.value': Math.max(0, remaining)
+      });
+      return true;
+    }
+
+    return false;
   }
 
   /**
@@ -365,6 +453,108 @@ export class BloodCurse {
   }
 
   /**
+   * Prompt Blood Hunter to use Fallen Puppet curse
+   * @param {Actor} bloodHunter - The Blood Hunter actor
+   * @param {Actor} fallenCreature - The creature that dropped to 0 HP
+   */
+  static async promptFallenPuppet(bloodHunter, fallenCreature) {
+    // Check if Blood Hunter has the Fallen Puppet curse
+    const curse = bloodHunter.items.find(i =>
+      i.flags?.[MODULE_ID]?.bloodCurse &&
+      i.flags[MODULE_ID]?.curseType === 'fallen_puppet'
+    );
+
+    if (!curse) return;
+
+    // Check if already used this turn
+    if (curse.flags[MODULE_ID]?.usedThisTurn) {
+      return;
+    }
+
+    // Check if Blood Maledict uses are available
+    if (!this.hasUsesRemaining(bloodHunter, curse)) {
+      return;
+    }
+
+    // Create prompt dialog
+    const content = `
+      <form class="bloodhunter-fallen-puppet-prompt">
+        <p><strong>${fallenCreature.name}</strong> has dropped to 0 hit points!</p>
+        <p>Use <strong>${curse.name}</strong>?</p>
+        <div class="form-group">
+          <label>
+            <input type="checkbox" name="amplify" id="fallen-puppet-amplify" />
+            ${game.i18n.localize('BLOODHUNTER.BloodCurse.Amplify')} (${game.i18n.localize('BLOODHUNTER.BloodCurse.CostsHP')})
+          </label>
+        </div>
+      </form>
+    `;
+
+    return new Promise((resolve) => {
+      const dialog = new Dialog({
+        title: curse.name,
+        content: content,
+        buttons: {
+          use: {
+            icon: '<i class="fas fa-hand-sparkles"></i>',
+            label: game.i18n.localize('BLOODHUNTER.BloodCurse.Use'),
+            callback: async(html) => {
+              const amplify = html.find('[name="amplify"]').prop('checked');
+
+              // Calculate HP cost if amplified
+              if (amplify) {
+                const hpCost = this.calculateAmplificationCost(bloodHunter);
+                const currentHP = bloodHunter.system.attributes.hp.value;
+
+                if (currentHP <= hpCost) {
+                  ui.notifications.warn(game.i18n.localize('BLOODHUNTER.BloodCurse.InsufficientHP'));
+                  resolve(false);
+                  return;
+                }
+
+                await bloodHunter.update({
+                  'system.attributes.hp.value': currentHP - hpCost
+                });
+
+                ui.notifications.info(
+                  game.i18n.format('BLOODHUNTER.BloodCurse.HPPaid', { cost: hpCost })
+                );
+              }
+
+              // Consume Blood Maledict use
+              await this.consumeBloodMaledictUse(bloodHunter);
+
+              // Execute the curse
+              await this.executeCurseOfTheFallenPuppet(bloodHunter, fallenCreature, amplify);
+
+              // Mark curse as used this turn
+              await curse.setFlag(MODULE_ID, 'usedThisTurn', true);
+
+              resolve(true);
+            }
+          },
+          skip: {
+            icon: '<i class="fas fa-times"></i>',
+            label: game.i18n.localize('BLOODHUNTER.BloodCurse.Skip'),
+            callback: () => resolve(false)
+          }
+        },
+        default: 'skip',
+        close: () => resolve(false)
+      }, {
+        width: 400
+      });
+
+      dialog.render(true);
+
+      // Auto-close after 10 seconds
+      setTimeout(() => {
+        dialog.close();
+      }, 10000);
+    });
+  }
+
+  /**
    * Execute a Blood Curse
    * @param {Actor} actor - The Blood Hunter actor
    * @param {Item} curse - The curse item
@@ -400,17 +590,22 @@ export class BloodCurse {
   }
 
   /**
-   * Calculate HP cost for amplification
+   * Calculate HP cost for amplifying a curse
+   * Rolls the hemocraft die as per Blood Maledict rules
    * @param {Actor} actor - The Blood Hunter actor
-   * @returns {number} HP cost
+   * @returns {Promise<number>} HP cost (rolled hemocraft die)
    */
-  static calculateAmplificationCost(actor) {
-    const bloodHunterLevel = BloodHunterUtils.getBloodHunterLevel(actor);
+  static async calculateAmplificationCost(actor) {
+    const hemocraftDie = BloodHunterUtils.getHemocraftDie(actor, 'blood-maledict');
+    const roll = await new Roll(hemocraftDie).evaluate();
 
-    if (bloodHunterLevel < 5) return 1;
-    if (bloodHunterLevel < 11) return 2;
-    if (bloodHunterLevel < 17) return 3;
-    return 4;
+    // Show the roll in chat
+    await roll.toMessage({
+      speaker: ChatMessage.getSpeaker({ actor }),
+      flavor: game.i18n.localize('BLOODHUNTER.BloodCurse.AmplificationCost') || 'Blood Curse Amplification Cost'
+    });
+
+    return roll.total;
   }
 
   /**
@@ -436,6 +631,9 @@ export class BloodCurse {
       case 'anxious':
         await this.executeCurseOfTheAnxious(actor, workflow, amplify);
         break;
+      case 'fallen_puppet':
+        await this.executeCurseOfTheFallenPuppet(actor, workflow, amplify);
+        break;
       // Add more curse types as needed
       default:
         console.warn(`${MODULE_ID} | Unknown curse type: ${curseType}`);
@@ -449,7 +647,7 @@ export class BloodCurse {
    * @param {boolean} amplify - Whether amplified
    */
   static async executeCurseOfTheMarked(actor, workflow, amplify) {
-    const hemocraftDie = BloodHunterUtils.getHemocraftDie(actor);
+    const hemocraftDie = BloodHunterUtils.getHemocraftDie(actor, 'blood-maledict');
     const bonusDice = amplify ? '2' : '1';
     const bonusRoll = await new Roll(`${bonusDice}${hemocraftDie.substring(1)}`).evaluate();
 
@@ -525,6 +723,150 @@ export class BloodCurse {
     if (amplify) {
       ui.notifications.info('Target also has disadvantage on next saving throw');
     }
+  }
+
+  /**
+   * Execute Blood Curse of the Fallen Puppet
+   * @param {Actor} actor - The Blood Hunter actor
+   * @param {Actor} fallenCreature - The creature that fell to 0 HP
+   * @param {boolean} amplify - Whether amplified
+   */
+  static async executeCurseOfTheFallenPuppet(actor, fallenCreature, amplify) {
+    if (!fallenCreature) {
+      ui.notifications.warn('No fallen creature to control');
+      return;
+    }
+
+    // Get the hemocraft die for amplified bonus
+    const hemocraftDie = amplify ? BloodHunterUtils.getHemocraftDie(actor, 'blood-maledict') : null;
+
+    // Get available weapons from the fallen creature
+    const weapons = fallenCreature.items.filter(i =>
+      i.type === 'weapon' && i.system.equipped
+    );
+
+    if (weapons.length === 0) {
+      ui.notifications.warn(game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.NoWeapons'));
+      return;
+    }
+
+    // Build weapon options
+    let weaponOptions = '';
+    for (const weapon of weapons) {
+      weaponOptions += `<option value="${weapon.id}">${weapon.name}</option>`;
+    }
+
+    // Get all potential targets in range
+    const tokens = canvas.tokens.placeables.filter(t =>
+      t.actor && t.actor.id !== fallenCreature.id
+    );
+
+    let targetOptions = '';
+    for (const token of tokens) {
+      targetOptions += `<option value="${token.id}">${token.name}</option>`;
+    }
+
+    // Create dialog for choosing weapon and target
+    const content = `
+      <form class="bloodhunter-fallen-puppet">
+        <p>${game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.Description')}</p>
+        ${amplify ? `<p><strong>${game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.Amplified')}</strong> +${hemocraftDie} ${game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.ToAttack')}</p>` : ''}
+        <div class="form-group">
+          <label>${game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.SelectWeapon')}:</label>
+          <select name="weapon" id="puppet-weapon">
+            ${weaponOptions}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>${game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.SelectTarget')}:</label>
+          <select name="target" id="puppet-target">
+            ${targetOptions}
+          </select>
+        </div>
+      </form>
+    `;
+
+    return new Promise((resolve) => {
+      new Dialog({
+        title: game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.Title'),
+        content: content,
+        buttons: {
+          attack: {
+            icon: '<i class="fas fa-crosshairs"></i>',
+            label: game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.Attack'),
+            callback: async(html) => {
+              const weaponId = html.find('[name="weapon"]').val();
+              const targetId = html.find('[name="target"]').val();
+
+              const weapon = fallenCreature.items.get(weaponId);
+              const targetToken = canvas.tokens.get(targetId);
+
+              if (!weapon || !targetToken) {
+                ui.notifications.error('Invalid weapon or target selection');
+                resolve(false);
+                return;
+              }
+
+              // If amplified, move the creature first
+              if (amplify) {
+                const fallenToken = canvas.tokens.placeables.find(t => t.actor?.id === fallenCreature.id);
+                if (fallenToken) {
+                  const speed = fallenCreature.system.attributes.movement?.walk || 30;
+                  const halfSpeed = Math.floor(speed / 2);
+                  ui.notifications.info(
+                    game.i18n.format('BLOODHUNTER.BloodCurse.FallenPuppet.CanMove', {
+                      distance: halfSpeed
+                    })
+                  );
+                }
+              }
+
+              // Create chat message describing the puppet attack
+              const messageContent = `
+                <div class="bloodhunter-puppet-attack">
+                  <h3>${game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.Title')}</h3>
+                  <p><strong>${fallenCreature.name}</strong> ${game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.Attacks')} <strong>${targetToken.name}</strong> ${game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.With')} ${weapon.name}</p>
+                  ${amplify ? `<p><em>${game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.AmplifiedBonus')}: +${hemocraftDie}</em></p>` : ''}
+                </div>
+              `;
+
+              await ChatMessage.create({
+                speaker: ChatMessage.getSpeaker({ actor: actor }),
+                content: messageContent,
+                flags: {
+                  [MODULE_ID]: {
+                    bloodCurse: true,
+                    curseType: 'fallen_puppet',
+                    amplified: amplify
+                  }
+                }
+              });
+
+              // Trigger the weapon attack
+              // Note: This would ideally trigger the actual weapon item's attack
+              // For now, we create a notification
+              ui.notifications.info(
+                game.i18n.format('BLOODHUNTER.BloodCurse.FallenPuppet.RollAttack', {
+                  creature: fallenCreature.name,
+                  weapon: weapon.name,
+                  target: targetToken.name
+                })
+              );
+
+              resolve(true);
+            }
+          },
+          cancel: {
+            icon: '<i class="fas fa-times"></i>',
+            label: game.i18n.localize('BLOODHUNTER.BloodCurse.Cancel'),
+            callback: () => resolve(false)
+          }
+        },
+        default: 'attack'
+      }, {
+        width: 400
+      }).render(true);
+    });
   }
 
   /**
