@@ -159,6 +159,7 @@ export class BloodHunterIntegrations {
 
     const effectData = {
       name: `${game.i18n.localize('BLOODHUNTER.CrimsonRite.Title')} - ${game.i18n.localize('BLOODHUNTER.CrimsonRite.Types.' + riteType)}`,
+      type: 'enchantment', // ⚠️ Type obligatoire pour les enchantements
       icon: BloodHunterUtils.getRiteIcon(riteType),
       origin: actor.uuid,
       duration: {
