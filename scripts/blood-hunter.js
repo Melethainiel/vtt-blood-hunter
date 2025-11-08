@@ -106,7 +106,7 @@ Hooks.on('preUpdateActor', async(actor, change, options, userId) => {
             }
 
             // Prompt the Blood Hunter to use Fallen Puppet
-            await BloodCurse.promptFallenPuppet(bloodHunter, actor);
+            await BloodCurse.promptFallenPuppet(bloodHunter, actor, fallenToken);
           }
         }
       }
