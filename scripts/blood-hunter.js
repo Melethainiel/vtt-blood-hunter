@@ -66,9 +66,8 @@ Hooks.on('combatTurn', async(combat, updateData, options) => {
 });
 
 // Hook into actor updates to detect when creatures drop to 0 HP (for Fallen Puppet curse)
-// Also updates Blood Maledict max uses when Blood Hunter levels up
 Hooks.on('updateActor', async(actor, change, options, userId) => {
-  // Check if HP changed to 0 or below (Fallen Puppet trigger)
+  // Check if HP changed to 0 or below
   if (change.system?.attributes?.hp?.value !== undefined) {
     const newHP = change.system.attributes.hp.value;
     const oldHP = actor.system.attributes.hp.value;
@@ -97,22 +96,6 @@ Hooks.on('updateActor', async(actor, change, options, userId) => {
             await BloodCurse.promptFallenPuppet(bloodHunter, actor);
           }
         }
-      }
-    }
-  }
-
-  // Update Blood Maledict max uses if Blood Hunter level changed
-  if (BloodHunterUtils.isBloodHunter(actor)) {
-    // Check if any items were updated (which could include class level changes)
-    if (change.items) {
-      const hasClassLevelChange = change.items.some(item =>
-        item.type === 'class' &&
-        (item.name?.toLowerCase().includes('blood hunter') || item.system?.identifier === 'bloodhunter') &&
-        item.system?.levels !== undefined
-      );
-
-      if (hasClassLevelChange) {
-        await BloodCurse.updateBloodMaledictMaxUses(actor);
       }
     }
   }

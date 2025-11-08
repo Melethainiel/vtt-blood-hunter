@@ -95,6 +95,13 @@ export class FeatureSync {
     }
     console.log(`Blood Hunter | Sync execution complete: ${results.synced} synced, ${results.failed} failed, ${results.skipped} skipped`);
 
+    // Update Blood Maledict max uses if feature was synced
+    const BloodCurse = (await import('./blood-curse.js')).BloodCurse;
+    const updated = await BloodCurse.updateBloodMaledictMaxUses(actor);
+    if (updated) {
+      console.log('Blood Hunter | Updated Blood Maledict max uses after sync');
+    }
+
     // Show results notification
     this._showSyncResults(actor, results);
 
