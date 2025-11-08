@@ -22,7 +22,7 @@
     "activities": {},
     "uses": {
       "spent": 0,
-      "max": "@scale.blood-hunter.blood-maledict-uses",
+      "max": "1",
       "recovery": [
         {
           "period": "sr",

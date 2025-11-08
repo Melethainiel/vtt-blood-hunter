@@ -304,6 +304,43 @@ export class BloodCurse {
   }
 
   /**
+   * Get max Blood Maledict uses based on Blood Hunter level
+   * @param {Actor} actor - The Blood Hunter actor
+   * @returns {number} Max uses (1/2/3/4 based on level)
+   */
+  static getBloodMaledictMaxUses(actor) {
+    const level = BloodHunterUtils.getBloodHunterLevel(actor);
+    if (level >= 17) return 4;
+    if (level >= 13) return 3;
+    if (level >= 6) return 2;
+    return 1;
+  }
+
+  /**
+   * Update Blood Maledict max uses based on current level
+   * @param {Actor} actor - The Blood Hunter actor
+   * @returns {Promise<boolean>} True if updated
+   */
+  static async updateBloodMaledictMaxUses(actor) {
+    const maledictFeature = this.getBloodMaledictFeature(actor);
+    if (!maledictFeature) return false;
+
+    const expectedMax = this.getBloodMaledictMaxUses(actor);
+    const currentMax = maledictFeature.system.uses.max;
+
+    // Only update if different
+    if (currentMax !== expectedMax.toString()) {
+      await maledictFeature.update({
+        'system.uses.max': expectedMax.toString()
+      });
+      console.log(`${MODULE_ID} | Updated Blood Maledict max uses to ${expectedMax}`);
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
    * Consume one use of Blood Maledict
    * @param {Actor} actor - The Blood Hunter actor
    * @returns {Promise<boolean>} True if use was consumed
@@ -314,6 +351,9 @@ export class BloodCurse {
       console.warn(`${MODULE_ID} | No Blood Maledict feature found on ${actor.name}`);
       return false;
     }
+
+    // Ensure max uses is correct for current level
+    await this.updateBloodMaledictMaxUses(actor);
 
     const uses = maledictFeature.system.uses;
     if (uses && uses.max) {
