@@ -15,6 +15,9 @@ import { FeatureSync } from './feature-sync.js';
 const MODULE_ID = 'vtt-blood-hunter';
 const MODULE_NAME = 'Blood Hunter';
 
+// Track actors that have already triggered Fallen Puppet to avoid duplicate prompts
+const fallenPuppetTriggered = new Set();
+
 Hooks.once('init', async function() {
   console.log(`${MODULE_NAME} | Initializing Blood Hunter Module`);
 
@@ -67,21 +70,27 @@ Hooks.on('combatTurn', async(combat, updateData, options) => {
   // No longer needed - keeping for backward compatibility
 });
 
-// Hook into actor updates to detect when creatures drop to 0 HP (for Fallen Puppet curse)
-// Use updateActor instead of preUpdateActor because preUpdateActor only triggers for the actor owner
+// Detect when creatures drop to 0 HP (for Fallen Puppet curse)
 Hooks.on('updateActor', async(actor, change, options, userId) => {
-  console.log(`${MODULE_ID} | updateActor triggered for user ${game.user.name} (${game.user.id}) - userId param: ${userId}`);
-
   // Check if HP changed to 0 or below
   if (change.system?.attributes?.hp?.value !== undefined) {
     const newHP = change.system.attributes.hp.value;
-    const oldHP = actor.system.attributes.hp.value;
 
-    console.log(`${MODULE_ID} | HP change detected: ${actor.name} ${oldHP} -> ${newHP}`);
+    // Creature is at 0 HP or below
+    if (newHP <= 0) {
+      // Check if we already triggered for this actor
+      const triggeredKey = `${actor.id}-${newHP}`;
+      if (fallenPuppetTriggered.has(triggeredKey)) {
+        return; // Already handled this drop to 0
+      }
 
-    // Creature just dropped to 0 HP
-    if (oldHP > 0 && newHP <= 0) {
-      console.log(`${MODULE_ID} | Creature dropped to 0 HP, checking for Blood Hunters with Fallen Puppet`);
+      // Mark as triggered
+      fallenPuppetTriggered.add(triggeredKey);
+
+      // Clean up after 1 second to allow re-triggering if HP changes again
+      setTimeout(() => fallenPuppetTriggered.delete(triggeredKey), 1000);
+
+      console.log(`${MODULE_ID} | Creature ${actor.name} at ${newHP} HP, checking for Blood Hunters with Fallen Puppet`);
 
       // Find all Blood Hunters in the scene with Fallen Puppet curse
       const bloodHunters = canvas.tokens?.placeables.filter(t =>
