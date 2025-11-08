@@ -9,9 +9,10 @@ import { MODULE_ID } from '../../blood-hunter.js';
  * Execute Blood Curse of the Fallen Puppet
  * @param {Actor} actor - The Blood Hunter actor
  * @param {Actor} fallenCreature - The creature that fell to 0 HP
+ * @param {Token} fallenToken - The specific token that fell to 0 HP
  * @param {boolean} amplify - Whether amplified
  */
-export async function executeCurseOfTheFallenPuppet(actor, fallenCreature, amplify) {
+export async function executeCurseOfTheFallenPuppet(actor, fallenCreature, fallenToken, amplify) {
   if (!fallenCreature) {
     ui.notifications.warn('No fallen creature to control');
     return;
@@ -36,9 +37,9 @@ export async function executeCurseOfTheFallenPuppet(actor, fallenCreature, ampli
     weaponOptions += `<option value="${weapon.id}">${weapon.name}</option>`;
   }
 
-  // Get all potential targets in range
+  // Get all potential targets in range (exclude the specific fallen token)
   const tokens = canvas.tokens.placeables.filter(t =>
-    t.actor && t.actor.id !== fallenCreature.id
+    t.actor && (!fallenToken || t.id !== fallenToken.id)
   );
 
   let targetOptions = '';
@@ -88,17 +89,14 @@ export async function executeCurseOfTheFallenPuppet(actor, fallenCreature, ampli
             }
 
             // If amplified, move the creature first
-            if (amplify) {
-              const fallenToken = canvas.tokens.placeables.find(t => t.actor?.id === fallenCreature.id);
-              if (fallenToken) {
-                const speed = fallenCreature.system.attributes.movement?.walk || 30;
-                const halfSpeed = Math.floor(speed / 2);
-                ui.notifications.info(
-                  game.i18n.format('BLOODHUNTER.BloodCurse.FallenPuppet.CanMove', {
-                    distance: halfSpeed
-                  })
-                );
-              }
+            if (amplify && fallenToken) {
+              const speed = fallenCreature.system.attributes.movement?.walk || 30;
+              const halfSpeed = Math.floor(speed / 2);
+              ui.notifications.info(
+                game.i18n.format('BLOODHUNTER.BloodCurse.FallenPuppet.CanMove', {
+                  distance: halfSpeed
+                })
+              );
             }
 
             // Create chat message describing the puppet attack

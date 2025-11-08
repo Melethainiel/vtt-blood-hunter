@@ -192,8 +192,9 @@ export async function promptBloodCurse(actor, curses, workflow) {
  * Prompt Blood Hunter to use Fallen Puppet curse
  * @param {Actor} bloodHunter - The Blood Hunter actor
  * @param {Actor} fallenCreature - The creature that dropped to 0 HP
+ * @param {Token} fallenToken - The specific token that dropped to 0 HP
  */
-export async function promptFallenPuppet(bloodHunter, fallenCreature) {
+export async function promptFallenPuppet(bloodHunter, fallenCreature, fallenToken) {
   // Check if Blood Hunter has the Fallen Puppet curse
   const curse = bloodHunter.items.find(i =>
     i.flags?.[MODULE_ID]?.bloodCurse &&
@@ -261,7 +262,7 @@ export async function promptFallenPuppet(bloodHunter, fallenCreature) {
             await consumeBloodMaledictUse(bloodHunter);
 
             // Execute the curse
-            await CurseImplementations.executeCurseOfTheFallenPuppet(bloodHunter, fallenCreature, amplify);
+            await CurseImplementations.executeCurseOfTheFallenPuppet(bloodHunter, fallenCreature, fallenToken, amplify);
 
             // Mark curse as used this turn
             await curse.setFlag(MODULE_ID, 'usedThisTurn', true);

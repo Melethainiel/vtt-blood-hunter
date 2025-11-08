@@ -122,8 +122,8 @@ export class BloodCurse {
    * Execute Blood Curse of the Fallen Puppet (backward compatibility)
    * @deprecated Use curse implementation modules instead
    */
-  static async executeCurseOfTheFallenPuppet(actor, fallenCreature, amplify) {
+  static async executeCurseOfTheFallenPuppet(actor, fallenCreature, fallenToken, amplify) {
     const { executeCurseOfTheFallenPuppet } = await import('./curses/curse-of-the-fallen-puppet.js');
-    return executeCurseOfTheFallenPuppet(actor, fallenCreature, amplify);
+    return executeCurseOfTheFallenPuppet(actor, fallenCreature, fallenToken, amplify);
   }
 }
