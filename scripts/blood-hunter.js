@@ -3,10 +3,10 @@
  * Main module initialization
  */
 
-import { CrimsonRite } from './crimson-rite.js';
+import { CrimsonRite } from './crimson-rite/index.js';
 import { BloodHunterUtils } from './utils.js';
 import { BloodHunterIntegrations } from './integrations.js';
-import { BloodCurse } from './blood-curse.js';
+import { BloodCurse } from './blood-curse/index.js';
 import { OrderOfTheLycan } from './order-lycan.js';
 import { ActorSheetButton } from './actor-sheet-button.js';
 import { FeatureSync } from './feature-sync.js';
@@ -66,7 +66,7 @@ Hooks.on('combatTurn', async(combat, updateData, options) => {
 });
 
 // Hook into actor updates to detect when creatures drop to 0 HP (for Fallen Puppet curse)
-Hooks.on('updateActor', async(actor, change, options, userId) => {
+Hooks.on('preUpdateActor', async(actor, change, options, userId) => {
   // Check if HP changed to 0 or below
   if (change.system?.attributes?.hp?.value !== undefined) {
     const newHP = change.system.attributes.hp.value;
