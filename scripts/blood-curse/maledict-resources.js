@@ -72,10 +72,16 @@ export async function consumeBloodMaledictUse(actor) {
 
   const uses = maledictFeature.system.uses;
   if (uses && uses.max) {
-    const remaining = (uses.value || 0) - 1;
+    // dnd5e v3+ uses 'spent' field instead of decrementing 'value'
+    // value = max - spent, so we increment spent to consume a use
+    const currentSpent = uses.spent || 0;
+    const newSpent = Math.min(currentSpent + 1, uses.max);
+
     await maledictFeature.update({
-      'system.uses.value': Math.max(0, remaining)
+      'system.uses.spent': newSpent
     });
+
+    console.log(`${MODULE_ID} | Consumed Blood Maledict use (${newSpent}/${uses.max} spent)`);
     return true;
   }
 
@@ -98,7 +104,11 @@ export function hasUsesRemaining(actor, curse) {
   if (maledictFeature) {
     const uses = maledictFeature.system.uses;
     if (uses && uses.max) {
-      return (uses.value || 0) > 0;
+      // dnd5e v3+ uses 'spent' field
+      // Remaining uses = max - spent
+      const spent = uses.spent || 0;
+      const remaining = uses.max - spent;
+      return remaining > 0;
     }
   }
 
