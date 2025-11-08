@@ -122,7 +122,13 @@ export async function executeCurseOfTheFallenPuppet(actor, fallenCreature, falle
 
             // Trigger the weapon attack
             try {
-              // Target the selected token
+              // Store current targets to restore later
+              const previousTargets = Array.from(game.user.targets);
+
+              // Clear all targets first
+              previousTargets.forEach(t => t.setTarget(false, { user: game.user, releaseOthers: false }));
+
+              // Target the selected token exclusively
               targetToken.setTarget(true, { user: game.user, releaseOthers: true, groupSelection: false });
 
               // If amplified, add bonus to attack roll
@@ -135,11 +141,16 @@ export async function executeCurseOfTheFallenPuppet(actor, fallenCreature, falle
                 };
               }
 
-              // Roll the attack using the weapon item
+              // Roll the attack using the weapon item from the fallen creature
               await weapon.use(attackOptions, { createMessage: true });
 
-              // Clear target after attack
-              targetToken.setTarget(false, { user: game.user, releaseOthers: false, groupSelection: false });
+              // Clear target after attack and restore previous targets
+              targetToken.setTarget(false, { user: game.user, releaseOthers: false });
+              previousTargets.forEach(t => {
+                if (t.id !== targetToken.id) {
+                  t.setTarget(true, { user: game.user, releaseOthers: false });
+                }
+              });
 
               resolve(true);
             } catch (error) {
