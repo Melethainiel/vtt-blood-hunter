@@ -92,6 +92,19 @@ Hooks.on('updateActor', async(actor, change, options, userId) => {
         if (fallenToken && bhToken) {
           const distance = canvas.grid?.measureDistance(bhToken, fallenToken);
           if (distance <= 30) {
+            // Check if Blood Hunter has Blood Maledict uses remaining
+            const maledictFeature = BloodCurse.getBloodMaledictFeature(bloodHunter);
+            if (!maledictFeature) {
+              console.warn(`${MODULE_ID} | ${bloodHunter.name} has no Blood Maledict feature`);
+              continue;
+            }
+
+            const uses = maledictFeature.system.uses;
+            if (!uses || !uses.max || (uses.value || 0) <= 0) {
+              console.log(`${MODULE_ID} | ${bloodHunter.name} has no Blood Maledict uses remaining`);
+              continue;
+            }
+
             // Prompt the Blood Hunter to use Fallen Puppet
             await BloodCurse.promptFallenPuppet(bloodHunter, actor);
           }
