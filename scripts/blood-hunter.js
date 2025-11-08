@@ -66,7 +66,7 @@ Hooks.on('combatTurn', async(combat, updateData, options) => {
 });
 
 // Hook into actor updates to detect when creatures drop to 0 HP (for Fallen Puppet curse)
-Hooks.on('updateActor', async(actor, change, options, userId) => {
+Hooks.on('preUpdateActor', async(actor, change, options, userId) => {
   // Check if HP changed to 0 or below
   if (change.system?.attributes?.hp?.value !== undefined) {
     const newHP = change.system.attributes.hp.value;
