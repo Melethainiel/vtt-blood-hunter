@@ -149,8 +149,10 @@
       "Cancel": "Cancel",
       "Amplify": "Amplify",
       "CostsHP": "costs HP",
+      "AmplificationCost": "Blood Curse Amplification Cost (Necrotic Damage)",
       "InsufficientHP": "Insufficient HP to amplify Blood Curse",
       "HPPaid": "Paid {cost} HP to amplify Blood Curse",
+      "NoUsesRemaining": "No Blood Maledict uses remaining",
 
       "FallenPuppet": {
         "Title": "Blood Curse of the Fallen Puppet",

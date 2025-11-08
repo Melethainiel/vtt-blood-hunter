@@ -149,8 +149,10 @@
       "Cancel": "Annuler",
       "Amplify": "Amplifier",
       "CostsHP": "coûte des PV",
+      "AmplificationCost": "Coût d'Amplification de Malédiction de Sang (Dégâts Nécrotiques)",
       "InsufficientHP": "Points de vie insuffisants pour amplifier la Malédiction de Sang",
       "HPPaid": "{cost} PV payés pour amplifier la Malédiction de Sang",
+      "NoUsesRemaining": "Aucune utilisation de Malédiction de Sang restante",
 
       "FallenPuppet": {
         "Title": "Malédiction de Sang de la Marionnette Déchue",

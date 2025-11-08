@@ -273,10 +273,58 @@ export class BloodCurse {
    * @returns {boolean} True if uses remain
    */
   static hasUsesRemaining(actor, curse) {
-    // Blood Curses can be used once per turn as a reaction/bonus action
-    // Track uses via a resource or flag
+    // Check if already used this turn
     const usedThisTurn = curse.flags[MODULE_ID]?.usedThisTurn || false;
-    return !usedThisTurn;
+    if (usedThisTurn) return false;
+
+    // Check Blood Maledict uses
+    const maledictFeature = this.getBloodMaledictFeature(actor);
+    if (maledictFeature) {
+      const uses = maledictFeature.system.uses;
+      if (uses && uses.max) {
+        return (uses.value || 0) > 0;
+      }
+    }
+
+    // Fallback: if no Blood Maledict feature found, allow use (backward compatibility)
+    return true;
+  }
+
+  /**
+   * Get the Blood Maledict feature from actor
+   * @param {Actor} actor - The Blood Hunter actor
+   * @returns {Item|null} The Blood Maledict feature or null
+   */
+  static getBloodMaledictFeature(actor) {
+    return actor.items.find(i =>
+      i.type === 'feat' &&
+      (i.name.toLowerCase().includes('blood maledict') ||
+       i.system?.identifier === 'blood-maledict')
+    );
+  }
+
+  /**
+   * Consume one use of Blood Maledict
+   * @param {Actor} actor - The Blood Hunter actor
+   * @returns {Promise<boolean>} True if use was consumed
+   */
+  static async consumeBloodMaledictUse(actor) {
+    const maledictFeature = this.getBloodMaledictFeature(actor);
+    if (!maledictFeature) {
+      console.warn(`${MODULE_ID} | No Blood Maledict feature found on ${actor.name}`);
+      return false;
+    }
+
+    const uses = maledictFeature.system.uses;
+    if (uses && uses.max) {
+      const remaining = (uses.value || 0) - 1;
+      await maledictFeature.update({
+        'system.uses.value': Math.max(0, remaining)
+      });
+      return true;
+    }
+
+    return false;
   }
 
   /**
@@ -383,6 +431,11 @@ export class BloodCurse {
       return;
     }
 
+    // Check if Blood Maledict uses are available
+    if (!this.hasUsesRemaining(bloodHunter, curse)) {
+      return;
+    }
+
     // Create prompt dialog
     const content = `
       <form class="bloodhunter-fallen-puppet-prompt">
@@ -428,10 +481,13 @@ export class BloodCurse {
                 );
               }
 
+              // Consume Blood Maledict use
+              await this.consumeBloodMaledictUse(bloodHunter);
+
               // Execute the curse
               await this.executeCurseOfTheFallenPuppet(bloodHunter, fallenCreature, amplify);
 
-              // Mark curse as used
+              // Mark curse as used this turn
               await curse.setFlag(MODULE_ID, 'usedThisTurn', true);
 
               resolve(true);
@@ -494,17 +550,22 @@ export class BloodCurse {
   }
 
   /**
-   * Calculate HP cost for amplification
+   * Calculate HP cost for amplifying a curse
+   * Rolls the hemocraft die as per Blood Maledict rules
    * @param {Actor} actor - The Blood Hunter actor
-   * @returns {number} HP cost
+   * @returns {Promise<number>} HP cost (rolled hemocraft die)
    */
-  static calculateAmplificationCost(actor) {
-    const bloodHunterLevel = BloodHunterUtils.getBloodHunterLevel(actor);
+  static async calculateAmplificationCost(actor) {
+    const hemocraftDie = BloodHunterUtils.getHemocraftDie(actor, 'blood-maledict');
+    const roll = await new Roll(hemocraftDie).evaluate();
 
-    if (bloodHunterLevel < 5) return 1;
-    if (bloodHunterLevel < 11) return 2;
-    if (bloodHunterLevel < 17) return 3;
-    return 4;
+    // Show the roll in chat
+    await roll.toMessage({
+      speaker: ChatMessage.getSpeaker({ actor }),
+      flavor: game.i18n.localize('BLOODHUNTER.BloodCurse.AmplificationCost') || 'Blood Curse Amplification Cost'
+    });
+
+    return roll.total;
   }
 
   /**
