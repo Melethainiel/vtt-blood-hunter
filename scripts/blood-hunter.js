@@ -60,9 +60,11 @@ Hooks.once('ready', async function() {
   registerActorSheetButtons();
 });
 
-// Hook into combat turn changes to reset Blood Curse uses
+// Hook into combat turn changes - no longer needed for Blood Curse uses
+// Blood Maledict charges are now tracked directly on the feature
+// Keeping the hook for potential future use
 Hooks.on('combatTurn', async(combat, updateData, options) => {
-  await BloodCurse.resetCurseUses(combat, updateData);
+  // No longer needed - keeping for backward compatibility
 });
 
 // Hook into actor updates to detect when creatures drop to 0 HP (for Fallen Puppet curse)
@@ -100,13 +102,25 @@ Hooks.on('preUpdateActor', async(actor, change, options, userId) => {
             }
 
             const uses = maledictFeature.system.uses;
-            if (!uses || !uses.max || (uses.value || 0) <= 0) {
-              console.log(`${MODULE_ID} | ${bloodHunter.name} has no Blood Maledict uses remaining`);
+            if (!uses || !uses.max) {
+              console.log(`${MODULE_ID} | ${bloodHunter.name} has no Blood Maledict uses configured`);
               continue;
             }
 
-            // Prompt the Blood Hunter to use Fallen Puppet
-            await BloodCurse.promptFallenPuppet(bloodHunter, actor, fallenToken);
+            // dnd5e v3+ uses 'spent' field
+            const spent = uses.spent || 0;
+            const remaining = uses.max - spent;
+
+            if (remaining <= 0) {
+              console.log(`${MODULE_ID} | ${bloodHunter.name} has no Blood Maledict uses remaining (${spent}/${uses.max} spent)`);
+              continue;
+            }
+
+            // Only prompt if this is the current user's character or if GM
+            if (bloodHunter.isOwner || game.user.isGM) {
+              // Prompt the Blood Hunter to use Fallen Puppet
+              await BloodCurse.promptFallenPuppet(bloodHunter, actor, fallenToken);
+            }
           }
         }
       }
