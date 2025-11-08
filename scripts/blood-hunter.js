@@ -69,13 +69,19 @@ Hooks.on('combatTurn', async(combat, updateData, options) => {
 
 // Hook into actor updates to detect when creatures drop to 0 HP (for Fallen Puppet curse)
 Hooks.on('preUpdateActor', async(actor, change, options, userId) => {
+  console.log(`${MODULE_ID} | preUpdateActor triggered for user ${game.user.name} (${game.user.id}) - userId param: ${userId}`);
+
   // Check if HP changed to 0 or below
   if (change.system?.attributes?.hp?.value !== undefined) {
     const newHP = change.system.attributes.hp.value;
     const oldHP = actor.system.attributes.hp.value;
 
+    console.log(`${MODULE_ID} | HP change detected: ${actor.name} ${oldHP} -> ${newHP}`);
+
     // Creature just dropped to 0 HP
     if (oldHP > 0 && newHP <= 0) {
+      console.log(`${MODULE_ID} | Creature dropped to 0 HP, checking for Blood Hunters with Fallen Puppet`);
+
       // Find all Blood Hunters in the scene with Fallen Puppet curse
       const bloodHunters = canvas.tokens?.placeables.filter(t =>
         t.actor &&
@@ -86,6 +92,8 @@ Hooks.on('preUpdateActor', async(actor, change, options, userId) => {
         )
       ) || [];
 
+      console.log(`${MODULE_ID} | Found ${bloodHunters.length} Blood Hunters with Fallen Puppet curse`);
+
       for (const bhToken of bloodHunters) {
         const bloodHunter = bhToken.actor;
         const fallenToken = canvas.tokens?.placeables.find(t => t.actor?.id === actor.id);
@@ -93,6 +101,8 @@ Hooks.on('preUpdateActor', async(actor, change, options, userId) => {
         // Check if fallen creature is within 30 feet
         if (fallenToken && bhToken) {
           const distance = canvas.grid?.measureDistance(bhToken, fallenToken);
+          console.log(`${MODULE_ID} | Distance from ${bloodHunter.name} to ${actor.name}: ${distance} feet`);
+
           if (distance <= 30) {
             // Check if Blood Hunter has Blood Maledict uses remaining
             const maledictFeature = BloodCurse.getBloodMaledictFeature(bloodHunter);
@@ -107,19 +117,34 @@ Hooks.on('preUpdateActor', async(actor, change, options, userId) => {
               continue;
             }
 
-            // dnd5e v3+ uses 'spent' field
-            const spent = uses.spent || 0;
-            const remaining = uses.max - spent;
+            // Check remaining uses - compatible with both dnd5e v3 (spent) and v4 (value)
+            let remaining;
+            if (uses.spent !== undefined) {
+              // dnd5e v3+ uses 'spent' field
+              const spent = uses.spent || 0;
+              remaining = uses.max - spent;
+              console.log(`${MODULE_ID} | ${bloodHunter.name} Blood Maledict: ${remaining} remaining (${spent}/${uses.max} spent) [v3 format]`);
+            } else {
+              // dnd5e v2 and some v4 uses 'value' field
+              remaining = uses.value || 0;
+              console.log(`${MODULE_ID} | ${bloodHunter.name} Blood Maledict: ${remaining}/${uses.max} remaining [v2/v4 format]`);
+            }
 
             if (remaining <= 0) {
-              console.log(`${MODULE_ID} | ${bloodHunter.name} has no Blood Maledict uses remaining (${spent}/${uses.max} spent)`);
+              console.log(`${MODULE_ID} | ${bloodHunter.name} has no Blood Maledict uses remaining`);
               continue;
             }
 
+            // Check ownership
+            console.log(`${MODULE_ID} | Checking ownership: bloodHunter.isOwner=${bloodHunter.isOwner}, game.user.isGM=${game.user.isGM}`);
+
             // Only prompt if this is the current user's character or if GM
             if (bloodHunter.isOwner || game.user.isGM) {
+              console.log(`${MODULE_ID} | Prompting ${game.user.name} to use Fallen Puppet`);
               // Prompt the Blood Hunter to use Fallen Puppet
               await BloodCurse.promptFallenPuppet(bloodHunter, actor, fallenToken);
+            } else {
+              console.log(`${MODULE_ID} | Skipping prompt - user ${game.user.name} is not owner of ${bloodHunter.name}`);
             }
           }
         }

@@ -99,10 +99,16 @@ export function hasUsesRemaining(actor) {
   if (maledictFeature) {
     const uses = maledictFeature.system.uses;
     if (uses && uses.max) {
-      // dnd5e v3+ uses 'spent' field
-      // Remaining uses = max - spent
-      const spent = uses.spent || 0;
-      const remaining = uses.max - spent;
+      // Check remaining uses - compatible with both dnd5e v3 (spent) and v4 (value)
+      let remaining;
+      if (uses.spent !== undefined) {
+        // dnd5e v3+ uses 'spent' field: remaining = max - spent
+        const spent = uses.spent || 0;
+        remaining = uses.max - spent;
+      } else {
+        // dnd5e v2 and some v4 uses 'value' field: remaining = value
+        remaining = uses.value || 0;
+      }
       return remaining > 0;
     }
   }
