@@ -141,6 +141,32 @@
         "HybridTransformationMastery": "Hybrid Transformation Mastery",
         "HybridTransformationMasteryDesc": "Advantage on Blood Lust saving throws"
       }
+    },
+
+    "BloodCurse": {
+      "Use": "Use Curse",
+      "Skip": "Skip",
+      "Cancel": "Cancel",
+      "Amplify": "Amplify",
+      "CostsHP": "costs HP",
+      "InsufficientHP": "Insufficient HP to amplify Blood Curse",
+      "HPPaid": "Paid {cost} HP to amplify Blood Curse",
+
+      "FallenPuppet": {
+        "Title": "Blood Curse of the Fallen Puppet",
+        "Description": "Control the fallen creature to make one weapon attack.",
+        "Amplified": "Amplified: The creature can move up to half its speed first, and the attack gains your hemocraft die as a bonus.",
+        "ToAttack": "damage bonus to the attack",
+        "SelectWeapon": "Select Weapon",
+        "SelectTarget": "Select Target",
+        "Attack": "Make Attack",
+        "NoWeapons": "The fallen creature has no equipped weapons",
+        "Attacks": "attacks",
+        "With": "with",
+        "AmplifiedBonus": "Amplified Bonus",
+        "CanMove": "The puppet can move up to {distance} feet before attacking",
+        "RollAttack": "Roll attack for {creature} using {weapon} against {target}"
+      }
     }
   }
 }

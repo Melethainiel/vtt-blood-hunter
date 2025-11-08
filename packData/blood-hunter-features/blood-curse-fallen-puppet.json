@@ -1,0 +1,132 @@
+{
+  "_id": "BloodCurseFallenPuppet01",
+  "_key": "!items!BloodCurseFallenPuppet01",
+  "name": "Blood Curse of the Fallen Puppet",
+  "type": "feat",
+  "img": "icons/magic/death/undead-zombie-grave-green.webp",
+  "system": {
+    "description": {
+      "value": "<p>When a creature you can see within 30 feet of you drops to 0 hit points, you can use your reaction to instill that creature with a final act of aggression. The creature immediately makes one weapon attack against a target of your choice within its range.</p><p><strong>Amplify.</strong> You can first cause the cursed creature to move up to half its speed, and you add your hemocraft die to the attack's damage roll.</p>",
+      "chat": ""
+    },
+    "source": {
+      "custom": "Blood Hunter Class",
+      "revision": 1,
+      "rules": "2014"
+    },
+    "type": {
+      "value": "class",
+      "subtype": "bloodHunter"
+    },
+    "identifier": "blood-curse-fallen-puppet",
+    "activities": {
+      "dnd5eactivity000": {
+        "_id": "dnd5eactivity000",
+        "type": "utility",
+        "activation": {
+          "type": "reaction",
+          "value": 1,
+          "condition": "Creature within 30 feet drops to 0 hit points",
+          "override": false
+        },
+        "consumption": {
+          "targets": [],
+          "scaling": {
+            "allowed": false,
+            "max": ""
+          },
+          "spellSlot": true
+        },
+        "description": {
+          "chatFlavor": ""
+        },
+        "duration": {
+          "concentration": false,
+          "value": "",
+          "units": "inst",
+          "special": "",
+          "override": false
+        },
+        "effects": [],
+        "range": {
+          "value": "30",
+          "units": "ft",
+          "special": "",
+          "override": false
+        },
+        "target": {
+          "template": {
+            "count": "",
+            "contiguous": false,
+            "type": "",
+            "size": "",
+            "width": "",
+            "height": "",
+            "units": ""
+          },
+          "affects": {
+            "count": "1",
+            "type": "creature",
+            "choice": false,
+            "special": ""
+          },
+          "prompt": true,
+          "override": false
+        },
+        "uses": {
+          "spent": 0,
+          "max": "",
+          "recovery": []
+        },
+        "roll": {
+          "formula": "",
+          "name": "",
+          "prompt": false,
+          "visible": false
+        },
+        "sort": 0,
+        "name": "",
+        "img": ""
+      }
+    },
+    "uses": {
+      "spent": 0,
+      "max": "",
+      "recovery": []
+    },
+    "prerequisites": {
+      "level": 6
+    },
+    "properties": [],
+    "enchantment": null,
+    "enchant": {}
+  },
+  "effects": [],
+  "flags": {
+    "vtt-blood-hunter": {
+      "bloodCurse": true,
+      "curseType": "fallen_puppet",
+      "timing": "reaction",
+      "minLevel": 6
+    },
+    "dnd5e": {
+      "advancementOrigin": "bmtkWJ5tOnXmTdqv"
+    }
+  },
+  "_stats": {
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "coreVersion": "13.346",
+    "systemId": "dnd5e",
+    "systemVersion": "4.3.6",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "exportSource": null
+  },
+  "folder": null,
+  "sort": 0,
+  "ownership": {
+    "default": 0
+  }
+}

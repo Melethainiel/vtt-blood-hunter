@@ -141,6 +141,32 @@
         "HybridTransformationMastery": "Maîtrise de la Transformation Hybride",
         "HybridTransformationMasteryDesc": "Avantage aux jets de sauvegarde contre la Soif de Sang"
       }
+    },
+
+    "BloodCurse": {
+      "Use": "Utiliser la Malédiction",
+      "Skip": "Passer",
+      "Cancel": "Annuler",
+      "Amplify": "Amplifier",
+      "CostsHP": "coûte des PV",
+      "InsufficientHP": "Points de vie insuffisants pour amplifier la Malédiction de Sang",
+      "HPPaid": "{cost} PV payés pour amplifier la Malédiction de Sang",
+
+      "FallenPuppet": {
+        "Title": "Malédiction de Sang de la Marionnette Déchue",
+        "Description": "Contrôlez la créature déchue pour effectuer une attaque d'arme.",
+        "Amplified": "Amplifié : La créature peut d'abord se déplacer jusqu'à la moitié de sa vitesse, et l'attaque gagne votre dé hémocratique comme bonus.",
+        "ToAttack": "bonus de dégâts à l'attaque",
+        "SelectWeapon": "Sélectionner l'Arme",
+        "SelectTarget": "Sélectionner la Cible",
+        "Attack": "Effectuer l'Attaque",
+        "NoWeapons": "La créature déchue n'a aucune arme équipée",
+        "Attacks": "attaque",
+        "With": "avec",
+        "AmplifiedBonus": "Bonus Amplifié",
+        "CanMove": "La marionnette peut se déplacer jusqu'à {distance} pieds avant d'attaquer",
+        "RollAttack": "Lancez l'attaque pour {creature} en utilisant {weapon} contre {target}"
+      }
     }
   }
 }
