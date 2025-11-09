@@ -3,8 +3,8 @@
  * Handles GM/Player interactions for curses that require GM permissions
  */
 
-import { MODULE_ID } from '../blood-hunter.js';
-
+// Define MODULE_ID locally to avoid circular dependency with blood-hunter.js
+const MODULE_ID = 'vtt-blood-hunter';
 const SOCKET_NAME = `module.${MODULE_ID}`;
 
 /**
