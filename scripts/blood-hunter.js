@@ -10,6 +10,7 @@ import { BloodCurse } from './blood-curse/index.js';
 import { OrderOfTheLycan } from './order-lycan.js';
 import { ActorSheetButton } from './actor-sheet-button.js';
 import { FeatureSync } from './feature-sync.js';
+import { initSocket } from './blood-curse/socket-handler.js';
 
 // Module constants
 const MODULE_ID = 'vtt-blood-hunter';
@@ -49,6 +50,9 @@ Hooks.once('init', async function() {
 
 Hooks.once('ready', async function() {
   console.log(`${MODULE_NAME} | Module Ready`);
+
+  // Initialize socket handlers
+  initSocket();
 
   // Initialize integrations
   BloodHunterIntegrations.init();
@@ -139,13 +143,19 @@ Hooks.on('updateActor', async(actor, change, options, userId) => {
             // Check ownership
             console.log(`${MODULE_ID} | Checking ownership: bloodHunter.isOwner=${bloodHunter.isOwner}, game.user.isGM=${game.user.isGM}`);
 
-            // Only prompt if this is the current user's character or if GM
-            if (bloodHunter.isOwner || game.user.isGM) {
+            // Determine if we should prompt this user
+            // 1. If the Blood Hunter has a player owner and this user owns it (not GM)
+            // 2. If the Blood Hunter has no player owner and this user is GM
+            const hasPlayerOwner = bloodHunter.hasPlayerOwner;
+            const shouldPrompt = (hasPlayerOwner && bloodHunter.isOwner && !game.user.isGM) ||
+                                (!hasPlayerOwner && game.user.isGM);
+
+            if (shouldPrompt) {
               console.log(`${MODULE_ID} | Prompting ${game.user.name} to use Fallen Puppet`);
               // Prompt the Blood Hunter to use Fallen Puppet
               await BloodCurse.promptFallenPuppet(bloodHunter, actor, fallenToken);
             } else {
-              console.log(`${MODULE_ID} | Skipping prompt - user ${game.user.name} is not owner of ${bloodHunter.name}`);
+              console.log(`${MODULE_ID} | Skipping prompt - user ${game.user.name} should not be prompted (hasPlayerOwner: ${hasPlayerOwner}, isOwner: ${bloodHunter.isOwner}, isGM: ${game.user.isGM})`);
             }
           }
         }

@@ -12,6 +12,7 @@
 
 import { BloodHunterUtils } from '../../utils.js';
 import { MODULE_ID } from '../../blood-hunter.js';
+import { requestFallenPuppetAttack } from '../socket-handler.js';
 
 /**
  * Execute Blood Curse of the Fallen Puppet
@@ -130,36 +131,51 @@ export async function executeCurseOfTheFallenPuppet(actor, fallenCreature, falle
 
             // Execute weapon attack
             try {
-              // Store and clear current targets
-              const previousTargets = Array.from(game.user.targets);
+              // Check if current user is GM - GMs execute directly, players request via socket
+              if (game.user.isGM) {
+                // GM can execute directly
+                // Store and clear current targets
+                const previousTargets = Array.from(game.user.targets);
 
-              previousTargets.forEach(t => t.setTarget(false, { user: game.user, releaseOthers: false }));
+                previousTargets.forEach(t => t.setTarget(false, { user: game.user, releaseOthers: false }));
 
-              // Set the chosen target
-              targetToken.setTarget(true, { user: game.user, releaseOthers: true, groupSelection: false });
+                // Set the chosen target
+                targetToken.setTarget(true, { user: game.user, releaseOthers: true, groupSelection: false });
 
-              // Apply amplified bonus to attack if needed
-              let attackOptions = {};
-              if (amplify && hemocraftDie) {
-                attackOptions = {
-                  advantage: false,
-                  disadvantage: false,
-                  bonus: hemocraftDie
-                };
-              }
-
-              // Execute weapon attack using dnd5e v4 item.use()
-              await weapon.use(attackOptions, { createMessage: true });
-
-              // Restore previous targeting state
-              targetToken.setTarget(false, { user: game.user, releaseOthers: false });
-              previousTargets.forEach(t => {
-                if (t.id !== targetToken.id) {
-                  t.setTarget(true, { user: game.user, releaseOthers: false });
+                // Apply amplified bonus to attack if needed
+                let attackOptions = {};
+                if (amplify && hemocraftDie) {
+                  attackOptions = {
+                    advantage: false,
+                    disadvantage: false,
+                    bonus: hemocraftDie
+                  };
                 }
-              });
 
-              resolve(true);
+                // Execute weapon attack using dnd5e v4 item.use()
+                await weapon.use(attackOptions, { createMessage: true });
+
+                // Restore previous targeting state
+                targetToken.setTarget(false, { user: game.user, releaseOthers: false });
+                previousTargets.forEach(t => {
+                  if (t.id !== targetToken.id) {
+                    t.setTarget(true, { user: game.user, releaseOthers: false });
+                  }
+                });
+
+                resolve(true);
+              } else {
+                // Player - send request to GM via socket
+                await requestFallenPuppetAttack(
+                  actor.id,
+                  fallenToken.id,
+                  targetToken.id,
+                  weapon.id,
+                  amplify,
+                  hemocraftDie
+                );
+                resolve(true);
+              }
             } catch (error) {
               console.error('Error triggering Fallen Puppet attack:', error);
               ui.notifications.error(

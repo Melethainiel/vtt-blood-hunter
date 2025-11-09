@@ -168,7 +168,16 @@
         "AmplifiedBonus": "Amplified Bonus",
         "CanMove": "The puppet can move up to {distance} feet before attacking",
         "RollAttack": "Roll attack for {creature} using {weapon} against {target}",
-        "AttackError": "Error triggering attack: {error}"
+        "AttackError": "Error triggering attack: {error}",
+        "RequestSent": "Fallen Puppet request sent to GM...",
+        "WantsToUse": "wants to use",
+        "MakeAttack": "Make",
+        "Approve": "Approve",
+        "Deny": "Deny",
+        "Approved": "Fallen Puppet approved by GM!",
+        "Denied": "Fallen Puppet request denied by GM",
+        "InvalidRequest": "Invalid Fallen Puppet request",
+        "WeaponNotFound": "Weapon not found on fallen creature"
       }
     }
   }

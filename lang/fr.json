@@ -168,7 +168,16 @@
         "AmplifiedBonus": "Bonus Amplifié",
         "CanMove": "La marionnette peut se déplacer jusqu'à {distance} pieds avant d'attaquer",
         "RollAttack": "Lancez l'attaque pour {creature} en utilisant {weapon} contre {target}",
-        "AttackError": "Erreur lors du déclenchement de l'attaque : {error}"
+        "AttackError": "Erreur lors du déclenchement de l'attaque : {error}",
+        "RequestSent": "Demande de Marionnette Déchue envoyée au MJ...",
+        "WantsToUse": "veut utiliser",
+        "MakeAttack": "Faire",
+        "Approve": "Approuver",
+        "Deny": "Refuser",
+        "Approved": "Marionnette Déchue approuvée par le MJ !",
+        "Denied": "Demande de Marionnette Déchue refusée par le MJ",
+        "InvalidRequest": "Demande de Marionnette Déchue invalide",
+        "WeaponNotFound": "Arme introuvable sur la créature déchue"
       }
     }
   }
