@@ -5,6 +5,41 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2025-11-09
+
+### Fixed
+- **Fallen Puppet multiplayer permissions** - Fixed critical issue where players couldn't use Fallen Puppet curse in multiplayer games
+  - Players can now request GM approval to execute attacks on tokens they don't control
+  - GM no longer receives duplicate notifications when a player owns the Blood Hunter
+  - Improved ownership detection logic to only notify the actual owner OR GM (not both)
+
+### Added
+- **Socket-based GM/Player communication** - New socket system for handling Fallen Puppet requests (scripts/blood-curse/socket-handler.js)
+  - Players send attack requests to GM with weapon and target selection
+  - GM receives confirmation dialog with full details (player name, puppet, target, weapon)
+  - GM can approve or deny requests
+  - Players receive real-time notifications of approval/denial status
+  - Attack executes with GM permissions when approved
+- **Comprehensive translations** - Added EN/FR translations for all socket messages and GM approval dialogs
+  - Request sent notification
+  - GM approval/denial messages
+  - Error messages for invalid requests
+
+### Changed
+- **Fallen Puppet execution flow** - Different behavior for GMs vs players
+  - GMs: Direct execution (backward compatible, no socket overhead)
+  - Players: Socket request workflow with GM approval
+- **Ownership detection** - More precise logic for determining who should receive Fallen Puppet prompts
+  - Only player owner receives prompt if Blood Hunter has player owner
+  - Only GM receives prompt if Blood Hunter is NPC with no player owner
+
+### Technical Details
+- New module: `scripts/blood-curse/socket-handler.js` with 224 lines of socket handling code
+- Updated: `scripts/blood-hunter.js` - Socket initialization and improved ownership logic
+- Updated: `scripts/blood-curse/curses/curse-of-the-fallen-puppet.js` - GM/player execution branching
+- All changes are backward compatible - no breaking changes
+- Lint and validation tests pass
+
 ## [1.2.10] - 2025-11-06
 
 ### Added
