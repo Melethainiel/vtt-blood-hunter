@@ -30,7 +30,7 @@ export async function executeCurseOfTheFallenPuppet(actor, fallenCreature, falle
   // Get hemocraft die for amplified attack bonus
   const hemocraftDie = amplify ? BloodHunterUtils.getHemocraftDie(actor, 'blood-maledict') : null;
 
-  // Find equipped weapons on the fallen creature
+  // Get weapons from the fallen creature (the puppet)
   const weapons = fallenCreature.items.filter(i =>
     i.type === 'weapon' && i.system.equipped
   );
@@ -40,21 +40,25 @@ export async function executeCurseOfTheFallenPuppet(actor, fallenCreature, falle
     return;
   }
 
-  // Build weapon selection options for dialog
-  let weaponOptions = '';
-  for (const weapon of weapons) {
-    weaponOptions += `<option value="${weapon.id}">${weapon.name}</option>`;
-  }
+  // Build weapon options from the fallen creature
+  const weaponOptions = weapons.map(w =>
+    `<option value="${w.id}">${w.name}</option>`
+  ).join('');
 
-  // Get all available targets (exclude the fallen creature itself)
-  const tokens = canvas.tokens.placeables.filter(t =>
+  // Get all potential targets (creatures around the fallen puppet)
+  const targetTokens = canvas.tokens.placeables.filter(t =>
     t.actor && (!fallenToken || t.id !== fallenToken.id)
   );
 
-  let targetOptions = '';
-  for (const token of tokens) {
-    targetOptions += `<option value="${token.id}">${token.name}</option>`;
+  if (targetTokens.length === 0) {
+    ui.notifications.warn('No available targets found');
+    return;
   }
+
+  // Build target options
+  const targetOptions = targetTokens.map(t =>
+    `<option value="${t.id}">${t.name}</option>`
+  ).join('');
 
   // Prompt player to choose weapon and target
   const content = `
