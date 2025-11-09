@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.3] - 2025-11-09
+
+### Fixed
+- **Fallen Puppet targeting error** - Fixed critical bug that prevented GM from approving Fallen Puppet attacks
+  - Resolved "targetToken.setTarget is not a function" error in socket handler
+  - Properly distinguish between Token objects (canvas placeables) and TokenDocument objects (data models)
+  - Token objects retrieved via `canvas.tokens.get()` now correctly used for targeting operations
+  - Added validation to ensure Token objects have required `setTarget()` method before execution
+  - Fixes multiplayer workflow when player requests and GM approves Fallen Puppet attacks
+
+### Technical Details
+- Updated `scripts/blood-curse/socket-handler.js`:
+  - `handleFallenPuppetRequest()` now retrieves both TokenDocument (for data) and Token (for targeting)
+  - `executeGMFallenPuppetAttack()` validates Token objects before calling `setTarget()`
+  - Added error handling for missing or invalid token objects
+- No breaking changes - all existing functionality preserved
+
 ## [1.3.0] - 2025-11-09
 
 ### Fixed
