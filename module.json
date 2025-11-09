@@ -42,6 +42,7 @@
   "styles": [
     "styles/blood-hunter.css"
   ],
+  "socket": true,
   "languages": [
     {
       "lang": "en",
