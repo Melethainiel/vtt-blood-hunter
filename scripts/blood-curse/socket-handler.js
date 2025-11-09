@@ -12,34 +12,54 @@ const SOCKET_NAME = `module.${MODULE_ID}`;
  * Called once during module ready hook
  */
 export function initSocket() {
-  console.log(`${MODULE_ID} | Initializing socket handlers`);
+  if (!game.socket) {
+    console.error(`${MODULE_ID} | game.socket not available during initSocket()`);
+    return;
+  }
+
+  console.log(`${MODULE_ID} | Initializing socket handlers for: ${SOCKET_NAME}`);
 
   game.socket.on(SOCKET_NAME, async(data) => {
-    console.log(`${MODULE_ID} | Socket received:`, data);
+    console.log(`${MODULE_ID} | Socket received on ${SOCKET_NAME}:`, data);
 
-    switch (data.action) {
-      case 'fallenPuppetRequest':
-        if (game.user.isGM) {
-          await handleFallenPuppetRequest(data);
-        }
-        break;
+    try {
+      switch (data.action) {
+        case 'fallenPuppetRequest':
+          if (game.user.isGM) {
+            console.log(`${MODULE_ID} | Processing fallenPuppetRequest as GM`);
+            await handleFallenPuppetRequest(data);
+          } else {
+            console.log(`${MODULE_ID} | Ignoring fallenPuppetRequest (not GM)`);
+          }
+          break;
 
-      case 'fallenPuppetResponse':
-        if (data.userId === game.user.id) {
-          handleFallenPuppetResponse(data);
-        }
-        break;
+        case 'fallenPuppetResponse':
+          if (data.userId === game.user.id) {
+            console.log(`${MODULE_ID} | Processing fallenPuppetResponse for this user`);
+            handleFallenPuppetResponse(data);
+          } else {
+            console.log(`${MODULE_ID} | Ignoring fallenPuppetResponse (different user)`);
+          }
+          break;
 
-      case 'notification':
-        if (data.userId === game.user.id) {
-          ui.notifications[data.type || 'info'](data.message);
-        }
-        break;
+        case 'notification':
+          if (data.userId === game.user.id) {
+            console.log(`${MODULE_ID} | Displaying notification for this user`);
+            ui.notifications[data.type || 'info'](data.message);
+          } else {
+            console.log(`${MODULE_ID} | Ignoring notification (different user)`);
+          }
+          break;
 
-      default:
-        console.warn(`${MODULE_ID} | Unknown socket action: ${data.action}`);
+        default:
+          console.warn(`${MODULE_ID} | Unknown socket action: ${data.action}`);
+      }
+    } catch (error) {
+      console.error(`${MODULE_ID} | Error handling socket message:`, error);
     }
   });
+
+  console.log(`${MODULE_ID} | Socket handlers initialized successfully`);
 }
 
 /**
@@ -53,6 +73,12 @@ export function initSocket() {
  * @param {string} hemocraftDie - The hemocraft die (e.g., "1d6")
  */
 export async function requestFallenPuppetAttack(bloodHunterId, puppetTokenId, targetTokenId, weaponId, amplify, hemocraftDie) {
+  if (!game.socket) {
+    console.error(`${MODULE_ID} | game.socket not available, cannot send request`);
+    ui.notifications.error('Socket not available, cannot send request to GM');
+    return;
+  }
+
   const data = {
     action: 'fallenPuppetRequest',
     bloodHunterId: bloodHunterId,
@@ -65,9 +91,16 @@ export async function requestFallenPuppetAttack(bloodHunterId, puppetTokenId, ta
     playerName: game.user.name
   };
 
-  console.log(`${MODULE_ID} | Sending Fallen Puppet request to GM:`, data);
+  console.log(`${MODULE_ID} | Emitting to socket ${SOCKET_NAME}:`, data);
 
-  game.socket.emit(SOCKET_NAME, data);
+  try {
+    game.socket.emit(SOCKET_NAME, data);
+    console.log(`${MODULE_ID} | Socket emit successful`);
+  } catch (error) {
+    console.error(`${MODULE_ID} | Error emitting socket:`, error);
+    ui.notifications.error(`Failed to send request: ${error.message}`);
+    return;
+  }
 
   ui.notifications.info(game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.RequestSent') || 'Fallen Puppet request sent to GM...');
 }
@@ -215,10 +248,24 @@ function handleFallenPuppetResponse(data) {
  * @param {string} type - Notification type: 'info', 'warning', 'error', 'success'
  */
 export function notifyPlayer(userId, message, type = 'info') {
-  game.socket.emit(SOCKET_NAME, {
+  if (!game.socket) {
+    console.error(`${MODULE_ID} | game.socket not available, cannot send notification`);
+    return;
+  }
+
+  const data = {
     action: 'notification',
     userId: userId,
     message: message,
     type: type
-  });
+  };
+
+  console.log(`${MODULE_ID} | Sending notification to user ${userId}:`, data);
+
+  try {
+    game.socket.emit(SOCKET_NAME, data);
+    console.log(`${MODULE_ID} | Notification sent successfully`);
+  } catch (error) {
+    console.error(`${MODULE_ID} | Error sending notification:`, error);
+  }
 }
