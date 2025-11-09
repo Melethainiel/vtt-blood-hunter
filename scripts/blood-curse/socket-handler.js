@@ -110,22 +110,26 @@ export async function requestFallenPuppetAttack(bloodHunterId, puppetTokenId, ta
  * @param {object} data - The request data
  */
 async function handleFallenPuppetRequest(data) {
-  const puppet = canvas.scene.tokens.get(data.puppetTokenId);
-  const target = canvas.scene.tokens.get(data.targetTokenId);
+  const puppetDoc = canvas.scene.tokens.get(data.puppetTokenId);
+  const targetDoc = canvas.scene.tokens.get(data.targetTokenId);
   const bloodHunter = game.actors.get(data.bloodHunterId);
 
-  if (!puppet || !target || !bloodHunter) {
+  if (!puppetDoc || !targetDoc || !bloodHunter) {
     console.error(`${MODULE_ID} | Invalid tokens or actor in Fallen Puppet request`);
     notifyPlayer(data.playerId, game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.InvalidRequest') || 'Invalid request', 'error');
     return;
   }
 
-  const weapon = puppet.actor.items.get(data.weaponId);
+  const weapon = puppetDoc.actor.items.get(data.weaponId);
   if (!weapon) {
     console.error(`${MODULE_ID} | Weapon not found on puppet`);
     notifyPlayer(data.playerId, game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.WeaponNotFound') || 'Weapon not found', 'error');
     return;
   }
+
+  // Get the actual Token objects (not TokenDocuments) for targeting
+  const puppetToken = canvas.tokens.get(data.puppetTokenId);
+  const targetToken = canvas.tokens.get(data.targetTokenId);
 
   // Create confirmation dialog for GM
   new Dialog({
@@ -133,7 +137,7 @@ async function handleFallenPuppetRequest(data) {
     content: `
       <div class="bloodhunter-gm-approval">
         <p><strong>${data.playerName}</strong> ${game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.WantsToUse') || 'wants to use'} <strong>${game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.Title')}</strong></p>
-        <p>${game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.MakeAttack') || 'Make'} <strong>${puppet.name}</strong> ${game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.Attack') || 'attack'} <strong>${target.name}</strong> ${game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.With') || 'with'} ${weapon.name}?</p>
+        <p>${game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.MakeAttack') || 'Make'} <strong>${puppetDoc.name}</strong> ${game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.Attack') || 'attack'} <strong>${targetDoc.name}</strong> ${game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.With') || 'with'} ${weapon.name}?</p>
         ${data.amplify ? `<p><em>${game.i18n.localize('BLOODHUNTER.BloodCurse.Amplified') || 'Amplified'}: +${data.hemocraftDie}</em></p>` : ''}
       </div>
     `,
@@ -142,7 +146,7 @@ async function handleFallenPuppetRequest(data) {
         icon: '<i class="fas fa-check"></i>',
         label: game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.Approve') || 'Approve',
         callback: async() => {
-          await executeGMFallenPuppetAttack(data, puppet, target, weapon);
+          await executeGMFallenPuppetAttack(data, puppetToken, targetToken, weapon);
         }
       },
       deny: {
@@ -160,12 +164,20 @@ async function handleFallenPuppetRequest(data) {
 /**
  * Execute Fallen Puppet attack as GM
  * @param {object} data - The request data
- * @param {Token} puppetToken - The puppet token
- * @param {Token} targetToken - The target token
+ * @param {Token} puppetToken - The puppet token object (not TokenDocument)
+ * @param {Token} targetToken - The target token object (not TokenDocument)
  * @param {Item} weapon - The weapon item
  */
 async function executeGMFallenPuppetAttack(data, puppetToken, targetToken, weapon) {
   try {
+    // Validate that we received Token objects with setTarget method
+    if (!puppetToken || !targetToken) {
+      throw new Error('Invalid token objects - tokens not found on canvas');
+    }
+    if (typeof targetToken.setTarget !== 'function') {
+      throw new Error('targetToken is not a Token object (missing setTarget method)');
+    }
+
     // Create chat message describing the puppet attack
     const bloodHunter = game.actors.get(data.bloodHunterId);
     const messageContent = `
