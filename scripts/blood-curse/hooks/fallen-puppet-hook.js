@@ -16,11 +16,13 @@ export async function handleFallenPuppetTrigger(fallenActor) {
   console.log(`${MODULE_ID} | Checking for Blood Hunters with Fallen Puppet curse for ${fallenActor.name}`);
 
   // Find the fallen token ONCE (not inside the loop)
-  // For synthetic actors (unlinked tokens), actor.parent.id gives the token ID
-  // For linked actors, we need to find by actor.id
-  const fallenToken = canvas.tokens?.placeables.find(t =>
-    t.id === fallenActor.parent?.id || t.actor?.id === fallenActor.id
-  );
+  // First check for synthetic actors (unlinked tokens) by token ID
+  // If not found, then check for linked actors by actor ID
+  let fallenToken = canvas.tokens?.placeables.find(t => t.id === fallenActor.parent?.id);
+
+  if (!fallenToken) {
+    fallenToken = canvas.tokens?.placeables.find(t => t.actor?.id === fallenActor.id);
+  }
 
   if (!fallenToken) {
     console.log(`${MODULE_ID} | No token found for fallen creature ${fallenActor.name}`);
