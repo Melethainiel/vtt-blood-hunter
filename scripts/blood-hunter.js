@@ -94,72 +94,8 @@ Hooks.on('updateActor', async(actor, change, options, userId) => {
       // Clean up after 1 second to allow re-triggering if HP changes again
       setTimeout(() => fallenPuppetTriggered.delete(triggeredKey), 1000);
 
-      console.log(`${MODULE_ID} | Creature ${actor.name} at ${newHP} HP, checking for Blood Hunters with Fallen Puppet`);
-
-      // Find all Blood Hunters in the scene with Fallen Puppet curse
-      const bloodHunters = canvas.tokens?.placeables.filter(t =>
-        t.actor &&
-        BloodHunterUtils.isBloodHunter(t.actor) &&
-        t.actor.items.some(i =>
-          i.flags?.[MODULE_ID]?.bloodCurse &&
-          i.flags[MODULE_ID]?.curseType === 'fallen_puppet'
-        )
-      ) || [];
-
-      console.log(`${MODULE_ID} | Found ${bloodHunters.length} Blood Hunters with Fallen Puppet curse`);
-
-      for (const bhToken of bloodHunters) {
-        const bloodHunter = bhToken.actor;
-        const fallenToken = canvas.tokens?.placeables.find(t => t.actor?.id === actor.id);
-
-        // Check if fallen creature is within 30 feet
-        if (fallenToken && bhToken) {
-          const distance = canvas.grid?.measureDistance(bhToken, fallenToken);
-          console.log(`${MODULE_ID} | Distance from ${bloodHunter.name} to ${actor.name}: ${distance} feet`);
-
-          if (distance <= 30) {
-            // Check if Blood Hunter has Blood Maledict uses remaining
-            const maledictFeature = BloodCurse.getBloodMaledictFeature(bloodHunter);
-            if (!maledictFeature) {
-              console.warn(`${MODULE_ID} | ${bloodHunter.name} has no Blood Maledict feature`);
-              continue;
-            }
-
-            const uses = maledictFeature.system.uses;
-            if (!uses || !uses.max) {
-              console.log(`${MODULE_ID} | ${bloodHunter.name} has no Blood Maledict uses configured`);
-              continue;
-            }
-
-            // Check remaining uses (dnd5e v4)
-            const remaining = uses.value || 0;
-            console.log(`${MODULE_ID} | ${bloodHunter.name} Blood Maledict: ${remaining}/${uses.max} remaining`);
-
-            if (remaining <= 0) {
-              console.log(`${MODULE_ID} | ${bloodHunter.name} has no Blood Maledict uses remaining`);
-              continue;
-            }
-
-            // Check ownership
-            console.log(`${MODULE_ID} | Checking ownership: bloodHunter.isOwner=${bloodHunter.isOwner}, game.user.isGM=${game.user.isGM}`);
-
-            // Determine if we should prompt this user
-            // 1. If the Blood Hunter has a player owner and this user owns it (not GM)
-            // 2. If the Blood Hunter has no player owner and this user is GM
-            const hasPlayerOwner = bloodHunter.hasPlayerOwner;
-            const shouldPrompt = (hasPlayerOwner && bloodHunter.isOwner && !game.user.isGM) ||
-                                (!hasPlayerOwner && game.user.isGM);
-
-            if (shouldPrompt) {
-              console.log(`${MODULE_ID} | Prompting ${game.user.name} to use Fallen Puppet`);
-              // Prompt the Blood Hunter to use Fallen Puppet
-              await BloodCurse.promptFallenPuppet(bloodHunter, actor, fallenToken);
-            } else {
-              console.log(`${MODULE_ID} | Skipping prompt - user ${game.user.name} should not be prompted (hasPlayerOwner: ${hasPlayerOwner}, isOwner: ${bloodHunter.isOwner}, isGM: ${game.user.isGM})`);
-            }
-          }
-        }
-      }
+      // Delegate to Blood Curse module
+      await BloodCurse.handleFallenPuppetTrigger(actor);
     }
   }
 });

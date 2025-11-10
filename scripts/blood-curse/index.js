@@ -8,6 +8,7 @@ import * as Detection from './curse-detection.js';
 import * as Resources from './maledict-resources.js';
 import * as Dialogs from './curse-dialogs.js';
 import * as MidiIntegration from './midi-integration.js';
+import * as Hooks from './hooks/index.js';
 import { MODULE_ID } from '../blood-hunter.js';
 
 export class BloodCurse {
@@ -18,6 +19,9 @@ export class BloodCurse {
   static getKnownCursesFromFeatures = Detection.getKnownCursesFromFeatures;
   static getKnownCursesByLevel = Detection.getKnownCursesByLevel;
   static getAvailableCurses = Detection.getAvailableCurses;
+
+  // Hook handlers
+  static handleFallenPuppetTrigger = Hooks.handleFallenPuppetTrigger;
 
   // Resource management methods
   static getBloodMaledictFeature = Resources.getBloodMaledictFeature;

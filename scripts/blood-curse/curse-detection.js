@@ -146,3 +146,4 @@ export function getAvailableCurses(actor, timing = null) {
     bloodHunterLevel >= (i.flags[MODULE_ID]?.minLevel || 1)
   );
 }
+
