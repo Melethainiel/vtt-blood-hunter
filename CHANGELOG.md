@@ -5,6 +5,43 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.5] - 2025-11-10
+
+### Fixed
+- **Fallen Puppet synthetic actor detection** - Fixed bug where Fallen Puppet curse failed to trigger for unlinked tokens (synthetic actors)
+  - Fixed token lookup in `updateActor` hook to properly handle both synthetic and linked actors
+  - Changed from `canvas.tokens.find(t => t.actor.id === actor.id)` to `canvas.tokens.find(t => t.id === actor.parent?.id || t.actor?.id === actor.id)`
+  - Synthetic actors (unlinked tokens) now correctly identified using `actor.parent.id` as token ID
+  - Linked actors continue to work using `actor.id` as fallback
+  - Fixes issue where fallen puppets with unlinked tokens never prompted Blood Hunters
+
+### Changed
+- **Performance optimization** - Moved fallen token lookup outside Blood Hunter iteration loop
+  - Before: O(n × m) complexity - lookup performed once per Blood Hunter
+  - After: O(m + n) complexity - lookup performed once total
+  - Significantly improves performance when multiple Blood Hunters are present
+
+### Refactored
+- **Code architecture** - Implemented Single Responsibility Principle for Fallen Puppet logic
+  - Created new module: `scripts/blood-curse/hooks/fallen-puppet-hook.js` with dedicated functions:
+    - `handleFallenPuppetTrigger()` - Main trigger logic
+    - `canUseBloodMaledict()` - Resource validation
+    - `shouldPromptUser()` - Ownership checks
+  - Updated `scripts/blood-hunter.js` - Reduced hook from ~90 lines to ~20 lines by delegating to BloodCurse module
+  - Updated `scripts/blood-curse/index.js` - Added barrel export for hooks and exposed `handleFallenPuppetTrigger` in facade
+  - Restored `scripts/blood-curse/curse-detection.js` to original purpose (removed Fallen Puppet logic)
+  - Each module now has a single, well-defined responsibility
+
+### Technical Details
+- Files modified:
+  - `scripts/blood-curse/hooks/fallen-puppet-hook.js` (NEW - 150+ lines)
+  - `scripts/blood-curse/hooks/index.js` (NEW - barrel export)
+  - `scripts/blood-curse/index.js` (UPDATED - added hook imports)
+  - `scripts/blood-hunter.js` (SIMPLIFIED - hook delegation)
+  - `scripts/blood-curse/curse-detection.js` (RESTORED - removed Fallen Puppet logic)
+- All changes maintain backward compatibility
+- No breaking changes to public API
+
 ## [1.3.3] - 2025-11-09
 
 ### Fixed
