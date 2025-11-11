@@ -13,6 +13,7 @@
 import { BloodHunterUtils } from '../../utils.js';
 import { MODULE_ID } from '../../blood-hunter.js';
 import { requestFallenPuppetAttack } from '../socket-handler.js';
+import { BloodHunterIntegrations } from '../../integrations.js';
 
 /**
  * Execute Blood Curse of the Fallen Puppet
@@ -146,18 +147,48 @@ export async function executeCurseOfTheFallenPuppet(actor, fallenCreature, falle
                 // Set the chosen target
                 targetToken.setTarget(true, { user: game.user, releaseOthers: true, groupSelection: false });
 
-                // Apply amplified bonus to attack if needed
-                let attackOptions = {};
+                // Set up hook to add amplified bonus to attack roll
+                let hookId;
                 if (amplify && hemocraftDie) {
-                  attackOptions = {
-                    advantage: false,
-                    disadvantage: false,
-                    bonus: hemocraftDie
-                  };
+                  // Check if MidiQOL is active
+                  const isMidiActive = BloodHunterIntegrations.isMidiQOLActive();
+
+                  if (isMidiActive) {
+                    // MidiQOL workflow: use preambleComplete hook to add attack bonus
+                    hookId = Hooks.once('midi-qol.preambleComplete', (workflow) => {
+                      if (workflow.item.id === weapon.id) {
+                        // Add bonus to attack roll options
+                        workflow.attackRoll = workflow.attackRoll || {};
+                        const currentBonus = workflow.attackRoll.parts || [];
+                        currentBonus.push(hemocraftDie);
+                        workflow.attackRoll.parts = currentBonus;
+                        console.log(`${MODULE_ID} | Applied Fallen Puppet amplified bonus (MidiQOL): ${hemocraftDie}`);
+                      }
+                    });
+                  } else {
+                    // Standard dnd5e: use preRollAttack hook
+                    hookId = Hooks.once('dnd5e.preRollAttack', (config) => {
+                      // Add hemocraft die bonus to attack roll
+                      const currentBonus = config.rolls[0].data.bonus || '';
+                      config.rolls[0].data.bonus = currentBonus ? `${currentBonus} + ${hemocraftDie}` : hemocraftDie;
+                      console.log(`${MODULE_ID} | Applied Fallen Puppet amplified bonus (dnd5e): ${hemocraftDie}`);
+                    });
+                  }
+
+                  // Safety: Remove hook if it doesn't fire within 5 seconds
+                  setTimeout(() => {
+                    if (hookId !== undefined) {
+                      const hookName = isMidiActive ? 'midi-qol.preambleComplete' : 'dnd5e.preRollAttack';
+                      Hooks.off(hookName, hookId);
+                      console.log(`${MODULE_ID} | Removed unused ${hookName} hook`);
+                    }
+                  }, 5000);
                 }
 
-                // Execute weapon attack using dnd5e v4 item.use()
-                await weapon.use(attackOptions, { createMessage: true });
+                // Execute weapon attack using dnd5e item.use()
+                await weapon.use({}, { createMessage: true });
+
+                // Note: Hook cleanup is handled by setTimeout above
 
                 // Restore previous targeting state
                 targetToken.setTarget(false, { user: game.user, releaseOthers: false });
