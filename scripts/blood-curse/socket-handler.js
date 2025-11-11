@@ -208,17 +208,28 @@ async function executeGMFallenPuppetAttack(data, puppetToken, targetToken, weapo
     targetToken.setTarget(true, { user: game.user, releaseOthers: true, groupSelection: false });
 
     // Apply amplified bonus to attack if needed
-    let attackOptions = {};
     if (data.amplify && data.hemocraftDie) {
-      attackOptions = {
-        advantage: false,
-        disadvantage: false,
-        bonus: data.hemocraftDie
-      };
+      // Use dnd5e.preRollAttack hook to add bonus to attack roll
+      // This is the correct approach for dnd5e v3/v4
+      const hookId = Hooks.once('dnd5e.preRollAttack', (config, dialog, message) => {
+        if (config.rolls && config.rolls[0] && config.rolls[0].data) {
+          const currentBonus = config.rolls[0].data.bonus || '';
+          config.rolls[0].data.bonus = currentBonus ? `${currentBonus} + ${data.hemocraftDie}` : data.hemocraftDie;
+          console.log(`${MODULE_ID} | Applied Fallen Puppet amplified bonus: ${data.hemocraftDie}`);
+        }
+      });
+
+      // Safety: Remove hook if it doesn't fire within 5 seconds
+      setTimeout(() => {
+        if (hookId !== null) {
+          Hooks.off('dnd5e.preRollAttack', hookId);
+          console.log(`${MODULE_ID} | Removed unused preRollAttack hook`);
+        }
+      }, 5000);
     }
 
     // Execute weapon attack
-    await weapon.use(attackOptions, { createMessage: true });
+    await weapon.use({}, { createMessage: true });
 
     // Restore previous targeting state
     targetToken.setTarget(false, { user: game.user, releaseOthers: false });
