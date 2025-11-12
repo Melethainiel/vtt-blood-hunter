@@ -7,9 +7,6 @@
 const MODULE_ID = 'vtt-blood-hunter';
 const SOCKET_NAME = `module.${MODULE_ID}`;
 
-// Import BloodHunterIntegrations for MidiQOL detection
-import { BloodHunterIntegrations } from '../integrations.js';
-
 /**
  * Initialize socket listeners
  * Called once during module ready hook
@@ -210,53 +207,46 @@ async function executeGMFallenPuppetAttack(data, puppetToken, targetToken, weapo
     // Set the chosen target
     targetToken.setTarget(true, { user: game.user, releaseOthers: true, groupSelection: false });
 
-    // Apply amplified bonus to attack if needed
+    // Apply temporary effect to puppet for amplified attack bonus
+    let effectId;
     if (data.amplify && data.hemocraftDie) {
-      // Check if MidiQOL is active
-      const isMidiActive = BloodHunterIntegrations.isMidiQOLActive();
+      const effectData = {
+        name: 'Fallen Puppet - Attack Bonus',
+        icon: 'icons/magic/death/skull-humanoid-crown-white.webp',
+        changes: [
+          {
+            key: 'system.bonuses.abilities.attack',
+            mode: 2, // ADD
+            value: data.hemocraftDie,
+            priority: 20
+          }
+        ],
+        duration: {
+          turns: 1,
+          seconds: 6
+        },
+        flags: {
+          [MODULE_ID]: {
+            bloodCurse: true,
+            curseType: 'fallen_puppet',
+            temporary: true
+          }
+        }
+      };
 
-      if (isMidiActive) {
-        // MidiQOL workflow: use preambleComplete hook to add attack bonus
-        const hookId = Hooks.once('midi-qol.preambleComplete', (workflow) => {
-          if (workflow.item.id === weapon.id) {
-            // Add bonus to attack roll options
-            workflow.attackRoll = workflow.attackRoll || {};
-            const currentBonus = workflow.attackRoll.parts || [];
-            currentBonus.push(data.hemocraftDie);
-            workflow.attackRoll.parts = currentBonus;
-            console.log(`${MODULE_ID} | Applied Fallen Puppet amplified bonus (MidiQOL): ${data.hemocraftDie}`);
-          }
-        });
-
-        // Safety: Remove hook if it doesn't fire within 5 seconds
-        setTimeout(() => {
-          if (hookId !== null) {
-            Hooks.off('midi-qol.preambleComplete', hookId);
-            console.log(`${MODULE_ID} | Removed unused midi-qol.preambleComplete hook`);
-          }
-        }, 5000);
-      } else {
-        // Standard dnd5e: use preRollAttack hook to add bonus to attack roll
-        const hookId = Hooks.once('dnd5e.preRollAttack', (config, dialog, message) => {
-          if (config.rolls && config.rolls[0] && config.rolls[0].data) {
-            const currentBonus = config.rolls[0].data.bonus || '';
-            config.rolls[0].data.bonus = currentBonus ? `${currentBonus} + ${data.hemocraftDie}` : data.hemocraftDie;
-            console.log(`${MODULE_ID} | Applied Fallen Puppet amplified bonus (dnd5e): ${data.hemocraftDie}`);
-          }
-        });
-
-        // Safety: Remove hook if it doesn't fire within 5 seconds
-        setTimeout(() => {
-          if (hookId !== null) {
-            Hooks.off('dnd5e.preRollAttack', hookId);
-            console.log(`${MODULE_ID} | Removed unused dnd5e.preRollAttack hook`);
-          }
-        }, 5000);
-      }
+      const effect = await puppetToken.actor.createEmbeddedDocuments('ActiveEffect', [effectData]);
+      effectId = effect[0].id;
+      console.log(`${MODULE_ID} | Applied Fallen Puppet effect to ${puppetToken.name}: ${data.hemocraftDie}`);
     }
 
     // Execute weapon attack
     await weapon.use({}, { createMessage: true });
+
+    // Remove the temporary effect immediately after attack
+    if (effectId) {
+      await puppetToken.actor.deleteEmbeddedDocuments('ActiveEffect', [effectId]);
+      console.log(`${MODULE_ID} | Removed Fallen Puppet effect from ${puppetToken.name}`);
+    }
 
     // Restore previous targeting state
     targetToken.setTarget(false, { user: game.user, releaseOthers: false });

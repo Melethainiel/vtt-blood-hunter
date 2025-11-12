@@ -13,7 +13,6 @@
 import { BloodHunterUtils } from '../../utils.js';
 import { MODULE_ID } from '../../blood-hunter.js';
 import { requestFallenPuppetAttack } from '../socket-handler.js';
-import { BloodHunterIntegrations } from '../../integrations.js';
 
 /**
  * Execute Blood Curse of the Fallen Puppet
@@ -147,48 +146,46 @@ export async function executeCurseOfTheFallenPuppet(actor, fallenCreature, falle
                 // Set the chosen target
                 targetToken.setTarget(true, { user: game.user, releaseOthers: true, groupSelection: false });
 
-                // Set up hook to add amplified bonus to attack roll
-                let hookId;
+                // Apply temporary effect to puppet for amplified attack bonus
+                let effectId;
                 if (amplify && hemocraftDie) {
-                  // Check if MidiQOL is active
-                  const isMidiActive = BloodHunterIntegrations.isMidiQOLActive();
-
-                  if (isMidiActive) {
-                    // MidiQOL workflow: use preambleComplete hook to add attack bonus
-                    hookId = Hooks.once('midi-qol.preambleComplete', (workflow) => {
-                      if (workflow.item.id === weapon.id) {
-                        // Add bonus to attack roll options
-                        workflow.attackRoll = workflow.attackRoll || {};
-                        const currentBonus = workflow.attackRoll.parts || [];
-                        currentBonus.push(hemocraftDie);
-                        workflow.attackRoll.parts = currentBonus;
-                        console.log(`${MODULE_ID} | Applied Fallen Puppet amplified bonus (MidiQOL): ${hemocraftDie}`);
+                  const effectData = {
+                    name: 'Fallen Puppet - Attack Bonus',
+                    icon: 'icons/magic/death/skull-humanoid-crown-white.webp',
+                    changes: [
+                      {
+                        key: 'system.bonuses.abilities.attack',
+                        mode: 2, // ADD
+                        value: hemocraftDie,
+                        priority: 20
                       }
-                    });
-                  } else {
-                    // Standard dnd5e: use preRollAttack hook
-                    hookId = Hooks.once('dnd5e.preRollAttack', (config) => {
-                      // Add hemocraft die bonus to attack roll
-                      const currentBonus = config.rolls[0].data.bonus || '';
-                      config.rolls[0].data.bonus = currentBonus ? `${currentBonus} + ${hemocraftDie}` : hemocraftDie;
-                      console.log(`${MODULE_ID} | Applied Fallen Puppet amplified bonus (dnd5e): ${hemocraftDie}`);
-                    });
-                  }
-
-                  // Safety: Remove hook if it doesn't fire within 5 seconds
-                  setTimeout(() => {
-                    if (hookId !== undefined) {
-                      const hookName = isMidiActive ? 'midi-qol.preambleComplete' : 'dnd5e.preRollAttack';
-                      Hooks.off(hookName, hookId);
-                      console.log(`${MODULE_ID} | Removed unused ${hookName} hook`);
+                    ],
+                    duration: {
+                      turns: 1,
+                      seconds: 6
+                    },
+                    flags: {
+                      [MODULE_ID]: {
+                        bloodCurse: true,
+                        curseType: 'fallen_puppet',
+                        temporary: true
+                      }
                     }
-                  }, 5000);
+                  };
+
+                  const effect = await fallenCreature.createEmbeddedDocuments('ActiveEffect', [effectData]);
+                  effectId = effect[0].id;
+                  console.log(`${MODULE_ID} | Applied Fallen Puppet effect to ${fallenCreature.name}: ${hemocraftDie}`);
                 }
 
                 // Execute weapon attack using dnd5e item.use()
                 await weapon.use({}, { createMessage: true });
 
-                // Note: Hook cleanup is handled by setTimeout above
+                // Remove the temporary effect immediately after attack
+                if (effectId) {
+                  await fallenCreature.deleteEmbeddedDocuments('ActiveEffect', [effectId]);
+                  console.log(`${MODULE_ID} | Removed Fallen Puppet effect from ${fallenCreature.name}`);
+                }
 
                 // Restore previous targeting state
                 targetToken.setTarget(false, { user: game.user, releaseOthers: false });
