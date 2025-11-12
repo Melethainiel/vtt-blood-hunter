@@ -34,7 +34,7 @@ export async function executeCurseOfTheFallenPuppet(actor, fallenCreature, falle
   const weapons = fallenCreature.items.filter(i =>
     i.type === 'weapon' &&
     i.system.equipped &&
-    i.system.actionType === 'mwak' // melee weapon attack only
+    i.system.range?.value === null // melee weapon (no range)
   );
 
   if (weapons.length === 0) {
