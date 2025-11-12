@@ -30,9 +30,11 @@ export async function executeCurseOfTheFallenPuppet(actor, fallenCreature, falle
   // Get hemocraft die for amplified attack bonus
   const hemocraftDie = amplify ? BloodHunterUtils.getHemocraftDie(actor, 'blood-maledict') : null;
 
-  // Get weapons from the fallen creature (the puppet)
+  // Get melee weapons from the fallen creature (the puppet)
   const weapons = fallenCreature.items.filter(i =>
-    i.type === 'weapon' && i.system.equipped
+    i.type === 'weapon' &&
+    i.system.equipped &&
+    i.system.actionType === 'mwak' // melee weapon attack only
   );
 
   if (weapons.length === 0) {
