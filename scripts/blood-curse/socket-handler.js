@@ -211,19 +211,24 @@ async function executeGMFallenPuppetAttack(data, puppetToken, targetToken, weapo
     let effectId;
     if (data.amplify && data.hemocraftDie) {
       const effectData = {
-        name: 'Fallen Puppet - Attack Bonus',
+        name: game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.AttackBonus'),
         icon: 'icons/magic/death/skull-humanoid-crown-white.webp',
         changes: [
           {
-            key: 'system.bonuses.abilities.attack',
-            mode: 2, // ADD
+            key: 'system.bonuses.mwak.attack',
+            mode: CONST.ACTIVE_EFFECT_MODES.ADD,
+            value: data.hemocraftDie,
+            priority: 20
+          },
+          {
+            key: 'system.bonuses.rwak.attack',
+            mode: CONST.ACTIVE_EFFECT_MODES.ADD,
             value: data.hemocraftDie,
             priority: 20
           }
         ],
         duration: {
-          turns: 1,
-          seconds: 6
+          turns: 1
         },
         flags: {
           [MODULE_ID]: {
@@ -233,6 +238,14 @@ async function executeGMFallenPuppetAttack(data, puppetToken, targetToken, weapo
           }
         }
       };
+
+      // Add DAE special duration if DAE is active
+      const isDaeActive = game.modules.get('dae')?.active;
+      if (isDaeActive) {
+        effectData.flags.dae = {
+          specialDuration: ['1Attack']
+        };
+      }
 
       const effect = await puppetToken.actor.createEmbeddedDocuments('ActiveEffect', [effectData]);
       effectId = effect[0].id;
