@@ -66,8 +66,23 @@ export class FeatureSync {
     const results = {
       synced: 0,
       failed: 0,
-      skipped: syncPlan.unmatched.length
+      skipped: syncPlan.unmatched.length,
+      duplicatesRemoved: 0
     };
+
+    // First, remove duplicates if any
+    if (syncPlan.duplicates && syncPlan.duplicates.length > 0) {
+      console.log(`Blood Hunter | Removing ${syncPlan.duplicates.length} duplicate features`);
+      for (const duplicate of syncPlan.duplicates) {
+        try {
+          await actor.deleteEmbeddedDocuments('Item', [duplicate.id]);
+          console.log(`Blood Hunter | Removed duplicate: ${duplicate.name} (${duplicate.system.identifier})`);
+          results.duplicatesRemoved++;
+        } catch (error) {
+          console.error(`Blood Hunter | Failed to remove duplicate ${duplicate.name}:`, error);
+        }
+      }
+    }
 
     // Process each matched feature
     console.log(`Blood Hunter | Starting sync execution for ${syncPlan.matched.length} matched features`);
@@ -125,10 +140,18 @@ export class FeatureSync {
     const matched = [];
     const unmatched = [];
     const usedCompendiumIdentifiers = new Set(); // Track which compendium features have been matched
+    const usedActorIdentifiers = new Set(); // Track which actor identifiers have been matched to avoid duplicates
 
     // Dry run: check each feature against compendium
     for (const actorFeature of candidateFeatures) {
       const actorIdentifier = actorFeature.system.identifier;
+
+      // Skip if we already matched this identifier (handles duplicate features from DDB)
+      if (usedActorIdentifiers.has(actorIdentifier)) {
+        console.log(`${this.MODULE_ID} | Skipping duplicate: "${actorFeature.name}" (${actorIdentifier}) - already matched`);
+        // We'll handle deletion of duplicates in a separate pass
+        continue;
+      }
 
       // Try to find exact match first
       let compendiumFeature = documents.find(item =>
@@ -163,6 +186,7 @@ export class FeatureSync {
           compendium: compendiumFeature
         });
         usedCompendiumIdentifiers.add(compendiumFeature.system.identifier); // Mark this compendium feature as used
+        usedActorIdentifiers.add(actorIdentifier); // Mark this actor identifier as matched
         console.log(`${this.MODULE_ID} | Matched: "${actorFeature.name}" (${actorIdentifier}) → "${compendiumFeature.name}" (${compendiumFeature.system.identifier})`);
       } else {
         unmatched.push(actorFeature);
@@ -170,7 +194,13 @@ export class FeatureSync {
       }
     }
 
-    return { matched, unmatched, total: candidateFeatures.length };
+    // Find duplicates: features with the same identifier that weren't matched
+    const duplicates = candidateFeatures.filter(item =>
+      usedActorIdentifiers.has(item.system.identifier) &&
+      !matched.some(m => m.actor.id === item.id)
+    );
+
+    return { matched, unmatched, duplicates, total: candidateFeatures.length };
   }
 
   /**
@@ -181,7 +211,7 @@ export class FeatureSync {
    * @private
    */
   static async _confirmSync(actor, syncPlan) {
-    const { matched, unmatched } = syncPlan;
+    const { matched, unmatched, duplicates } = syncPlan;
 
     // Build matched features list (will be synced)
     const matchedList = matched.length > 0
@@ -192,6 +222,11 @@ export class FeatureSync {
     const unmatchedList = unmatched.length > 0
       ? unmatched.map(f => `<span style="color: #888;">○</span> ${f.name}`).join('<br>')
       : `<em style="color: #888;">${game.i18n.localize('BLOODHUNTER.FeatureSync.NoUnmatched')}</em>`;
+
+    // Build duplicates list (will be removed)
+    const duplicatesList = duplicates && duplicates.length > 0
+      ? duplicates.map(f => `<span style="color: #ff6400;">✗</span> ${f.name} (${f.system.identifier})`).join('<br>')
+      : null;
 
     return Dialog.confirm({
       title: game.i18n.localize('BLOODHUNTER.FeatureSync.ConfirmTitle'),
@@ -221,6 +256,17 @@ export class FeatureSync {
         </div>
         ` : ''}
 
+        ${duplicatesList ? `
+        <div style="margin: 1em 0;">
+          <h3 style="margin: 0.5em 0; font-size: 1.1em; border-bottom: 2px solid #ff6400;">
+            Duplicates (Will be Removed) (${duplicates.length})
+          </h3>
+          <div style="max-height: 100px; overflow-y: auto; padding: 0.5em; background: rgba(255, 100, 0, 0.1); border-radius: 3px; font-size: 0.9em;">
+            ${duplicatesList}
+          </div>
+        </div>
+        ` : ''}
+
         <p style="color: #ff6400; font-weight: bold; margin-top: 1em;">
           ${game.i18n.localize('BLOODHUNTER.FeatureSync.ConfirmWarning')}
         </p>
@@ -238,37 +284,39 @@ export class FeatureSync {
    * @private
    */
   static _showSyncResults(actor, results) {
-    const { synced, failed, skipped } = results;
+    const { synced, failed, skipped, duplicatesRemoved } = results;
 
-    if (synced === 0 && failed === 0 && skipped > 0) {
+    // Build message parts
+    const messageParts = [];
+
+    if (synced > 0) {
+      messageParts.push(`${synced} synced`);
+    }
+    if (duplicatesRemoved > 0) {
+      messageParts.push(`${duplicatesRemoved} duplicates removed`);
+    }
+    if (skipped > 0) {
+      messageParts.push(`${skipped} skipped`);
+    }
+    if (failed > 0) {
+      messageParts.push(`${failed} failed`);
+    }
+
+    const message = `${actor.name}: ${messageParts.join(', ')}`;
+
+    if (synced === 0 && failed === 0 && duplicatesRemoved === 0 && skipped > 0) {
       ui.notifications.info(
         game.i18n.format('BLOODHUNTER.FeatureSync.NoMatchingFeatures', {
           name: actor.name,
           count: skipped
         })
       );
-    } else if (synced > 0 && failed === 0) {
-      ui.notifications.info(
-        game.i18n.format('BLOODHUNTER.FeatureSync.Success', {
-          name: actor.name,
-          count: synced
-        })
-      );
-    } else if (synced > 0 && failed > 0) {
-      ui.notifications.warn(
-        game.i18n.format('BLOODHUNTER.FeatureSync.PartialSuccess', {
-          name: actor.name,
-          synced: synced,
-          failed: failed
-        })
-      );
-    } else if (failed > 0) {
-      ui.notifications.error(
-        game.i18n.format('BLOODHUNTER.FeatureSync.Failed', {
-          name: actor.name,
-          count: failed
-        })
-      );
+    } else if (failed === 0) {
+      ui.notifications.info(message);
+    } else if (failed > 0 && synced > 0) {
+      ui.notifications.warn(message);
+    } else {
+      ui.notifications.error(message);
     }
   }
 }

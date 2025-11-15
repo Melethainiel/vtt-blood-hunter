@@ -1,0 +1,61 @@
+{
+  "_id": "StalkersProwess01",
+  "_key": "!items!StalkersProwess01",
+  "name": "Stalker's Prowess",
+  "type": "feat",
+  "img": "icons/skills/movement/feet-winged-boots-brown.webp",
+  "system": {
+    "description": {
+      "value": "<h3>Stalker's Prowess (7th Level)</h3><p>Your predatory nature enhances your movement and strikes.</p><h4>Always Active:</h4><ul><li>Speed increases by 10 feet</li><li>Long jump distance increases by 10 feet</li><li>High jump distance increases by 3 feet</li></ul><h4>In Hybrid Form - Improved Predatory Strikes:</h4><ul><li>Bonus to attack rolls with unarmed strikes: +1 at 7th level, +2 at 11th level, +3 at 18th level</li><li>Unarmed strikes with an active crimson rite are considered magical for overcoming resistance and immunity</li></ul>",
+      "chat": ""
+    },
+    "source": {
+      "custom": "Order of the Lycan",
+      "revision": 1,
+      "rules": "2014"
+    },
+    "type": {
+      "value": "class",
+      "subtype": "bloodHunter"
+    },
+    "identifier": "stalkers-prowess",
+    "activities": {},
+    "uses": {
+      "spent": 0,
+      "max": "",
+      "recovery": []
+    },
+    "prerequisites": {
+      "level": null
+    },
+    "properties": [],
+    "enchantment": null,
+    "enchant": {}
+  },
+  "effects": [],
+  "flags": {
+    "vtt-blood-hunter": {
+      "stalkersProwess": true,
+      "orderOfTheLycan": true
+    },
+    "dnd5e": {
+      "advancementOrigin": null
+    }
+  },
+  "_stats": {
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "coreVersion": "13.346",
+    "systemId": "dnd5e",
+    "systemVersion": "4.3.6",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "exportSource": null
+  },
+  "folder": null,
+  "sort": 0,
+  "ownership": {
+    "default": 0
+  }
+}

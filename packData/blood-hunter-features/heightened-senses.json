@@ -1,0 +1,61 @@
+{
+  "_id": "HeightenedSenses01",
+  "_key": "!items!HeightenedSenses01",
+  "name": "Heightened Senses",
+  "type": "feat",
+  "img": "icons/magic/perception/eye-ringed-glow-angry-small-teal.webp",
+  "system": {
+    "description": {
+      "value": "<h3>Heightened Senses (3rd Level)</h3><p>You gain the improved senses of a natural predator.</p><p><strong>Benefit:</strong> You have advantage on Wisdom (Perception) checks that rely on hearing or smell.</p><h4>Applications:</h4><ul><li>Detect invisible creatures</li><li>Track enemies by scent</li><li>Notice ambushes</li><li>Listen through doors</li></ul>",
+      "chat": ""
+    },
+    "source": {
+      "custom": "Order of the Lycan",
+      "revision": 1,
+      "rules": "2014"
+    },
+    "type": {
+      "value": "class",
+      "subtype": "bloodHunter"
+    },
+    "identifier": "heightened-senses",
+    "activities": {},
+    "uses": {
+      "spent": 0,
+      "max": "",
+      "recovery": []
+    },
+    "prerequisites": {
+      "level": null
+    },
+    "properties": [],
+    "enchantment": null,
+    "enchant": {}
+  },
+  "effects": [],
+  "flags": {
+    "vtt-blood-hunter": {
+      "heightenedSenses": true,
+      "orderOfTheLycan": true
+    },
+    "dnd5e": {
+      "advancementOrigin": null
+    }
+  },
+  "_stats": {
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "coreVersion": "13.346",
+    "systemId": "dnd5e",
+    "systemVersion": "4.3.6",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "exportSource": null
+  },
+  "folder": null,
+  "sort": 0,
+  "ownership": {
+    "default": 0
+  }
+}
