@@ -14,7 +14,8 @@ import { BloodHunterUtils } from '../../utils.js';
 import { MODULE_ID } from '../../blood-hunter.js';
 import { notifyPlayer } from '../socket-handler.js';
 
-const SOCKET_NAME = `module.${MODULE_ID}`;
+// Lazy getter to avoid circular dependency issues
+const getSocketName = () => `module.${MODULE_ID}`;
 
 /**
  * Execute the actual Fallen Puppet attack
@@ -298,10 +299,10 @@ async function requestFallenPuppetAttack(bloodHunterId, puppetTokenId, targetTok
     playerName: game.user.name
   };
 
-  console.log(`${MODULE_ID} | Emitting to socket ${SOCKET_NAME}:`, data);
+  console.log(`${MODULE_ID} | Emitting to socket ${getSocketName()}:`, data);
 
   try {
-    game.socket.emit(SOCKET_NAME, data);
+    game.socket.emit(getSocketName(), data);
     console.log(`${MODULE_ID} | Socket emit successful`);
   } catch (error) {
     console.error(`${MODULE_ID} | Error emitting socket:`, error);
