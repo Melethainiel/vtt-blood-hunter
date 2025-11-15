@@ -30,6 +30,14 @@ export class FeatureSync {
       return { synced: 0, failed: 0, skipped: 0 };
     }
 
+    // Detect the Blood Hunter class advancement origin ID
+    const advancementOrigin = this._detectBloodHunterOrigin(actor);
+    if (advancementOrigin) {
+      console.log(`Blood Hunter | Detected advancement origin: ${advancementOrigin}`);
+    } else {
+      console.warn('Blood Hunter | Could not detect Blood Hunter class advancement origin');
+    }
+
     // Load the compendium documents
     const documents = await pack.getDocuments();
     console.log(`Blood Hunter | Loaded ${documents.length} features from compendium for sync`);
@@ -99,6 +107,15 @@ export class FeatureSync {
 
         // Create the new feature from compendium
         const itemData = compendiumFeature.toObject();
+
+        // Update advancementOrigin if we detected one
+        if (advancementOrigin) {
+          if (!itemData.flags) itemData.flags = {};
+          if (!itemData.flags.dnd5e) itemData.flags.dnd5e = {};
+          itemData.flags.dnd5e.advancementOrigin = advancementOrigin;
+          console.log(`Blood Hunter | Setting advancementOrigin to ${advancementOrigin} for ${compendiumFeature.name}`);
+        }
+
         const created = await actor.createEmbeddedDocuments('Item', [itemData]);
         console.log(`Blood Hunter | Created compendium feature: ${compendiumFeature.name} (New ID: ${created[0].id})`);
 
@@ -122,6 +139,40 @@ export class FeatureSync {
     this._showSyncResults(actor, results);
 
     return results;
+  }
+
+  /**
+   * Detect the Blood Hunter class advancement origin ID from the actor
+   * This is used to properly link features to their parent class
+   * @param {Actor} actor - The actor to check
+   * @returns {string|null} The advancement origin ID or null if not found
+   * @private
+   */
+  static _detectBloodHunterOrigin(actor) {
+    // Look for any Blood Hunter feature with an advancementOrigin
+    const bloodHunterFeature = actor.items.find(item => {
+      // Check if it's a Blood Hunter class feature with advancementOrigin set
+      return item.type === 'feat' &&
+        item.system?.type?.subtype === 'bloodHunter' &&
+        item.flags?.dnd5e?.advancementOrigin;
+    });
+
+    if (bloodHunterFeature) {
+      return bloodHunterFeature.flags.dnd5e.advancementOrigin;
+    }
+
+    // Fallback: look for the Blood Hunter class itself
+    const bloodHunterClass = actor.items.find(item =>
+      item.type === 'class' &&
+      (item.name.toLowerCase().includes('blood hunter') ||
+       item.system?.identifier === 'blood-hunter')
+    );
+
+    if (bloodHunterClass) {
+      return bloodHunterClass.id;
+    }
+
+    return null;
   }
 
   /**
