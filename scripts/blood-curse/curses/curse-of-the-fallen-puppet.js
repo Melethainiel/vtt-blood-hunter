@@ -12,7 +12,80 @@
 
 import { BloodHunterUtils } from '../../utils.js';
 import { MODULE_ID } from '../../blood-hunter.js';
-import { requestFallenPuppetAttack } from '../socket-handler.js';
+import { notifyPlayer } from '../socket-handler.js';
+
+const SOCKET_NAME = `module.${MODULE_ID}`;
+
+/**
+ * Execute the actual Fallen Puppet attack
+ * @param {Actor} fallenCreature - The puppet creature
+ * @param {Token} targetToken - The target token
+ * @param {Item} weapon - The weapon to use
+ * @param {boolean} amplify - Whether amplified
+ * @param {string} hemocraftDie - The hemocraft die value (e.g., "1d6")
+ */
+export async function executeFallenPuppetAttack(fallenCreature, targetToken, weapon, amplify, hemocraftDie) {
+  // Store and clear current targets
+  const previousTargets = Array.from(game.user.targets);
+  previousTargets.forEach(t => t.setTarget(false, { user: game.user, releaseOthers: false }));
+
+  // Set the chosen target
+  targetToken.setTarget(true, { user: game.user, releaseOthers: true, groupSelection: false });
+
+  // Apply temporary effect to puppet for amplified attack bonus
+  if (amplify && hemocraftDie) {
+    const effectData = {
+      name: game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.AttackBonus'),
+      icon: 'icons/magic/death/skull-humanoid-crown-white.webp',
+      changes: [
+        {
+          key: 'system.bonuses.mwak.attack',
+          mode: CONST.ACTIVE_EFFECT_MODES.ADD,
+          value: hemocraftDie,
+          priority: 20
+        },
+        {
+          key: 'system.bonuses.rwak.attack',
+          mode: CONST.ACTIVE_EFFECT_MODES.ADD,
+          value: hemocraftDie,
+          priority: 20
+        }
+      ],
+      duration: {
+        turns: 1
+      },
+      flags: {
+        [MODULE_ID]: {
+          bloodCurse: true,
+          curseType: 'fallen_puppet',
+          temporary: true
+        }
+      }
+    };
+
+    // Add DAE special duration if DAE is active
+    const isDaeActive = game.modules.get('dae')?.active;
+    if (isDaeActive) {
+      effectData.flags.dae = {
+        specialDuration: ['1Attack']
+      };
+    }
+
+    await fallenCreature.createEmbeddedDocuments('ActiveEffect', [effectData]);
+    console.log(`${MODULE_ID} | Applied Fallen Puppet effect to ${fallenCreature.name}: ${hemocraftDie} bonus to attack`);
+  }
+
+  // Execute weapon attack using dnd5e item.use()
+  await weapon.use({}, { createMessage: true });
+
+  // Restore previous targeting state
+  targetToken.setTarget(false, { user: game.user, releaseOthers: false });
+  previousTargets.forEach(t => {
+    if (t.id !== targetToken.id) {
+      t.setTarget(true, { user: game.user, releaseOthers: false });
+    }
+  });
+}
 
 /**
  * Execute Blood Curse of the Fallen Puppet
@@ -114,102 +187,20 @@ export async function executeCurseOfTheFallenPuppet(actor, fallenCreature, falle
               );
             }
 
-            // Create chat message describing the puppet attack
-            const messageContent = `
-              <div class="bloodhunter-puppet-attack">
-                <h3>${game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.Title')}</h3>
-                <p><strong>${fallenCreature.name}</strong> ${game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.Attacks')} <strong>${targetToken.name}</strong> ${game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.With')} ${weapon.name}</p>
-                ${amplify ? `<p><em>${game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.AmplifiedBonus')}: +${hemocraftDie}</em></p>` : ''}
-              </div>
-            `;
-
-            await ChatMessage.create({
-              speaker: ChatMessage.getSpeaker({ actor: actor }),
-              content: messageContent,
-              flags: {
-                [MODULE_ID]: {
-                  bloodCurse: true,
-                  curseType: 'fallen_puppet',
-                  amplified: amplify
-                }
-              }
-            });
-
             // Execute weapon attack
             try {
               // Check if current user is GM - GMs execute directly, players request via socket
               if (game.user.isGM) {
-                // GM can execute directly
-                // Store and clear current targets
-                const previousTargets = Array.from(game.user.targets);
-
-                previousTargets.forEach(t => t.setTarget(false, { user: game.user, releaseOthers: false }));
-
-                // Set the chosen target
-                targetToken.setTarget(true, { user: game.user, releaseOthers: true, groupSelection: false });
-
-                // Apply temporary effect to puppet for amplified attack bonus
-                let effectId;
-                if (amplify && hemocraftDie) {
-                  const effectData = {
-                    name: game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.AttackBonus'),
-                    icon: 'icons/magic/death/skull-humanoid-crown-white.webp',
-                    changes: [
-                      {
-                        key: 'system.bonuses.mwak.attack',
-                        mode: CONST.ACTIVE_EFFECT_MODES.ADD,
-                        value: hemocraftDie,
-                        priority: 20
-                      },
-                      {
-                        key: 'system.bonuses.rwak.attack',
-                        mode: CONST.ACTIVE_EFFECT_MODES.ADD,
-                        value: hemocraftDie,
-                        priority: 20
-                      }
-                    ],
-                    duration: {
-                      turns: 1
-                    },
-                    flags: {
-                      [MODULE_ID]: {
-                        bloodCurse: true,
-                        curseType: 'fallen_puppet',
-                        temporary: true
-                      }
-                    }
-                  };
-
-                  // Add DAE special duration if DAE is active
-                  const isDaeActive = game.modules.get('dae')?.active;
-                  if (isDaeActive) {
-                    effectData.flags.dae = {
-                      specialDuration: ['1Attack']
-                    };
-                  }
-
-                  const effect = await fallenCreature.createEmbeddedDocuments('ActiveEffect', [effectData]);
-                  effectId = effect[0].id;
-                  console.log(`${MODULE_ID} | Applied Fallen Puppet effect to ${fallenCreature.name}: ${hemocraftDie} bonus to attack`);
-                }
-
-                // Execute weapon attack using dnd5e item.use()
-                await weapon.use({}, { createMessage: true });
-
-                // Remove the temporary effect immediately after attack
-                if (effectId) {
-                  await fallenCreature.deleteEmbeddedDocuments('ActiveEffect', [effectId]);
-                  console.log(`${MODULE_ID} | Removed Fallen Puppet effect from ${fallenCreature.name}`);
-                }
-
-                // Restore previous targeting state
-                targetToken.setTarget(false, { user: game.user, releaseOthers: false });
-                previousTargets.forEach(t => {
-                  if (t.id !== targetToken.id) {
-                    t.setTarget(true, { user: game.user, releaseOthers: false });
-                  }
-                });
-
+                // GM can execute directly - create chat message first
+                await createFallenPuppetChatMessage(
+                  actor,
+                  fallenCreature.name,
+                  targetToken.name,
+                  weapon.name,
+                  amplify,
+                  hemocraftDie
+                );
+                await executeFallenPuppetAttack(fallenCreature, targetToken, weapon, amplify, hemocraftDie);
                 resolve(true);
               } else {
                 // Player - send request to GM via socket
@@ -245,4 +236,179 @@ export async function executeCurseOfTheFallenPuppet(actor, fallenCreature, falle
       width: 400
     }).render(true);
   });
+}
+
+/**
+ * Create chat message for Fallen Puppet attack
+ * @param {Actor} bloodHunter - The Blood Hunter actor
+ * @param {string} puppetName - Name of the puppet creature
+ * @param {string} targetName - Name of the target
+ * @param {string} weaponName - Name of the weapon
+ * @param {boolean} amplify - Whether amplified
+ * @param {string} hemocraftDie - The hemocraft die value
+ */
+async function createFallenPuppetChatMessage(bloodHunter, puppetName, targetName, weaponName, amplify, hemocraftDie) {
+  const messageContent = `
+    <div class="bloodhunter-puppet-attack">
+      <h3>${game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.Title')}</h3>
+      <p><strong>${puppetName}</strong> ${game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.Attacks')} <strong>${targetName}</strong> ${game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.With')} ${weaponName}</p>
+      ${amplify ? `<p><em>${game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.AmplifiedBonus')}: +${hemocraftDie}</em></p>` : ''}
+    </div>
+  `;
+
+  await ChatMessage.create({
+    speaker: ChatMessage.getSpeaker({ actor: bloodHunter }),
+    content: messageContent,
+    flags: {
+      [MODULE_ID]: {
+        bloodCurse: true,
+        curseType: 'fallen_puppet',
+        amplified: amplify
+      }
+    }
+  });
+}
+
+/**
+ * Request Fallen Puppet attack from GM
+ * Called by player when they want to use Fallen Puppet curse
+ * @param {string} bloodHunterId - The Blood Hunter actor ID
+ * @param {string} puppetTokenId - The fallen creature's token ID
+ * @param {string} targetTokenId - The target token ID
+ * @param {string} weaponId - The weapon item ID to use
+ * @param {boolean} amplify - Whether the curse is amplified
+ * @param {string} hemocraftDie - The hemocraft die (e.g., "1d6")
+ */
+async function requestFallenPuppetAttack(bloodHunterId, puppetTokenId, targetTokenId, weaponId, amplify, hemocraftDie) {
+  if (!game.socket) {
+    console.error(`${MODULE_ID} | game.socket not available, cannot send request`);
+    ui.notifications.error('Socket not available, cannot send request to GM');
+    return;
+  }
+
+  const data = {
+    action: 'fallenPuppetRequest',
+    bloodHunterId: bloodHunterId,
+    puppetTokenId: puppetTokenId,
+    targetTokenId: targetTokenId,
+    weaponId: weaponId,
+    amplify: amplify,
+    hemocraftDie: hemocraftDie,
+    playerId: game.user.id,
+    playerName: game.user.name
+  };
+
+  console.log(`${MODULE_ID} | Emitting to socket ${SOCKET_NAME}:`, data);
+
+  try {
+    game.socket.emit(SOCKET_NAME, data);
+    console.log(`${MODULE_ID} | Socket emit successful`);
+  } catch (error) {
+    console.error(`${MODULE_ID} | Error emitting socket:`, error);
+    ui.notifications.error(`Failed to send request: ${error.message}`);
+    return;
+  }
+
+  ui.notifications.info(game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.RequestSent') || 'Fallen Puppet request sent to GM...');
+}
+
+/**
+ * Handle Fallen Puppet request from player (GM only)
+ * Called by socket-handler when GM receives request
+ * @param {object} data - The request data
+ */
+export async function handleFallenPuppetRequest(data) {
+  const puppetDoc = canvas.scene.tokens.get(data.puppetTokenId);
+  const targetDoc = canvas.scene.tokens.get(data.targetTokenId);
+  const bloodHunter = game.actors.get(data.bloodHunterId);
+
+  if (!puppetDoc || !targetDoc || !bloodHunter) {
+    console.error(`${MODULE_ID} | Invalid tokens or actor in Fallen Puppet request`);
+    notifyPlayer(data.playerId, game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.InvalidRequest') || 'Invalid request', 'error');
+    return;
+  }
+
+  const weapon = puppetDoc.actor.items.get(data.weaponId);
+  if (!weapon) {
+    console.error(`${MODULE_ID} | Weapon not found on puppet`);
+    notifyPlayer(data.playerId, game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.WeaponNotFound') || 'Weapon not found', 'error');
+    return;
+  }
+
+  // Get the actual Token objects (not TokenDocuments) for targeting
+  const puppetToken = canvas.tokens.get(data.puppetTokenId);
+  const targetToken = canvas.tokens.get(data.targetTokenId);
+
+  // Create confirmation dialog for GM
+  new Dialog({
+    title: game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.Title'),
+    content: `
+      <div class="bloodhunter-gm-approval">
+        <p><strong>${data.playerName}</strong> ${game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.WantsToUse') || 'wants to use'} <strong>${game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.Title')}</strong></p>
+        <p>${game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.MakeAttack') || 'Make'} <strong>${puppetDoc.name}</strong> ${game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.Attack') || 'attack'} <strong>${targetDoc.name}</strong> ${game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.With') || 'with'} ${weapon.name}?</p>
+        ${data.amplify ? `<p><em>${game.i18n.localize('BLOODHUNTER.BloodCurse.Amplified') || 'Amplified'}: +${data.hemocraftDie}</em></p>` : ''}
+      </div>
+    `,
+    buttons: {
+      approve: {
+        icon: '<i class="fas fa-check"></i>',
+        label: game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.Approve') || 'Approve',
+        callback: async() => {
+          await executeGMFallenPuppetAttack(data, puppetToken, targetToken, weapon, bloodHunter);
+        }
+      },
+      deny: {
+        icon: '<i class="fas fa-times"></i>',
+        label: game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.Deny') || 'Deny',
+        callback: () => {
+          notifyPlayer(data.playerId, game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.Denied') || 'Fallen Puppet request denied by GM', 'warning');
+        }
+      }
+    },
+    default: 'approve'
+  }).render(true);
+}
+
+/**
+ * Execute Fallen Puppet attack as GM
+ * @param {object} data - The request data
+ * @param {Token} puppetToken - The puppet token object (not TokenDocument)
+ * @param {Token} targetToken - The target token object (not TokenDocument)
+ * @param {Item} weapon - The weapon item
+ * @param {Actor} bloodHunter - The Blood Hunter actor
+ */
+async function executeGMFallenPuppetAttack(data, puppetToken, targetToken, weapon, bloodHunter) {
+  try {
+    // Validate that we received Token objects with setTarget method
+    if (!puppetToken || !targetToken) {
+      throw new Error('Invalid token objects - tokens not found on canvas');
+    }
+    if (typeof targetToken.setTarget !== 'function') {
+      throw new Error('targetToken is not a Token object (missing setTarget method)');
+    }
+
+    // Create chat message describing the puppet attack
+    await createFallenPuppetChatMessage(
+      bloodHunter,
+      puppetToken.name,
+      targetToken.name,
+      weapon.name,
+      data.amplify,
+      data.hemocraftDie
+    );
+
+    // Execute the attack using the shared function
+    await executeFallenPuppetAttack(puppetToken.actor, targetToken, weapon, data.amplify, data.hemocraftDie);
+
+    // Notify player of success
+    notifyPlayer(data.playerId, game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.Approved') || 'Fallen Puppet approved by GM!', 'success');
+
+  } catch (error) {
+    console.error(`${MODULE_ID} | Error executing Fallen Puppet attack:`, error);
+    notifyPlayer(
+      data.playerId,
+      game.i18n.format('BLOODHUNTER.BloodCurse.FallenPuppet.AttackError', { error: error.message }) || `Attack error: ${error.message}`,
+      'error'
+    );
+  }
 }
