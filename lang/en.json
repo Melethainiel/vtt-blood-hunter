@@ -162,6 +162,7 @@
         "SelectWeapon": "Select Weapon",
         "SelectTarget": "Select Target",
         "Attack": "Make Attack",
+        "AttackBonus": "Fallen Puppet - Attack Bonus",
         "NoWeapons": "The fallen creature has no equipped melee weapons",
         "Attacks": "attacks",
         "With": "with",
