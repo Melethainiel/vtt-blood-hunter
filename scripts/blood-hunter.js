@@ -164,8 +164,7 @@ Hooks.on('dnd5e.preUseActivity', async(activity, usageConfig, dialogConfig, mess
       return false; // Prevent default item usage
     },
     hybridTransformation: async() => {
-      // TODO: Call OrderOfTheLycan.transformationDialog() in a future update
-      // For now, just infrastructure is in place
+      await OrderOfTheLycan.transformationDialog(item.actor);
       return false; // Prevent default item usage
     }
   };

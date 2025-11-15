@@ -67,7 +67,8 @@ export class FeatureSync {
       synced: 0,
       failed: 0,
       skipped: syncPlan.unmatched.length,
-      duplicatesRemoved: 0
+      duplicatesRemoved: 0,
+      alreadySynced: syncPlan.alreadySynced?.length || 0
     };
 
     // First, remove duplicates if any
@@ -139,6 +140,7 @@ export class FeatureSync {
 
     const matched = [];
     const unmatched = [];
+    const alreadySynced = []; // Track features already synced from compendium
     const usedCompendiumIdentifiers = new Set(); // Track which compendium features have been matched
     const usedActorIdentifiers = new Set(); // Track which actor identifiers have been matched to avoid duplicates
 
@@ -181,6 +183,16 @@ export class FeatureSync {
       }
 
       if (compendiumFeature) {
+        // Check if this feature is already up-to-date with the compendium version
+        // Compare the feature data to see if they're identical (already synced)
+        if (this._areFeaturesSame(actorFeature, compendiumFeature)) {
+          console.log(`${this.MODULE_ID} | Already synced: "${actorFeature.name}" (${actorIdentifier}) - skipping`);
+          alreadySynced.push(actorFeature);
+          usedActorIdentifiers.add(actorIdentifier); // Mark as processed
+          usedCompendiumIdentifiers.add(compendiumFeature.system.identifier);
+          continue;
+        }
+
         matched.push({
           actor: actorFeature,
           compendium: compendiumFeature
@@ -197,10 +209,30 @@ export class FeatureSync {
     // Find duplicates: features with the same identifier that weren't matched
     const duplicates = candidateFeatures.filter(item =>
       usedActorIdentifiers.has(item.system.identifier) &&
-      !matched.some(m => m.actor.id === item.id)
+      !matched.some(m => m.actor.id === item.id) &&
+      !alreadySynced.some(s => s.id === item.id)
     );
 
-    return { matched, unmatched, duplicates, total: candidateFeatures.length };
+    return { matched, unmatched, duplicates, alreadySynced, total: candidateFeatures.length };
+  }
+
+  /**
+   * Compare two features to see if they're the same (already synced)
+   * @param {Item} actorFeature - The feature on the actor
+   * @param {Item} compendiumFeature - The feature from compendium
+   * @returns {boolean} True if features are the same
+   * @private
+   */
+  static _areFeaturesSame(actorFeature, compendiumFeature) {
+    // Check if the actor feature has the Blood Hunter flag indicating it came from compendium
+    const hasCompendiumFlag = actorFeature.flags?.[this.MODULE_ID];
+
+    // Compare key properties that would indicate the feature needs updating
+    const sameIdentifier = actorFeature.system?.identifier === compendiumFeature.system?.identifier;
+    const sameName = actorFeature.name === compendiumFeature.name;
+
+    // If it has compendium flags and matches identifier/name, consider it synced
+    return hasCompendiumFlag && sameIdentifier && sameName;
   }
 
   /**
@@ -211,7 +243,7 @@ export class FeatureSync {
    * @private
    */
   static async _confirmSync(actor, syncPlan) {
-    const { matched, unmatched, duplicates } = syncPlan;
+    const { matched, unmatched, duplicates, alreadySynced } = syncPlan;
 
     // Build matched features list (will be synced)
     const matchedList = matched.length > 0
@@ -226,6 +258,11 @@ export class FeatureSync {
     // Build duplicates list (will be removed)
     const duplicatesList = duplicates && duplicates.length > 0
       ? duplicates.map(f => `<span style="color: #ff6400;">✗</span> ${f.name} (${f.system.identifier})`).join('<br>')
+      : null;
+
+    // Build already synced list (no action needed)
+    const alreadySyncedList = alreadySynced && alreadySynced.length > 0
+      ? alreadySynced.map(f => `<span style="color: #2196F3;">●</span> ${f.name}`).join('<br>')
       : null;
 
     return Dialog.confirm({
@@ -267,6 +304,17 @@ export class FeatureSync {
         </div>
         ` : ''}
 
+        ${alreadySyncedList ? `
+        <div style="margin: 1em 0;">
+          <h3 style="margin: 0.5em 0; font-size: 1.1em; border-bottom: 2px solid #2196F3;">
+            Already Up-to-Date (${alreadySynced.length})
+          </h3>
+          <div style="max-height: 100px; overflow-y: auto; padding: 0.5em; background: rgba(33, 150, 243, 0.1); border-radius: 3px; font-size: 0.9em;">
+            ${alreadySyncedList}
+          </div>
+        </div>
+        ` : ''}
+
         <p style="color: #ff6400; font-weight: bold; margin-top: 1em;">
           ${game.i18n.localize('BLOODHUNTER.FeatureSync.ConfirmWarning')}
         </p>
@@ -284,7 +332,7 @@ export class FeatureSync {
    * @private
    */
   static _showSyncResults(actor, results) {
-    const { synced, failed, skipped, duplicatesRemoved } = results;
+    const { synced, failed, skipped, duplicatesRemoved, alreadySynced } = results;
 
     // Build message parts
     const messageParts = [];
@@ -295,6 +343,9 @@ export class FeatureSync {
     if (duplicatesRemoved > 0) {
       messageParts.push(`${duplicatesRemoved} duplicates removed`);
     }
+    if (alreadySynced > 0) {
+      messageParts.push(`${alreadySynced} already up-to-date`);
+    }
     if (skipped > 0) {
       messageParts.push(`${skipped} skipped`);
     }
@@ -304,7 +355,10 @@ export class FeatureSync {
 
     const message = `${actor.name}: ${messageParts.join(', ')}`;
 
-    if (synced === 0 && failed === 0 && duplicatesRemoved === 0 && skipped > 0) {
+    // If everything was already synced and nothing to do
+    if (synced === 0 && failed === 0 && duplicatesRemoved === 0 && alreadySynced > 0 && skipped === 0) {
+      ui.notifications.info(`${actor.name}: All features are already up-to-date!`);
+    } else if (synced === 0 && failed === 0 && duplicatesRemoved === 0 && skipped > 0) {
       ui.notifications.info(
         game.i18n.format('BLOODHUNTER.FeatureSync.NoMatchingFeatures', {
           name: actor.name,
