@@ -6,7 +6,7 @@
   "img": "icons/creatures/abilities/wolf-howl-moon-gray.webp",
   "system": {
     "description": {
-      "value": "<p>As a bonus action, you can transform into your hybrid form for up to 1 hour. You can speak, use equipment, and wear armor in this form.</p><p>You can transform a number of times equal to your proficiency bonus, and regain all expended uses when you finish a long rest.</p><p>While you are transformed, you gain the following benefits:</p><ul><li>You have advantage on Strength checks and saving throws.</li><li>Your speed increases by 10 feet.</li><li>You gain darkvision out to 60 feet if you don't already have it. If you already have darkvision, its range increases by 60 feet.</li><li>Your unarmed strikes are considered magical and deal 1d6 slashing damage. This die increases to 1d8 at 11th level, and 1d10 at 18th level.</li><li>You can use your Dexterity modifier instead of Strength for attack and damage rolls with your unarmed strikes.</li></ul>",
+      "value": "<h3>Hybrid Transformation (3rd Level)</h3><p><strong>Activation:</strong> Bonus action<br><strong>Duration:</strong> Up to 1 hour<br><strong>Reversion:</strong> Bonus action, or automatically if you fall unconscious or die<br><strong>Uses:</strong> 1/short rest (2/short rest at 11th level, unlimited at 18th level)</p><p>You can speak, use equipment, and wear armor in this form. You retain all class features and abilities.</p><h4>While Transformed, you gain:</h4><p><strong>Feral Might</strong></p><ul><li>Advantage on Strength checks and Strength saving throws</li><li>Bonus to melee damage rolls: +1 at 3rd level, +2 at 11th level, +3 at 18th level</li></ul><p><strong>Resilient Hide</strong></p><ul><li>Resistance to bludgeoning, piercing, and slashing damage from nonmagical attacks not made with silvered weapons</li><li>+1 bonus to AC while not wearing heavy armor</li></ul><p><strong>Predatory Strikes</strong></p><ul><li>Apply Crimson Rite to your unarmed strikes (treating them as one weapon)</li><li>Use Dexterity instead of Strength for unarmed strike attacks and damage</li><li>Unarmed strikes deal 1d6 bludgeoning or slashing damage (your choice) at 3rd level, 1d8 at 11th level</li><li>When you use the Attack action to make an unarmed strike, you can make one additional unarmed strike as a bonus action</li></ul><p><strong>Bloodlust (The Drawback)</strong></p><p>If you start your turn with fewer hit points than half your hit point maximum, you must succeed on a <strong>DC 8 Wisdom saving throw</strong> or lose control:</p><ul><li>Must move directly toward the nearest creature</li><li>Must use the Attack action against that creature</li><li>If multiple creatures are equally near, roll randomly for target</li><li>Automatically fail this save if concentrating on a spell or under effects that prevent concentration</li></ul><p>Once the attack is resolved, you regain control.</p>",
       "chat": ""
     },
     "source": {
@@ -90,10 +90,10 @@
     },
     "uses": {
       "spent": 0,
-      "max": "@prof",
+      "max": "1",
       "recovery": [
         {
-          "period": "lr",
+          "period": "sr",
           "type": "recoverAll"
         }
       ]
@@ -108,7 +108,8 @@
   "effects": [],
   "flags": {
     "vtt-blood-hunter": {
-      "hybridTransformation": true
+      "hybridTransformation": true,
+      "orderOfTheLycan": true
     },
     "dnd5e": {
       "advancementOrigin": null

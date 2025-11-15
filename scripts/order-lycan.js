@@ -28,43 +28,38 @@ export class OrderOfTheLycan {
   static HYBRID_BONUSES = {
     3: {
       ac: 1,
-      speed: 10,
-      strength: 0,
-      dexterity: 0,
-      damageReduction: 0,
-      features: ['predatoryStrikes', 'cursedWeakness', 'bloodLust']
+      feralMight: 1, // Bonus to melee damage
+      unarmedAttack: 0, // Bonus to unarmed attack rolls (from Stalker's Prowess)
+      unarmedDamage: '1d6', // Unarmed strike damage die
+      features: ['predatoryStrikes', 'resilientHide', 'feralMight', 'bloodLust']
     },
     7: {
       ac: 1,
-      speed: 15,
-      strength: 1,
-      dexterity: 0,
-      damageReduction: 0,
-      features: ['predatoryStrikes', 'cursedWeakness', 'bloodLust', 'stalkersprowess']
+      feralMight: 1,
+      unarmedAttack: 1, // Stalker's Prowess
+      unarmedDamage: '1d6',
+      features: ['predatoryStrikes', 'resilientHide', 'feralMight', 'bloodLust', 'stalkersProwess']
     },
     11: {
-      ac: 2,
-      speed: 15,
-      strength: 1,
-      dexterity: 1,
-      damageReduction: 3,
-      features: ['predatoryStrikes', 'cursedWeakness', 'bloodLust', 'stalkersprowess', 'brandOfTheVoracious']
+      ac: 1,
+      feralMight: 2,
+      unarmedAttack: 2,
+      unarmedDamage: '1d8',
+      features: ['predatoryStrikes', 'resilientHide', 'feralMight', 'bloodLust', 'stalkersProwess', 'advancedTransformation']
     },
     15: {
-      ac: 2,
-      speed: 20,
-      strength: 2,
-      dexterity: 1,
-      damageReduction: 5,
-      features: ['predatoryStrikes', 'cursedWeakness', 'bloodLust', 'stalkersprowess', 'brandOfTheVoracious', 'advancedTransformation']
+      ac: 1,
+      feralMight: 2,
+      unarmedAttack: 2,
+      unarmedDamage: '1d8',
+      features: ['predatoryStrikes', 'resilientHide', 'feralMight', 'bloodLust', 'stalkersProwess', 'advancedTransformation', 'brandOfTheVoracious']
     },
     18: {
-      ac: 2,
-      speed: 20,
-      strength: 2,
-      dexterity: 2,
-      damageReduction: 5,
-      features: ['predatoryStrikes', 'cursedWeakness', 'bloodLust', 'stalkersprowess', 'brandOfTheVoracious', 'advancedTransformation', 'hybridTransformationMastery']
+      ac: 1,
+      feralMight: 3,
+      unarmedAttack: 3,
+      unarmedDamage: '1d8',
+      features: ['predatoryStrikes', 'resilientHide', 'feralMight', 'bloodLust', 'stalkersProwess', 'advancedTransformation', 'brandOfTheVoracious', 'hybridTransformationMastery']
     }
   };
 
@@ -166,11 +161,12 @@ export class OrderOfTheLycan {
           <div class="transformation-preview">
             <h3>${game.i18n.localize('BLOODHUNTER.Lycan.HybridForm')}</h3>
             <div class="bonus-list">
-              <p><i class="fas fa-shield"></i> +${bonuses.ac} AC</p>
-              <p><i class="fas fa-running"></i> +${bonuses.speed} ft Speed</p>
-              ${bonuses.strength > 0 ? `<p><i class="fas fa-fist-raised"></i> +${bonuses.strength} Strength</p>` : ''}
-              ${bonuses.dexterity > 0 ? `<p><i class="fas fa-wind"></i> +${bonuses.dexterity} Dexterity</p>` : ''}
-              ${bonuses.damageReduction > 0 ? `<p><i class="fas fa-heart"></i> ${bonuses.damageReduction} Damage Reduction</p>` : ''}
+              <p><i class="fas fa-shield"></i> +${bonuses.ac} AC (Resilient Hide)</p>
+              <p><i class="fas fa-shield-alt"></i> Resistance to physical damage (Resilient Hide)</p>
+              <p><i class="fas fa-fist-raised"></i> +${bonuses.feralMight} melee damage (Feral Might)</p>
+              <p><i class="fas fa-hand-rock"></i> Advantage on Strength checks/saves (Feral Might)</p>
+              ${bonuses.unarmedAttack > 0 ? `<p><i class="fas fa-paw"></i> +${bonuses.unarmedAttack} unarmed attack (Stalker's Prowess)</p>` : ''}
+              <p><i class="fas fa-paw-claws"></i> Unarmed strikes: ${bonuses.unarmedDamage} damage</p>
             </div>
             <div class="features-list">
               <p><strong>Abilities:</strong></p>
@@ -283,46 +279,54 @@ export class OrderOfTheLycan {
     const bloodHunterLevel = BloodHunterUtils.getBloodHunterLevel(actor);
 
     const changes = [
-      // AC bonus
+      // Resilient Hide: AC bonus
       {
         key: 'system.attributes.ac.bonus',
         mode: CONST.ACTIVE_EFFECT_MODES.ADD,
         value: bonuses.ac,
         priority: 20
       },
-      // Speed bonus
+      // Resilient Hide: Damage resistance to physical damage
       {
-        key: 'system.attributes.movement.walk',
+        key: 'system.traits.dr.value',
         mode: CONST.ACTIVE_EFFECT_MODES.ADD,
-        value: bonuses.speed,
+        value: 'physical',
+        priority: 20
+      },
+      // Feral Might: Advantage on Strength checks
+      {
+        key: 'flags.dnd5e.advantage.ability.check.str',
+        mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+        value: '1',
+        priority: 20
+      },
+      // Feral Might: Advantage on Strength saves
+      {
+        key: 'flags.dnd5e.advantage.ability.save.str',
+        mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+        value: '1',
         priority: 20
       }
     ];
 
-    // Strength bonus
-    if (bonuses.strength > 0) {
+    // Improved Predatory Strikes: Bonus to unarmed attack rolls (from Stalker's Prowess at 7th+)
+    if (bonuses.unarmedAttack > 0) {
       changes.push({
-        key: 'system.abilities.str.value',
+        key: 'system.bonuses.mwak.attack',
         mode: CONST.ACTIVE_EFFECT_MODES.ADD,
-        value: bonuses.strength,
+        value: `${bonuses.unarmedAttack}`,
         priority: 20
       });
     }
 
-    // Dexterity bonus
-    if (bonuses.dexterity > 0) {
+    // Feral Might: Bonus to melee damage
+    if (bonuses.feralMight > 0) {
       changes.push({
-        key: 'system.abilities.dex.value',
+        key: 'system.bonuses.mwak.damage',
         mode: CONST.ACTIVE_EFFECT_MODES.ADD,
-        value: bonuses.dexterity,
+        value: `${bonuses.feralMight}`,
         priority: 20
       });
-    }
-
-    // Damage resistance (non-silver, non-magical)
-    if (bonuses.damageReduction > 0) {
-      // Note: DR is harder to implement via AE, may need custom handling
-      // For now, we'll add it as a flag and handle manually
     }
 
     const effectData = {
@@ -337,7 +341,9 @@ export class OrderOfTheLycan {
         [MODULE_ID]: {
           hybridTransformation: true,
           lycanLevel: bloodHunterLevel,
-          damageReduction: bonuses.damageReduction,
+          feralMight: bonuses.feralMight,
+          unarmedAttack: bonuses.unarmedAttack,
+          unarmedDamage: bonuses.unarmedDamage,
           features: bonuses.features
         }
       }
@@ -513,11 +519,9 @@ export class OrderOfTheLycan {
         <h3>🐺 ${game.i18n.localize('BLOODHUNTER.Lycan.HybridTransformation')}</h3>
         <p><strong>${actor.name}</strong> transforms into their hybrid form!</p>
         <div class="transformation-bonuses">
-          <p>+${bonuses.ac} AC | +${bonuses.speed} ft Speed</p>
-          ${bonuses.strength > 0 ? `<p>+${bonuses.strength} Strength</p>` : ''}
-          ${bonuses.dexterity > 0 ? `<p>+${bonuses.dexterity} Dexterity</p>` : ''}
-          ${bonuses.damageReduction > 0 ? `<p>${bonuses.damageReduction} Damage Reduction (vs non-silver, non-magical)</p>` : ''}
-          <p>🦷 Predatory Strikes Active</p>
+          <p><strong>Resilient Hide:</strong> +${bonuses.ac} AC, Physical Resistance</p>
+          <p><strong>Feral Might:</strong> +${bonuses.feralMight} melee damage, Advantage on Str checks/saves</p>
+          <p><strong>Predatory Strikes:</strong> ${bonuses.unarmedDamage} unarmed damage${bonuses.unarmedAttack > 0 ? `, +${bonuses.unarmedAttack} attack` : ''}</p>
         </div>
       </div>
     ` : `
