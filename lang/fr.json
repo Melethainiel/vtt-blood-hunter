@@ -162,6 +162,7 @@
         "SelectWeapon": "Sélectionner l'Arme",
         "SelectTarget": "Sélectionner la Cible",
         "Attack": "Effectuer l'Attaque",
+        "AttackBonus": "Marionnette Déchue - Bonus d'Attaque",
         "NoWeapons": "La créature déchue n'a aucune arme de corps à corps équipée",
         "Attacks": "attaque",
         "With": "avec",

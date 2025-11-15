@@ -152,19 +152,24 @@ export async function executeCurseOfTheFallenPuppet(actor, fallenCreature, falle
                 let effectId;
                 if (amplify && hemocraftDie) {
                   const effectData = {
-                    name: 'Fallen Puppet - Attack Bonus',
+                    name: game.i18n.localize('BLOODHUNTER.BloodCurse.FallenPuppet.AttackBonus'),
                     icon: 'icons/magic/death/skull-humanoid-crown-white.webp',
                     changes: [
                       {
-                        key: 'system.bonuses.abilities.attack',
-                        mode: 2, // ADD
+                        key: 'system.bonuses.mwak.attack',
+                        mode: CONST.ACTIVE_EFFECT_MODES.ADD,
+                        value: hemocraftDie,
+                        priority: 20
+                      },
+                      {
+                        key: 'system.bonuses.rwak.attack',
+                        mode: CONST.ACTIVE_EFFECT_MODES.ADD,
                         value: hemocraftDie,
                         priority: 20
                       }
                     ],
                     duration: {
-                      turns: 1,
-                      seconds: 6
+                      turns: 1
                     },
                     flags: {
                       [MODULE_ID]: {
@@ -175,9 +180,17 @@ export async function executeCurseOfTheFallenPuppet(actor, fallenCreature, falle
                     }
                   };
 
+                  // Add DAE special duration if DAE is active
+                  const isDaeActive = game.modules.get('dae')?.active;
+                  if (isDaeActive) {
+                    effectData.flags.dae = {
+                      specialDuration: ['1Attack']
+                    };
+                  }
+
                   const effect = await fallenCreature.createEmbeddedDocuments('ActiveEffect', [effectData]);
                   effectId = effect[0].id;
-                  console.log(`${MODULE_ID} | Applied Fallen Puppet effect to ${fallenCreature.name}: ${hemocraftDie}`);
+                  console.log(`${MODULE_ID} | Applied Fallen Puppet effect to ${fallenCreature.name}: ${hemocraftDie} bonus to attack`);
                 }
 
                 // Execute weapon attack using dnd5e item.use()
