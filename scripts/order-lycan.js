@@ -114,13 +114,37 @@ export class OrderOfTheLycan {
   }
 
   /**
-   * Get current transformation effect
+   * Get current transformation effect (returns first one found, for backwards compatibility)
    * @param {Actor} actor - The Blood Hunter actor
    * @returns {ActiveEffect|null} The transformation effect
    */
   static getTransformationEffect(actor) {
     return actor.effects.find(e =>
       e.flags[MODULE_ID]?.hybridTransformation === true
+    );
+  }
+
+  /**
+   * Get all transformation effects
+   * @param {Actor} actor - The Blood Hunter actor
+   * @returns {Array<ActiveEffect>} Array of transformation effects
+   */
+  static getTransformationEffects(actor) {
+    return actor.effects.filter(e =>
+      e.flags[MODULE_ID]?.hybridTransformation === true
+    );
+  }
+
+  /**
+   * Get specific transformation effect by feature name
+   * @param {Actor} actor - The Blood Hunter actor
+   * @param {string} featureName - Feature name: 'feralMight', 'resilientHide', 'predatoryStrikes', 'bloodLust'
+   * @returns {ActiveEffect|null} The specific effect
+   */
+  static getTransformationFeatureEffect(actor, featureName) {
+    return actor.effects.find(e =>
+      e.flags[MODULE_ID]?.hybridTransformation === true &&
+      e.flags[MODULE_ID]?.hybridFeature === featureName
     );
   }
 
@@ -233,13 +257,13 @@ export class OrderOfTheLycan {
     const bloodHunterLevel = BloodHunterUtils.getBloodHunterLevel(actor);
     const bonuses = this.getHybridBonuses(bloodHunterLevel);
 
-    // Create transformation effect
-    const effectData = this.createTransformationEffect(actor, bonuses);
+    // Create transformation effects (multiple effects, one per feature)
+    const effectsData = this.createTransformationEffects(actor, bonuses);
 
     // Apply HP cost (no cost for transformation itself, but Blood Lust may trigger)
     // Transformation lasts 1 hour
 
-    await actor.createEmbeddedDocuments('ActiveEffect', [effectData]);
+    await actor.createEmbeddedDocuments('ActiveEffect', effectsData);
 
     // Create chat message
     await this.createTransformationMessage(actor, true);
@@ -255,13 +279,15 @@ export class OrderOfTheLycan {
    * @param {Actor} actor - The Blood Hunter actor
    */
   static async revertTransformation(actor) {
-    const effect = this.getTransformationEffect(actor);
-    if (!effect) {
+    const effects = this.getTransformationEffects(actor);
+    if (!effects || effects.length === 0) {
       ui.notifications.warn(game.i18n.localize('BLOODHUNTER.Lycan.NotTransformed'));
       return;
     }
 
-    await effect.delete();
+    // Delete all transformation effects
+    const effectIds = effects.map(e => e.id);
+    await actor.deleteEmbeddedDocuments('ActiveEffect', effectIds);
 
     // Create chat message
     await this.createTransformationMessage(actor, false);
@@ -270,37 +296,26 @@ export class OrderOfTheLycan {
   }
 
   /**
-   * Create transformation Active Effect
+   * Create transformation Active Effects (multiple effects, one per feature)
    * @param {Actor} actor - The Blood Hunter actor
    * @param {Object} bonuses - Hybrid form bonuses
-   * @returns {Object} Effect data
+   * @returns {Array} Array of effect data objects
    */
-  static createTransformationEffect(actor, bonuses) {
+  static createTransformationEffects(actor, bonuses) {
     const bloodHunterLevel = BloodHunterUtils.getBloodHunterLevel(actor);
+    const effects = [];
+    const duration = { seconds: 3600 }; // 1 hour
 
-    const changes = [
-      // Resilient Hide: AC bonus
-      {
-        key: 'system.attributes.ac.bonus',
-        mode: CONST.ACTIVE_EFFECT_MODES.ADD,
-        value: bonuses.ac,
-        priority: 20
-      },
-      // Resilient Hide: Damage resistance to physical damage
-      {
-        key: 'system.traits.dr.value',
-        mode: CONST.ACTIVE_EFFECT_MODES.ADD,
-        value: 'physical',
-        priority: 20
-      },
-      // Feral Might: Advantage on Strength checks
+    // 1. Feral Might Effect
+    const feralMightChanges = [
+      // Advantage on Strength checks
       {
         key: 'flags.dnd5e.advantage.ability.check.str',
         mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
         value: '1',
         priority: 20
       },
-      // Feral Might: Advantage on Strength saves
+      // Advantage on Strength saves
       {
         key: 'flags.dnd5e.advantage.ability.save.str',
         mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
@@ -309,19 +324,9 @@ export class OrderOfTheLycan {
       }
     ];
 
-    // Improved Predatory Strikes: Bonus to unarmed attack rolls (from Stalker's Prowess at 7th+)
-    if (bonuses.unarmedAttack > 0) {
-      changes.push({
-        key: 'system.bonuses.mwak.attack',
-        mode: CONST.ACTIVE_EFFECT_MODES.ADD,
-        value: `${bonuses.unarmedAttack}`,
-        priority: 20
-      });
-    }
-
-    // Feral Might: Bonus to melee damage
+    // Bonus to melee damage
     if (bonuses.feralMight > 0) {
-      changes.push({
+      feralMightChanges.push({
         key: 'system.bonuses.mwak.damage',
         mode: CONST.ACTIVE_EFFECT_MODES.ADD,
         value: `${bonuses.feralMight}`,
@@ -329,27 +334,103 @@ export class OrderOfTheLycan {
       });
     }
 
-    const effectData = {
-      name: game.i18n.localize('BLOODHUNTER.Lycan.HybridForm'),
-      icon: this.TRANSFORMATION_FORMS.hybrid.icon,
+    effects.push({
+      name: 'Feral Might',
+      icon: 'icons/magic/fire/blast-beam-impact-silhouette.webp',
       origin: actor.uuid,
-      duration: {
-        seconds: 3600 // 1 hour
-      },
-      changes: changes,
+      duration: duration,
+      changes: feralMightChanges,
       flags: {
         [MODULE_ID]: {
           hybridTransformation: true,
+          hybridFeature: 'feralMight',
           lycanLevel: bloodHunterLevel,
-          feralMight: bonuses.feralMight,
+          feralMight: bonuses.feralMight
+        }
+      }
+    });
+
+    // 2. Resilient Hide Effect
+    effects.push({
+      name: 'Resilient Hide',
+      icon: 'icons/magic/defensive/shield-barrier-glowing-triangle-blue.webp',
+      origin: actor.uuid,
+      duration: duration,
+      changes: [
+        // AC bonus
+        {
+          key: 'system.attributes.ac.bonus',
+          mode: CONST.ACTIVE_EFFECT_MODES.ADD,
+          value: bonuses.ac,
+          priority: 20
+        },
+        // Damage resistance to physical damage
+        {
+          key: 'system.traits.dr.value',
+          mode: CONST.ACTIVE_EFFECT_MODES.ADD,
+          value: 'physical',
+          priority: 20
+        }
+      ],
+      flags: {
+        [MODULE_ID]: {
+          hybridTransformation: true,
+          hybridFeature: 'resilientHide',
+          lycanLevel: bloodHunterLevel,
+          acBonus: bonuses.ac
+        }
+      }
+    });
+
+    // 3. Predatory Strikes Effect
+    const predatoryStrikesChanges = [];
+
+    // Bonus to unarmed attack rolls (from Stalker's Prowess at 7th+)
+    if (bonuses.unarmedAttack > 0) {
+      predatoryStrikesChanges.push({
+        key: 'system.bonuses.mwak.attack',
+        mode: CONST.ACTIVE_EFFECT_MODES.ADD,
+        value: `${bonuses.unarmedAttack}`,
+        priority: 20
+      });
+    }
+
+    effects.push({
+      name: 'Predatory Strikes',
+      icon: 'icons/skills/melee/unarmed-punch-fist.webp',
+      origin: actor.uuid,
+      duration: duration,
+      changes: predatoryStrikesChanges,
+      flags: {
+        [MODULE_ID]: {
+          hybridTransformation: true,
+          hybridFeature: 'predatoryStrikes',
+          lycanLevel: bloodHunterLevel,
           unarmedAttack: bonuses.unarmedAttack,
           unarmedDamage: bonuses.unarmedDamage,
           features: bonuses.features
         }
       }
-    };
+    });
 
-    return effectData;
+    // 4. Blood Lust Effect (reminder/passive)
+    effects.push({
+      name: 'Blood Lust',
+      icon: 'icons/magic/unholy/strike-body-explode-disintegrate.webp',
+      origin: actor.uuid,
+      duration: duration,
+      changes: [], // No mechanical changes, just a reminder
+      flags: {
+        [MODULE_ID]: {
+          hybridTransformation: true,
+          hybridFeature: 'bloodLust',
+          lycanLevel: bloodHunterLevel,
+          description: 'At the start of your turn with less than half HP, make a DC 8 Wisdom save or attack the nearest creature.'
+        }
+      }
+    });
+
+    return effects;
   }
 
   /**
@@ -431,11 +512,8 @@ export class OrderOfTheLycan {
    * @returns {boolean} True if has ability
    */
   static hasPredatoryStrikes(actor) {
-    const effect = this.getTransformationEffect(actor);
-    if (!effect) return false;
-
-    const features = effect.flags[MODULE_ID]?.features || [];
-    return features.includes('predatoryStrikes');
+    const effect = this.getTransformationFeatureEffect(actor, 'predatoryStrikes');
+    return effect !== null && effect !== undefined;
   }
 
   /**
