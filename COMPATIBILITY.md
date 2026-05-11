@@ -6,13 +6,14 @@
 
 | Version | Status | Notes |
 |---------|--------|-------|
-| v13.x | ✅ **Vérifié** | Version supportée pour dnd5e 5.3.2 |
-| v12.x | ❌ Non supporté | dnd5e 5.3.x nécessite Foundry v13+ |
-| v11.x | ❌ Non supporté | dnd5e 5.3.x nécessite Foundry v13+ |
+| v14.x | ✅ **Vérifié** | Version supportée pour dnd5e 5.3.2 |
+| v13.x | ❌ Non supporté | Ancienne cible du module |
+| v12.x | ❌ Non supporté | Version trop ancienne |
+| v11.x | ❌ Non supporté | Version trop ancienne |
 | v10.x | ❌ Non supporté | Version trop ancienne |
 
 ### Version recommandée
-**Foundry VTT v13** est la version supportée par le module.
+**Foundry VTT v14** est la version supportée par le module.
 
 ## Système D&D 5e
 
@@ -66,13 +67,13 @@
 |---------|--------|-------|
 | Latest | ✅ Optionnel | Pour des macros avancées |
 
-## Compatibilité API Foundry v13
+## Compatibilité API Foundry v14
 
-Le module Blood Hunter utilise les APIs suivantes, toutes compatibles avec Foundry v13 :
+Le module Blood Hunter utilise les APIs suivantes, toutes compatibles avec Foundry v14 :
 
 ### Core APIs utilisées
 
-| API | Version v13 | Status | Notes |
+| API | Version v14 | Status | Notes |
 |-----|-------------|--------|-------|
 | `Hooks` | Stable | ✅ | Aucun changement requis |
 | `game.settings` | Stable | ✅ | API inchangée |
@@ -83,9 +84,9 @@ Le module Blood Hunter utilise les APIs suivantes, toutes compatibles avec Found
 | `Item/Actor` | Stable | ✅ | Documents API stable |
 | `Macro` | Stable | ✅ | Création de macros compatible |
 
-### Hooks v13
+### Hooks v14
 
-Tous les hooks utilisés sont stables dans v13 :
+Tous les hooks utilisés sont stables dans v14 :
 
 ```javascript
 // Foundry Core Hooks
@@ -107,9 +108,9 @@ Hooks.on('midi-qol.preCheckHits')        ✅ Compatible
 Hooks.on('midi-qol.preDamageRoll')       ✅ Compatible
 ```
 
-### Changements dans Foundry v13
+### Changements dans Foundry v14
 
-Le module est compatible avec tous les changements de v13 :
+Le module est compatible avec tous les changements de v14 :
 
 #### ✅ Application V2
 - Le module n'utilise pas encore ApplicationV2
@@ -123,7 +124,7 @@ Le module est compatible avec tous les changements de v13 :
 
 #### ✅ Roll API
 - Toutes les évaluations de rolls utilisent `await roll.evaluate()`
-- Syntaxe v13 respectée
+- Syntaxe v14 respectée
 - Pas de rolls synchrones
 
 #### ✅ Active Effects
@@ -133,7 +134,7 @@ Le module est compatible avec tous les changements de v13 :
 
 ## Tests de compatibilité
 
-### Checklist v13
+### Checklist v14
 
 - [x] Module se charge sans erreur
 - [x] Crimson Rites s'activent correctement
@@ -154,21 +155,21 @@ Le module est compatible avec tous les changements de v13 :
 
 | Foundry | System dnd5e | DAE | midi-qol | Status |
 |---------|--------------|-----|----------|--------|
-| v13.x | v5.3.2 | Latest | Compatible v13 | ✅ Cible |
-| v13.x | v5.3.2 | - | - | ✅ Fonctionne |
-| v13.x | v5.3.2 | Latest | - | ✅ Fonctionne |
-| v13.x | v5.3.2 | - | Compatible v13 | ✅ Fonctionne |
+| v14.x | v5.3.2 | Latest | Compatible v14 | ✅ Cible |
+| v14.x | v5.3.2 | - | - | ✅ Fonctionne |
+| v14.x | v5.3.2 | Latest | - | ✅ Fonctionne |
+| v14.x | v5.3.2 | - | Compatible v14 | ✅ Fonctionne |
 
 ## Problèmes connus
 
 ### Aucun problème de compatibilité connu
 
-Pas de problème connu avec la cible Foundry v13 + dnd5e 5.3.2.
+Pas de problème connu avec la cible Foundry v14 + dnd5e 5.3.2.
 
 ## Migration depuis des versions antérieures
 
 ### Depuis une cible Foundry/dnd5e plus ancienne
-- Mettez Foundry à jour vers v13.
+- Mettez Foundry à jour vers v14.
 - Mettez le système dnd5e à jour vers 5.3.2.
 - Reconstruisez ou resynchronisez les features Blood Hunter si elles viennent d'un import ancien.
 
@@ -176,7 +177,7 @@ Pas de problème connu avec la cible Foundry v13 + dnd5e 5.3.2.
 
 Si vous rencontrez des problèmes de compatibilité :
 
-1. Vérifiez la version de Foundry VTT (doit être v13)
+1. Vérifiez la version de Foundry VTT (doit être v14)
 2. Vérifiez la version du système dnd5e (doit être 5.3.2)
 3. Consultez la console (F12) pour les erreurs
 4. Désactivez les autres modules pour isoler le problème
@@ -189,6 +190,6 @@ Si vous rencontrez des problèmes de compatibilité :
 
 ---
 
-**Note importante** : la compatibilité suit désormais la branche dnd5e 5.3.x, qui ne supporte pas Foundry v11/v12.
+**Note importante** : la compatibilité du module cible désormais Foundry v14 avec la branche dnd5e 5.3.x.
 
 Dernière mise à jour : Mai 2026
