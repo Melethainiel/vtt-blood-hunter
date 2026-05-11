@@ -6,13 +6,13 @@
 
 | Version | Status | Notes |
 |---------|--------|-------|
-| v13.x | ✅ **Vérifié** | Version actuelle, entièrement testé et compatible |
-| v12.x | ✅ Compatible | Fonctionne sans problème |
-| v11.x | ✅ Compatible | Version minimale supportée |
+| v13.x | ✅ **Vérifié** | Version supportée pour dnd5e 5.3.2 |
+| v12.x | ❌ Non supporté | dnd5e 5.3.x nécessite Foundry v13+ |
+| v11.x | ❌ Non supporté | dnd5e 5.3.x nécessite Foundry v13+ |
 | v10.x | ❌ Non supporté | Version trop ancienne |
 
 ### Version recommandée
-**Foundry VTT v13** est la version recommandée pour une expérience optimale.
+**Foundry VTT v13** est la version supportée par le module.
 
 ## Système D&D 5e
 
@@ -20,10 +20,10 @@
 
 | Version | Status | Notes |
 |---------|--------|-------|
-| v3.3.x | ✅ Vérifié | Version actuelle du système |
-| v3.2.x | ✅ Compatible | |
-| v3.1.x | ✅ Compatible | |
-| v3.0.x | ✅ Compatible | Version minimale supportée |
+| v5.3.2 | ✅ Vérifié | Version cible |
+| v5.3.x | ✅ Compatible | Même branche mineure |
+| v4.x | ❌ Non supporté | Ancienne cible du module |
+| v3.x | ❌ Non supporté | Ancienne cible du module |
 | v2.x | ❌ Non supporté | Version trop ancienne |
 
 ## Modules complémentaires
@@ -154,33 +154,30 @@ Le module est compatible avec tous les changements de v13 :
 
 | Foundry | System dnd5e | DAE | midi-qol | Status |
 |---------|--------------|-----|----------|--------|
-| v13.x | v3.3.x | Latest | v11.x | ✅ Testé et vérifié |
-| v13.x | v3.3.x | - | - | ✅ Fonctionne |
-| v13.x | v3.3.x | Latest | - | ✅ Fonctionne |
-| v13.x | v3.3.x | - | v11.x | ✅ Fonctionne |
+| v13.x | v5.3.2 | Latest | Compatible v13 | ✅ Cible |
+| v13.x | v5.3.2 | - | - | ✅ Fonctionne |
+| v13.x | v5.3.2 | Latest | - | ✅ Fonctionne |
+| v13.x | v5.3.2 | - | Compatible v13 | ✅ Fonctionne |
 
 ## Problèmes connus
 
 ### Aucun problème de compatibilité connu
 
-Le module fonctionne parfaitement sur Foundry v13 sans aucun problème connu.
+Pas de problème connu avec la cible Foundry v13 + dnd5e 5.3.2.
 
 ## Migration depuis des versions antérieures
 
-### Depuis v12
-- ✅ Aucune migration nécessaire
-- ✅ Tous les effets et settings restent intacts
-
-### Depuis v11
-- ✅ Aucune migration nécessaire
-- ✅ Compatible immédiatement
+### Depuis une cible Foundry/dnd5e plus ancienne
+- Mettez Foundry à jour vers v13.
+- Mettez le système dnd5e à jour vers 5.3.2.
+- Reconstruisez ou resynchronisez les features Blood Hunter si elles viennent d'un import ancien.
 
 ## Support et rapports de bugs
 
 Si vous rencontrez des problèmes de compatibilité :
 
-1. Vérifiez la version de Foundry VTT (doit être v11+)
-2. Vérifiez la version du système dnd5e (doit être v3.0.0+)
+1. Vérifiez la version de Foundry VTT (doit être v13)
+2. Vérifiez la version du système dnd5e (doit être 5.3.2)
 3. Consultez la console (F12) pour les erreurs
 4. Désactivez les autres modules pour isoler le problème
 5. Ouvrez une issue sur GitHub avec :
@@ -190,20 +187,8 @@ Si vous rencontrez des problèmes de compatibilité :
    - Message d'erreur complet
    - Steps pour reproduire
 
-## Roadmap de compatibilité
-
-### Version 1.1.0 (Future)
-- Migration optionnelle vers DialogV2 pour v13+
-- Utilisation des nouvelles APIs v13 quand disponibles
-- Optimisations spécifiques v13
-
-### Version 2.0.0 (Future)
-- Migration complète vers ApplicationV2
-- Utilisation exclusive des nouvelles APIs v13+
-- Support minimum : Foundry v13+
-
 ---
 
-**Note importante** : Le module est conçu pour être compatible avec un large éventail de versions, mais nous recommandons toujours d'utiliser la dernière version stable de Foundry VTT et du système dnd5e pour bénéficier des dernières fonctionnalités et corrections de bugs.
+**Note importante** : la compatibilité suit désormais la branche dnd5e 5.3.x, qui ne supporte pas Foundry v11/v12.
 
-Dernière mise à jour : Janvier 2025
+Dernière mise à jour : Mai 2026

@@ -3,6 +3,8 @@
  * Syncs Blood Hunter features from DDB imports with enhanced compendium versions
  */
 
+import { BloodHunterUtils } from './utils.js';
+
 export class FeatureSync {
   static MODULE_ID = 'vtt-blood-hunter';
   static COMPENDIUM_ID = 'vtt-blood-hunter.blood-hunter-features';
@@ -162,11 +164,7 @@ export class FeatureSync {
     }
 
     // Fallback: look for the Blood Hunter class itself
-    const bloodHunterClass = actor.items.find(item =>
-      item.type === 'class' &&
-      (item.name.toLowerCase().includes('blood hunter') ||
-       item.system?.identifier === 'blood-hunter')
-    );
+    const bloodHunterClass = actor.items.find(item => BloodHunterUtils.isBloodHunterClass(item));
 
     if (bloodHunterClass) {
       return bloodHunterClass.id;

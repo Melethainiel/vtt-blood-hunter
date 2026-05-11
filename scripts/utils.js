@@ -5,6 +5,27 @@
 export class BloodHunterUtils {
 
   /**
+   * Check if a class identifier belongs to Blood Hunter.
+   * @param {string} identifier - The dnd5e class identifier
+   * @returns {boolean} True if the identifier matches Blood Hunter
+   */
+  static isBloodHunterIdentifier(identifier) {
+    return ['blood-hunter', 'bloodhunter'].includes(identifier);
+  }
+
+  /**
+   * Check if an item is the Blood Hunter class item.
+   * @param {Item} item - The item to check
+   * @returns {boolean} True if this is a Blood Hunter class item
+   */
+  static isBloodHunterClass(item) {
+    return item?.type === 'class' && (
+      item.name.toLowerCase().includes('blood hunter') ||
+      this.isBloodHunterIdentifier(item.system?.identifier)
+    );
+  }
+
+  /**
    * Check if an actor is a Blood Hunter
    * @param {Actor} actor - The actor to check
    * @returns {boolean} True if actor has Blood Hunter class
@@ -13,11 +34,7 @@ export class BloodHunterUtils {
     if (!actor) return false;
 
     // Check for Blood Hunter class in character classes
-    const classes = actor.items.filter(i => i.type === 'class');
-    return classes.some(c =>
-      c.name.toLowerCase().includes('blood hunter') ||
-      c.system?.identifier === 'bloodhunter'
-    );
+    return actor.items.some(i => this.isBloodHunterClass(i));
   }
 
   /**
@@ -28,12 +45,7 @@ export class BloodHunterUtils {
   static getBloodHunterLevel(actor) {
     if (!actor) return 0;
 
-    const bhClass = actor.items.find(i =>
-      i.type === 'class' && (
-        i.name.toLowerCase().includes('blood hunter') ||
-        i.system?.identifier === 'bloodhunter'
-      )
-    );
+    const bhClass = actor.items.find(i => this.isBloodHunterClass(i));
 
     return bhClass?.system?.levels || 0;
   }
@@ -48,7 +60,8 @@ export class BloodHunterUtils {
   static getHemocraftDie(actor, scalePath = null) {
     // If scalePath is provided, check for DDB Importer scale value first
     if (scalePath) {
-      const scaleValue = actor?.system?.scale?.['blood-hunter']?.[scalePath];
+      const scaleValue = actor?.system?.scale?.['blood-hunter']?.[scalePath]
+        ?? actor?.system?.scale?.bloodhunter?.[scalePath];
 
       if (scaleValue) {
         // Handle DDB object format: { number, faces, modifiers }
