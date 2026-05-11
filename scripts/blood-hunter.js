@@ -160,7 +160,7 @@ Hooks.on('dnd5e.preUseActivity', async(activity, usageConfig, dialogConfig, mess
   // Map of feature flags to their handler functions
   const featureHandlers = {
     crimsonRiteActivation: async() => {
-      await CrimsonRite.activateDialog();
+      await CrimsonRite.activateDialog(item.actor);
       return false; // Prevent default item usage
     },
     hybridTransformation: async() => {
