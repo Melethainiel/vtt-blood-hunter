@@ -114,8 +114,7 @@ export class BloodHunterIntegrations {
 
     // Look for Blood Hunter class
     const bhClass = targetActor.items.find(i =>
-      i.type === 'class' &&
-      (i.name.toLowerCase().includes('blood hunter') || i.system?.identifier === 'bloodhunter')
+      BloodHunterUtils.isBloodHunterClass(i)
     );
 
     if (!bhClass) return;
@@ -178,8 +177,7 @@ export class BloodHunterIntegrations {
       transfer: false
     };
 
-    // Add damage to activities[attack].damage.parts using the dnd5e v4.x format
-    // This works with or without DAE, as it's the native dnd5e v4.x system
+    // Apply to every attack activity, which is stable in dnd5e 5.3.x.
     effectData.changes.push({
       key: 'activities[attack].damage.parts',
       mode: CONST.ACTIVE_EFFECT_MODES.ADD,

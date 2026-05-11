@@ -34,8 +34,8 @@
       "level": 1
     },
     "properties": [],
-    "advancement": [
-      {
+    "advancement": {
+      "bloodmaledict001": {
         "_id": "bloodmaledict001",
         "type": "ScaleValue",
         "configuration": {
@@ -63,7 +63,7 @@
         "title": "Blood Maledict Uses",
         "icon": ""
       },
-      {
+      "bloodmaledict002": {
         "_id": "bloodmaledict002",
         "type": "ScaleValue",
         "configuration": {
@@ -95,7 +95,7 @@
         "title": "Hemocraft Die",
         "icon": ""
       }
-    ],
+    },
     "enchantment": null,
     "enchant": {}
   },
@@ -113,7 +113,7 @@
     "duplicateSource": null,
     "coreVersion": "13.346",
     "systemId": "dnd5e",
-    "systemVersion": "4.3.6",
+    "systemVersion": "5.3.2",
     "createdTime": null,
     "modifiedTime": null,
     "lastModifiedBy": null,
