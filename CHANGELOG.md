@@ -5,10 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.5] - 2026-05-11
+
+### Fixed
+- Corrected the supported Foundry VTT target from v13 to v14.
+
 ## [1.4.4] - 2026-05-11
 
 ### Changed
-- Updated module compatibility for Foundry VTT v13 and dnd5e 5.3.2.
+- Updated module compatibility for Foundry VTT v14 and dnd5e 5.3.2.
 - Migrated Blood Maledict advancement data to the dnd5e 5.3 object format.
 - Refreshed Blood Hunter class and hemocraft scale detection for current and legacy identifiers.
 - Rewrote README and compatibility notes with a more direct maintenance-focused tone.

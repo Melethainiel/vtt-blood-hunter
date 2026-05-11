@@ -2,11 +2,11 @@
   "id": "vtt-blood-hunter",
   "title": "Blood Hunter",
   "description": "Automatisation de la classe Blood Hunter de Matthew Mercer pour D&D 5e : Crimson Rite, Blood Curses, Order of the Lycan et intégrations optionnelles DAE/midi-qol.",
-  "version": "1.4.4",
+  "version": "1.4.5",
   "compatibility": {
-    "minimum": "13",
-    "verified": "13",
-    "maximum": "13"
+    "minimum": "14",
+    "verified": "14",
+    "maximum": "14"
   },
   "authors": [
     {

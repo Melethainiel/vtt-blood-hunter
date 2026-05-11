@@ -2,13 +2,13 @@
 
 Module Foundry VTT pour jouer la classe Blood Hunter de Matthew Mercer avec le système D&D 5e.
 
-![Foundry v13](https://img.shields.io/badge/Foundry-v13-informational)
+![Foundry v14](https://img.shields.io/badge/Foundry-v14-informational)
 ![dnd5e 5.3.2](https://img.shields.io/badge/dnd5e-5.3.2-blue)
-![Module 1.4.4](https://img.shields.io/badge/module-1.4.4-green)
+![Module 1.4.5](https://img.shields.io/badge/module-1.4.5-green)
 
 ## Compatibilité
 
-- Foundry VTT 13.
+- Foundry VTT 14.
 - Système `dnd5e` 5.3.2.
 - DAE et midi-qol sont optionnels. Le module fonctionne sans eux, avec moins d'automatisation.
 

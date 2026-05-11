@@ -1,6 +1,6 @@
 {
   "name": "vtt-blood-hunter",
-  "version": "1.4.4",
+  "version": "1.4.5",
   "description": "Module Foundry VTT pour automatiser la classe Blood Hunter",
   "main": "scripts/blood-hunter.js",
   "scripts": {
